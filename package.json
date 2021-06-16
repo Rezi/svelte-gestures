@@ -2,7 +2,7 @@
   "name": "svelte-gestures",
   "description": "Svelte cross-platform gesture actions",
   "repository": "https://github.com/Rezi/svelte-gestures",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.umd.min.js",
   "module": "dist/index.es.js",
   "types": "dist/svelteGestures.d.ts",
