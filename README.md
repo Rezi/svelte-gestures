@@ -6,7 +6,7 @@ It contains the most popular gestures: `pan`, `pinch`, `rotate`, `swipe`, `tap`.
 
 It uses pointer events under the hood, to make it really cross platform. Gestures will be recognized, if done by mouse, touche, stylus etc.
 
-Recognizers are kept as simple as possible, but still providing desired basic functionality. They are made in form of svelte actions with custom event emiters. Any number of recognizers can be used on one element.
+Recognizers are kept as simple as possible, but still providing desired basic functionality. They are made in form of svelte actions with custom event emiters. **Any number of different recognizers can be used on one element**.
 
 ## Pan
 
@@ -14,7 +14,7 @@ Pan action fires `pan` event: `event.detail` has `x` and `y` properties (x,y sta
 
 It is triggered on pointer (mouse, touch, etc.) move. But not earlier than `delay` parameter. The `delay` parameter is optional. If used it overwrites 300ms default value. It prevents triggering of tap or swipe gestures when combined on single element.
 
-[> repl Tap demo](https://svelte.dev/repl/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
+[> repl Pan demo](https://svelte.dev/repl/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
 
 ```html
 <script>
@@ -107,7 +107,7 @@ Tap action fires `tap` event: `event.detail` has `x` and `y` properties (x,y sta
 
 Tap action is fired only when the click/touch is finished within the give `timeframe`, the parameter is optional and overwrites defalut value of 300ms.
 
-[> repl Swipe demo](https://svelte.dev/repl/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
+[> repl Tap demo](https://svelte.dev/repl/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
 
 ```html
 <script>
