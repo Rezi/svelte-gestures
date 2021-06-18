@@ -1,7 +1,7 @@
 'use strict';
 
 export const DEFAULT_DELAY = 300;
-export const DEFAULT_MIN_SWIPE_DISTANCE = 100; // in pixels
+export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
 export type GestureName = 'pan' | 'pinch' | 'tap' | 'swipe' | 'rotate';
 
 type PointerType = 'up' | 'down' | 'move';
@@ -71,7 +71,7 @@ export function setPointerControls(
 
     const removePointerupHandler = addEventListener(
       node,
-      'pointerup',
+      'pointerup', //lostpointercapture
       (event: PointerEvent) => {
         activeEvents = removeEvent(event, activeEvents);
 

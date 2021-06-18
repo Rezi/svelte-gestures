@@ -8,6 +8,12 @@ It uses pointer events under the hood, to make it really cross platform. Gesture
 
 Recognizers are kept as simple as possible, but still providing desired basic functionality. They are made in form of svelte actions with custom event emiters. **Any number of different recognizers can be used on one element**.
 
+## API events
+
+Except main event, each resogniser triggers, three more events with names composed from action name (`pan` | `pinch` | `tap` | `swipe` | `rotate`) and event type (`up` | `down` | `move`). 
+
+For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.detail` with following property `{ event: PointerEvent, pointersCount: number }`. First is native pointer event, second is number of active pointers.
+
 ## Pan
 
 Pan action fires `pan` event: `event.detail` has `x` and `y` properties (x,y stand for position withing the `element` on which the action is used).
@@ -80,7 +86,7 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
 
 ## Swipe
 
-Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number }` with default values 300ms and 100px. Swipe is fired if preset distance in propper direction is done in preset time.
+Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number }` with default values 300ms and 60px. Swipe is fired if preset distance in propper direction is done in preset time.
 
 `event.detail.direction` represents direction of swipe: 'top' | 'right' | 'bottom' | 'left' 
 
@@ -96,7 +102,7 @@ Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as 
   }
 </script>
 
-<div use:swipe={{ timeframe: 300, minSwipeDistance: 100 }} on:swipe={handler} style="width:500px;height:500px;border:1px solid black;">
+<div use:swipe={{ timeframe: 300, minSwipeDistance: 60 }} on:swipe={handler} style="width:500px;height:500px;border:1px solid black;">
   direction: {direction}
 </div>
 ```
@@ -126,6 +132,10 @@ Tap action is fired only when the click/touch is finished within the give `timef
   tap: {x} {y}
 </div>
 ```
+
+# Custom gestures
+
+You are encouraged to define your own custom gestures. 
 
 ## License
 
