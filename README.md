@@ -148,15 +148,17 @@ Tap action is fired only when the click/touch is finished within the give `timef
 
 You are encouraged to define your own custom gestures. There is a `setPointerControls` function exposed by the `svelte-gestures`. It handle all the events registration/deregistration needed for handling gestures; you just need to pass callbacks in it.
 
-here are all the arguments of `setPointerControls`:
-
 ```typescript
+function setPointerControls(
   gestureName: string,
   node: HTMLElement,
   onMoveCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
   onDownCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
   onUpCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void
+);
 ```
+
+You can pass `null` instead of a callback if you dont need to call it in that event. In double tap example below you actually do not need any events related to move, as they are irrelevant for tapping.
 
 See how doubletap custome gesture is implemented:
 
