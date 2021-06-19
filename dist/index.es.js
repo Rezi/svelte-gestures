@@ -30,25 +30,34 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
     dispatch(node, gestureName, event, activeEvents, 'down');
     onDownCallback === null || onDownCallback === void 0 ? void 0 : onDownCallback(activeEvents, event);
     const pointerId = event.pointerId;
-    const removePointermoveHandler = addEventListener(node, 'pointermove', event => {
-      activeEvents = activeEvents.map(activeEvent => {
-        return event.pointerId === activeEvent.pointerId ? event : activeEvent;
-      });
-      dispatch(node, gestureName, event, activeEvents, 'move');
-      onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, event);
-    });
-    const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', event => {
-      if (pointerId === event.pointerId) {
-        activeEvents = removeEvent(event, activeEvents);
+
+    function onup(e) {
+      if (pointerId === e.pointerId) {
+        activeEvents = removeEvent(e, activeEvents);
 
         if (!activeEvents.length) {
           removePointermoveHandler();
           removeLostpointercaptureHandler();
+          removepointerupHandler();
         }
 
-        dispatch(node, gestureName, event, activeEvents, 'up');
-        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, event);
+        dispatch(node, gestureName, e, activeEvents, 'up');
+        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
       }
+    }
+
+    const removePointermoveHandler = addEventListener(node, 'pointermove', e => {
+      activeEvents = activeEvents.map(activeEvent => {
+        return e.pointerId === activeEvent.pointerId ? e : activeEvent;
+      });
+      dispatch(node, gestureName, e, activeEvents, 'move');
+      onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, e);
+    });
+    const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', e => {
+      onup(e);
+    });
+    const removepointerupHandler = addEventListener(node, 'pointerup', e => {
+      onup(e);
     });
   }
 
