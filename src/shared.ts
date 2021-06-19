@@ -2,7 +2,6 @@
 
 export const DEFAULT_DELAY = 300;
 export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
-export type GestureName = 'pan' | 'pinch' | 'tap' | 'swipe' | 'rotate';
 
 type PointerType = 'up' | 'down' | 'move';
 
@@ -26,7 +25,7 @@ function removeEvent(
 
 function dispatch(
   node: HTMLElement,
-  gestureName: GestureName,
+  gestureName: string,
   event: PointerEvent,
   activeEvents: PointerEvent[],
   pointerType: PointerType
@@ -39,7 +38,7 @@ function dispatch(
 }
 
 export function setPointerControls(
-  gestureName: GestureName,
+  gestureName: string,
   node: HTMLElement,
   onMoveCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
   onDownCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
@@ -54,6 +53,7 @@ export function setPointerControls(
     activeEvents.push(event);
     dispatch(node, gestureName, event, activeEvents, 'down');
     onDownCallback?.(activeEvents, event);
+    const pointerId = event.pointerId;
 
     const removePointermoveHandler = addEventListener(
       node,
@@ -69,20 +69,21 @@ export function setPointerControls(
       }
     );
 
-    const removePointerupHandler = addEventListener(
+    const removeLostpointercaptureHandler = addEventListener(
       node,
-      'pointerup', //lostpointercapture
+      'lostpointercapture',
       (event: PointerEvent) => {
-        activeEvents = removeEvent(event, activeEvents);
+        if (pointerId === event.pointerId) {
+          activeEvents = removeEvent(event, activeEvents);
 
-        if (!activeEvents.length) {
-          removePointermoveHandler();
-          removePointerupHandler();
+          if (!activeEvents.length) {
+            removePointermoveHandler();
+            removeLostpointercaptureHandler();
+          }
+
+          dispatch(node, gestureName, event, activeEvents, 'up');
+          onUpCallback?.(activeEvents, event);
         }
-
-        dispatch(node, gestureName, event, activeEvents, 'up');
-        onUpCallback?.(activeEvents, event);
-        // onMoveCallback?.(activeEvents, event);
       }
     );
   }

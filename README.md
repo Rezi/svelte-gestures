@@ -10,7 +10,7 @@ Recognizers are kept as simple as possible, but still providing desired basic fu
 
 ## API events
 
-Except main event, each resogniser triggers, three more events with names composed from action name (`pan` | `pinch` | `tap` | `swipe` | `rotate`) and event type (`up` | `down` | `move`). 
+Except main event, each resogniser triggers, three more events with names composed from action name (`pan` | `pinch` | `tap` | `swipe` | `rotate`) and event type (`up` | `down` | `move`).
 
 For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.detail` with following property `{ event: PointerEvent, pointersCount: number }`. First is native pointer event, second is number of active pointers.
 
@@ -34,7 +34,11 @@ It is triggered on pointer (mouse, touch, etc.) move. But not earlier than `dela
   }
 </script>
 
-<div use:pan={{delay:300}} on:pan={handler} style="width:500px;height:500px;border:1px solid black;">
+<div
+  use:pan="{{delay:300}}"
+  on:pan="{handler}"
+  style="width:500px;height:500px;border:1px solid black;"
+>
   pan: {x} {y}
 </div>
 ```
@@ -55,11 +59,14 @@ Pinch action fires `pinch` event: `event.detail.scale`. Initial scale after firs
   }
 </script>
 
-<div use:pinch on:pinch={handler} style="width:500px;height:500px;border:1px solid black;">
+<div
+  use:pinch
+  on:pinch="{handler}"
+  style="width:500px;height:500px;border:1px solid black;"
+>
   pinch scale: {scale}
 </div>
 ```
-
 
 ## Rotate
 
@@ -79,7 +86,11 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
   }
 </script>
 
-<div use:rotate on:rotate={handler} style="width:500px;height:500px;border:1px solid black;">
+<div
+  use:rotate
+  on:rotate="{handler}"
+  style="width:500px;height:500px;border:1px solid black;"
+>
   rotation: {rotation}
 </div>
 ```
@@ -88,7 +99,7 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
 
 Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number }` with default values 300ms and 60px. Swipe is fired if preset distance in propper direction is done in preset time.
 
-`event.detail.direction` represents direction of swipe: 'top' | 'right' | 'bottom' | 'left' 
+`event.detail.direction` represents direction of swipe: 'top' | 'right' | 'bottom' | 'left'
 
 [> repl Swipe demo](https://svelte.dev/repl/f696ca27e6374f2cab1691727409a31d?version=3.38.2)
 
@@ -118,7 +129,7 @@ Tap action is fired only when the click/touch is finished within the give `timef
 ```html
 <script>
   import { tap } from 'svelte-gestures';
-  
+
   let x;
   let y;
 
@@ -135,7 +146,96 @@ Tap action is fired only when the click/touch is finished within the give `timef
 
 # Custom gestures
 
-You are encouraged to define your own custom gestures. 
+You are encouraged to define your own custom gestures. There is a `setPointerControls` function exposed by the `svelte-gestures`. It handle all the events registration/deregistration needed for handling gestures; you just need to pass callbacks in it.
+
+here are all the arguments of `setPointerControls`:
+
+```typescript
+  gestureName: string,
+  node: HTMLElement,
+  onMoveCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
+  onDownCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
+  onUpCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void
+```
+
+See how doubletap custome gesture is implemented:
+
+[> repl Custom gesture (doubletap) demo](https://svelte.dev/repl/c56082d9d056460d80e53cd71efddefe?version=3.38.2)
+
+```html
+<script>
+  import { setPointerControls, DEFAULT_DELAY } from 'svelte-gestures';
+
+  let dx;
+  let dy;
+
+  function doubletapHandler(event) {
+    dx = event.detail.x;
+    dy = event.detail.y;
+  }
+
+  function doubletap(
+    node: HTMLElement,
+    parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
+  ): { destroy: () => void } {
+    const gestureName = 'doubletap';
+
+    let startTime: number;
+    let clientX: number;
+    let clientY: number;
+    let tapCount = 0;
+    let spread = 20;
+    let timeout;
+
+    function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+      if (
+        Math.abs(event.clientX - clientX) < spread &&
+        Math.abs(event.clientY - clientY) < spread &&
+        Date.now() - startTime < parameters.timeframe
+      ) {
+        if (!tapCount) {
+          tapCount++;
+        } else {
+          const rect = node.getBoundingClientRect();
+          const x = Math.round(event.clientX - rect.left);
+          const y = Math.round(event.clientY - rect.top);
+
+          node.dispatchEvent(
+            new CustomEvent(gestureName, {
+              detail: { x, y },
+            })
+          );
+
+          clearTimeout(timeout);
+          tapCount = 0;
+        }
+      }
+    }
+
+    function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+      if (!tapCount) {
+        clientX = event.clientX;
+        clientY = event.clientY;
+        startTime = Date.now();
+      }
+
+      timeout = setTimeout(() => {
+        tapCount = 0;
+      }, parameters.timeframe);
+    }
+
+    return setPointerControls(gestureName, node, null, onDown, onUp);
+  }
+</script>
+
+<div
+  use:doubletap
+  on:doubletap="{doubletapHandler}"
+  style="width:500px;height:500px;border:1px solid black;"
+>
+  double tap me {dx} {dy}
+</div>
+```
 
 ## License
 

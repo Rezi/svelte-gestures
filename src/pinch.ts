@@ -1,6 +1,6 @@
 'use strict';
 
-import { setPointerControls, GestureName } from './shared';
+import { setPointerControls } from './shared';
 
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
@@ -10,7 +10,7 @@ function getPointersDistance(activeEvents: PointerEvent[]) {
 }
 
 export function pinch(node: HTMLElement): { destroy: () => void } {
-  const gestureName: GestureName = 'pinch';
+  const gestureName = 'pinch';
 
   let prevDistance: number = null;
   let initDistance = 0;

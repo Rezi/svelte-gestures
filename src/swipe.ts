@@ -4,7 +4,6 @@ import {
   DEFAULT_DELAY,
   DEFAULT_MIN_SWIPE_DISTANCE,
   setPointerControls,
-  GestureName,
 } from './shared';
 
 export function swipe(
@@ -14,7 +13,7 @@ export function swipe(
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
   }
 ): { destroy: () => void } {
-  const gestureName: GestureName = 'swipe';
+  const gestureName = 'swipe';
 
   let startTime: number;
   let clientX: number;

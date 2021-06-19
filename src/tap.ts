@@ -1,12 +1,12 @@
 'use strict';
 
-import { DEFAULT_DELAY, setPointerControls, GestureName } from './shared';
+import { DEFAULT_DELAY, setPointerControls } from './shared';
 
 export function tap(
   node: HTMLElement,
   parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
 ): { destroy: () => void } {
-  const gestureName: GestureName = 'tap';
+  const gestureName = 'tap';
 
   let startTime: number;
   let clientX: number;

@@ -1,12 +1,12 @@
 'use strict';
 
-import { DEFAULT_DELAY, setPointerControls, GestureName } from './shared';
+import { DEFAULT_DELAY, setPointerControls } from './shared';
 
 export function pan(
   node: HTMLElement,
   parameters: { delay: number } = { delay: DEFAULT_DELAY }
 ): { destroy: () => void } {
-  const gestureName: GestureName = 'pan';
+  const gestureName = 'pan';
 
   let startTime: number;
 

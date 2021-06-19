@@ -1,6 +1,6 @@
 'use strict';
 
-import { setPointerControls, GestureName } from './shared';
+import { setPointerControls } from './shared';
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   // instead of hell lot of conditions we use an object mapping
@@ -33,7 +33,7 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]) {
 }
 
 export function rotate(node: HTMLElement): { destroy: () => void } {
-  const gestureName: GestureName = 'rotate';
+  const gestureName = 'rotate';
 
   let prevAngle: number = null;
   let initAngle = 0;

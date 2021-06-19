@@ -1,5 +1,5 @@
 const DEFAULT_DELAY = 300;
-const DEFAULT_MIN_SWIPE_DISTANCE = 100; // in pixels
+const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
 
 function addEventListener(node, event, handler) {
   node.addEventListener(event, handler);
@@ -29,6 +29,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
     activeEvents.push(event);
     dispatch(node, gestureName, event, activeEvents, 'down');
     onDownCallback === null || onDownCallback === void 0 ? void 0 : onDownCallback(activeEvents, event);
+    const pointerId = event.pointerId;
     const removePointermoveHandler = addEventListener(node, 'pointermove', event => {
       activeEvents = activeEvents.map(activeEvent => {
         return event.pointerId === activeEvent.pointerId ? event : activeEvent;
@@ -36,16 +37,18 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
       dispatch(node, gestureName, event, activeEvents, 'move');
       onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, event);
     });
-    const removePointerupHandler = addEventListener(node, 'pointerup', event => {
-      activeEvents = removeEvent(event, activeEvents);
+    const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', event => {
+      if (pointerId === event.pointerId) {
+        activeEvents = removeEvent(event, activeEvents);
 
-      if (!activeEvents.length) {
-        removePointermoveHandler();
-        removePointerupHandler();
+        if (!activeEvents.length) {
+          removePointermoveHandler();
+          removeLostpointercaptureHandler();
+        }
+
+        dispatch(node, gestureName, event, activeEvents, 'up');
+        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, event);
       }
-
-      dispatch(node, gestureName, event, activeEvents, 'up');
-      onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, event); // onMoveCallback?.(activeEvents, event);
     });
   }
 
