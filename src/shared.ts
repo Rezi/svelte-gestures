@@ -55,35 +55,46 @@ export function setPointerControls(
     onDownCallback?.(activeEvents, event);
     const pointerId = event.pointerId;
 
+    function onup(e) {
+      if (pointerId === e.pointerId) {
+        activeEvents = removeEvent(event, activeEvents);
+
+        if (!activeEvents.length) {
+          removePointermoveHandler();
+          removeLostpointercaptureHandler();
+          removepointerupHandler();
+        }
+
+        dispatch(node, gestureName, e, activeEvents, 'up');
+        onUpCallback?.(activeEvents, e);
+      }
+    }
+
     const removePointermoveHandler = addEventListener(
       node,
       'pointermove',
-      (event: PointerEvent) => {
+      (e: PointerEvent) => {
         activeEvents = activeEvents.map((activeEvent: PointerEvent) => {
-          return event.pointerId === activeEvent.pointerId
-            ? event
-            : activeEvent;
+          return e.pointerId === activeEvent.pointerId ? e : activeEvent;
         });
-        dispatch(node, gestureName, event, activeEvents, 'move');
-        onMoveCallback?.(activeEvents, event);
+        dispatch(node, gestureName, e, activeEvents, 'move');
+        onMoveCallback?.(activeEvents, e);
       }
     );
 
     const removeLostpointercaptureHandler = addEventListener(
       node,
       'lostpointercapture',
-      (event: PointerEvent) => {
-        if (pointerId === event.pointerId) {
-          activeEvents = removeEvent(event, activeEvents);
+      (e: PointerEvent) => {
+        onup(e);
+      }
+    );
 
-          if (!activeEvents.length) {
-            removePointermoveHandler();
-            removeLostpointercaptureHandler();
-          }
-
-          dispatch(node, gestureName, event, activeEvents, 'up');
-          onUpCallback?.(activeEvents, event);
-        }
+    const removepointerupHandler = addEventListener(
+      node,
+      'pointerup',
+      (e: PointerEvent) => {
+        onup(e);
       }
     );
   }

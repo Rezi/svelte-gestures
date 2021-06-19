@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- `pointerup` added back alongside `lostpointercapture` so mouse clicks are handled correctly.
+
 ## 1.0.2
 
 - **Default swipe distance** decreased from `100px` to `60px`.
