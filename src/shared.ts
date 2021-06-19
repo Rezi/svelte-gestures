@@ -55,9 +55,9 @@ export function setPointerControls(
     onDownCallback?.(activeEvents, event);
     const pointerId = event.pointerId;
 
-    function onup(e) {
+    function onup(e: PointerEvent) {
       if (pointerId === e.pointerId) {
-        activeEvents = removeEvent(event, activeEvents);
+        activeEvents = removeEvent(e, activeEvents);
 
         if (!activeEvents.length) {
           removePointermoveHandler();
