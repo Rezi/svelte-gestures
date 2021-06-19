@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.4
+## 1.0.5
 
 - `pointerup` added back alongside `lostpointercapture` so mouse clicks are handled correctly.
 
