@@ -97,7 +97,10 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
 
 ## Swipe
 
-Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number }` with default values 300ms and 60px. Swipe is fired if preset distance in propper direction is done in preset time.
+Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number; touchAction: string }` with default values 300ms, 60px and `none`.
+Swipe is fired if preset distance in proper direction is done in preset time.
+You can use the [touchAction](https://developer.mozilla.org/en/docs/Web/CSS/touch-action) parameter to control the default behaviour of the browser.
+For example if you only use left/right swipe and want to keep the default browser behaviour (scrolling) for up/down swipe use `touchAction: 'pan-y'`.
 
 `event.detail.direction` represents direction of swipe: 'top' | 'right' | 'bottom' | 'left'
 
