@@ -2,16 +2,21 @@
 
 import {
   DEFAULT_DELAY,
-  DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_TOUCH_ACTION,
+  DEFAULT_MIN_SWIPE_DISTANCE,
+  DEFAULT_TOUCH_ACTION,
   setPointerControls,
 } from './shared';
 
 export function swipe(
   node: HTMLElement,
-  parameters: { timeframe: number; minSwipeDistance: number; touchAction: string } = {
+  parameters: {
+    timeframe: number;
+    minSwipeDistance: number;
+    touchAction: string;
+  } = {
     timeframe: DEFAULT_DELAY,
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
-    touchAction: DEFAULT_TOUCH_ACTION
+    touchAction: DEFAULT_TOUCH_ACTION,
   }
 ): { destroy: () => void } {
   const gestureName = 'swipe';
@@ -54,5 +59,12 @@ export function swipe(
     }
   }
 
-  return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
+  return setPointerControls(
+    gestureName,
+    node,
+    null,
+    onDown,
+    onUp,
+    parameters.touchAction
+  );
 }
