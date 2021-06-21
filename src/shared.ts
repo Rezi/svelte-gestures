@@ -2,6 +2,7 @@
 
 export const DEFAULT_DELAY = 300;
 export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
+export const DEFAULT_TOUCH_ACTION = 'none';
 
 type PointerType = 'up' | 'down' | 'move';
 
@@ -42,11 +43,12 @@ export function setPointerControls(
   node: HTMLElement,
   onMoveCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
   onDownCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
-  onUpCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void
+  onUpCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
+  touchAction: string = DEFAULT_TOUCH_ACTION
 ): {
   destroy: () => void;
 } {
-  node.style.touchAction = 'none';
+  node.style.touchAction = touchAction;
   let activeEvents: PointerEvent[] = [];
 
   function handlePointerdown(event: PointerEvent) {
