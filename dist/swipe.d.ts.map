@@ -1,1 +1,1 @@
-{"version":3,"file":"swipe.d.ts","sourceRoot":"","sources":["../src/swipe.ts"],"names":[],"mappings":"AAQA,wBAAgB,KAAK,CACnB,IAAI,EAAE,WAAW,EACjB,UAAU,GAAE;IAAE,SAAS,EAAE,MAAM,CAAC;IAAC,gBAAgB,EAAE,MAAM,CAAA;CAGxD,GACA;IAAE,OAAO,EAAE,MAAM,IAAI,CAAA;CAAE,CA0CzB"}
+{"version":3,"file":"swipe.d.ts","sourceRoot":"","sources":["../src/swipe.ts"],"names":[],"mappings":"AASA,wBAAgB,KAAK,CACnB,IAAI,EAAE,WAAW,EACjB,UAAU,GAAE;IACV,SAAS,EAAE,MAAM,CAAC;IAClB,gBAAgB,EAAE,MAAM,CAAC;IACzB,WAAW,EAAE,MAAM,CAAC;CAKrB,GACA;IAAE,OAAO,EAAE,MAAM,IAAI,CAAA;CAAE,CAiDzB"}

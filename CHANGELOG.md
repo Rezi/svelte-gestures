@@ -1,8 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+`rotate` and `pinch` actions emit center coordinates of the gesture.
+
 ## 1.1.0
 
 Core lib function `setPointerControls` now accept argument, by which one can manually set `touch-action` css property. It is not used in swipe recogniser.
+
 ## 1.0.6
 
 - `pointerup` added back alongside `lostpointercapture` so mouse clicks are handled correctly.

@@ -1,9 +1,27 @@
 const DEFAULT_DELAY = 300;
 const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
 
+const DEFAULT_TOUCH_ACTION = 'none';
+
 function addEventListener(node, event, handler) {
   node.addEventListener(event, handler);
   return () => node.removeEventListener(event, handler);
+}
+
+function getCenterOfTwoPoints(node, activeEvents) {
+  const rect = node.getBoundingClientRect();
+  const xDistance = Math.abs(activeEvents[0].clientX - activeEvents[1].clientX);
+  const yDistance = Math.abs(activeEvents[0].clientY - activeEvents[1].clientY);
+  const minX = Math.min(activeEvents[0].clientX, activeEvents[1].clientX);
+  const minY = Math.min(activeEvents[0].clientY, activeEvents[1].clientY);
+  const centerX = minX + xDistance / 2;
+  const centerY = minY + yDistance / 2;
+  const x = Math.round(centerX - rect.left);
+  const y = Math.round(centerY - rect.top);
+  return {
+    x,
+    y
+  };
 }
 
 function removeEvent(event, activeEvents) {
@@ -21,8 +39,8 @@ function dispatch(node, gestureName, event, activeEvents, pointerType) {
   }));
 }
 
-function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, onUpCallback) {
-  node.style.touchAction = 'none';
+function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, onUpCallback, touchAction = DEFAULT_TOUCH_ACTION) {
+  node.style.touchAction = touchAction;
   let activeEvents = [];
 
   function handlePointerdown(event) {
@@ -107,6 +125,7 @@ function pinch(node) {
   const gestureName = 'pinch';
   let prevDistance = null;
   let initDistance = 0;
+  let pinchCenter;
 
   function onUp(activeEvents) {
     if (activeEvents.length === 1) {
@@ -117,6 +136,7 @@ function pinch(node) {
   function onDown(activeEvents) {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
+      pinchCenter = getCenterOfTwoPoints(node, activeEvents);
     }
   }
 
@@ -128,7 +148,8 @@ function pinch(node) {
         const scale = curDistance / initDistance;
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
-            scale
+            scale,
+            center: pinchCenter
           }
         }));
       }
@@ -173,6 +194,7 @@ function rotate(node) {
   const gestureName = 'rotate';
   let prevAngle = null;
   let initAngle = 0;
+  let rotationCenter;
 
   function onUp(activeEvents) {
     if (activeEvents.length === 1) {
@@ -185,6 +207,7 @@ function rotate(node) {
       activeEvents = activeEvents.sort((a, b) => {
         return a.clientX - b.clientX;
       });
+      rotationCenter = getCenterOfTwoPoints(node, activeEvents);
       initAngle = getPointersAngleDeg(activeEvents);
     }
   }
@@ -203,7 +226,8 @@ function rotate(node) {
 
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
-            rotation
+            rotation,
+            center: rotationCenter
           }
         }));
       }
@@ -217,7 +241,8 @@ function rotate(node) {
 
 function swipe(node, parameters = {
   timeframe: DEFAULT_DELAY,
-  minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE
+  minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
+  touchAction: DEFAULT_TOUCH_ACTION
 }) {
   const gestureName = 'swipe';
   let startTime;
@@ -256,7 +281,7 @@ function swipe(node, parameters = {
     }
   }
 
-  return setPointerControls(gestureName, node, null, onDown, onUp);
+  return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
 }
 
 function tap(node, parameters = {
@@ -290,4 +315,4 @@ function tap(node, parameters = {
   return setPointerControls(gestureName, node, null, onDown, onUp);
 }
 
-export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, pan, pinch, rotate, setPointerControls, swipe, tap };
+export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_TOUCH_ACTION, getCenterOfTwoPoints, pan, pinch, rotate, setPointerControls, swipe, tap };

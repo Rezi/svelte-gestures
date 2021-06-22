@@ -45,7 +45,9 @@ It is triggered on pointer (mouse, touch, etc.) move. But not earlier than `dela
 
 ## Pinch
 
-Pinch action fires `pinch` event: `event.detail.scale`. Initial scale after first two registered points is 1, then it either decrease toward zero as the points get nearer, or grow up as their distance grows.
+Pinch action fires `pinch` event: `event.detail` with properties `{scale:number; center: {x:number; y:number;}}`. Initial scale after first two registered points is 1, then it either decrease toward zero as the points get nearer, or grow up as their distance grows.
+
+`x` and `y` represents coordinates in `px` of an imaginary center of the pinch gesture. They originate in top left corner of the element on which pinch is used.
 
 [> repl Pinch demo](https://svelte.dev/repl/6f6d34e2b4ab420ab4e192a5046c86b4?version=3.38.2)
 
@@ -53,9 +55,13 @@ Pinch action fires `pinch` event: `event.detail.scale`. Initial scale after firs
 <script>
   import { pinch } from 'svelte-gestures';
   let scale;
+  let x;
+  let y;
 
   function handler(event) {
     scale = event.detail.scale;
+    x = event.detail.center.x;
+    y = event.detail.center.y;
   }
 </script>
 
@@ -64,13 +70,16 @@ Pinch action fires `pinch` event: `event.detail.scale`. Initial scale after firs
   on:pinch="{handler}"
   style="width:500px;height:500px;border:1px solid black;"
 >
-  pinch scale: {scale}
+  pinch scale: {scale} <br />
+  center: x {x}, y {y}
 </div>
 ```
 
 ## Rotate
 
-Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation after first two registered points is 0, then it either decrease to -180 as the points rotate anticlockwise, or grow up 180 as they rotate clockwise.
+Rotate action fires `rotate` event: `event.detail`. with properties`{rotation:number; center: {x:number;y:number;}}`. Initial rotation after first two registered points is 0, then it either decrease to -180 as the points rotate anticlockwise, or grow up 180 as they rotate clockwise.
+
+`x` and `y` represents coordinates in `px` of an imaginary center of the rotation gesture. They originate in top left corner of the element on which rotate is used.
 
 `event.detail.rotation` represents angle between -180 and 180 degrees.
 
@@ -80,9 +89,13 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
 <script>
   import { rotate } from 'svelte-gestures';
   let rotation;
+  let x;
+  let y;
 
   function handler(event) {
     rotation = event.detail.rotation;
+    x = event.detail.center.x;
+    y = event.detail.center.y;
   }
 </script>
 
@@ -91,7 +104,8 @@ Rotate action fires `rotate` event: `event.detail.rotation`. Initial rotation af
   on:rotate="{handler}"
   style="width:500px;height:500px;border:1px solid black;"
 >
-  rotation: {rotation}
+  rotation: {rotation} <br />
+  center: x {x}, y {y}
 </div>
 ```
 
