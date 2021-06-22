@@ -1,6 +1,6 @@
 'use strict';
 
-import { setPointerControls } from './shared';
+import { setPointerControls, getCenterOfTwoPoints } from './shared';
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   // instead of hell lot of conditions we use an object mapping
@@ -37,6 +37,7 @@ export function rotate(node: HTMLElement): { destroy: () => void } {
 
   let prevAngle: number = null;
   let initAngle = 0;
+  let rotationCenter: { x: number; y: number };
 
   function onUp(activeEvents: PointerEvent[]) {
     if (activeEvents.length === 1) {
@@ -50,6 +51,7 @@ export function rotate(node: HTMLElement): { destroy: () => void } {
         return a.clientX - b.clientX;
       });
 
+      rotationCenter = getCenterOfTwoPoints(node, activeEvents);
       initAngle = getPointersAngleDeg(activeEvents);
     }
   }
@@ -69,7 +71,7 @@ export function rotate(node: HTMLElement): { destroy: () => void } {
 
         node.dispatchEvent(
           new CustomEvent(gestureName, {
-            detail: { rotation },
+            detail: { rotation, center: rotationCenter },
           })
         );
       }

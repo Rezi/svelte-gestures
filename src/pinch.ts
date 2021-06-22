@@ -1,6 +1,6 @@
 'use strict';
 
-import { setPointerControls } from './shared';
+import { setPointerControls, getCenterOfTwoPoints } from './shared';
 
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
@@ -14,6 +14,7 @@ export function pinch(node: HTMLElement): { destroy: () => void } {
 
   let prevDistance: number = null;
   let initDistance = 0;
+  let pinchCenter: { x: number; y: number };
 
   function onUp(activeEvents: PointerEvent[]) {
     if (activeEvents.length === 1) {
@@ -24,6 +25,7 @@ export function pinch(node: HTMLElement): { destroy: () => void } {
   function onDown(activeEvents: PointerEvent[]) {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
+      pinchCenter = getCenterOfTwoPoints(node, activeEvents);
     }
   }
 
@@ -35,7 +37,7 @@ export function pinch(node: HTMLElement): { destroy: () => void } {
         const scale = curDistance / initDistance;
         node.dispatchEvent(
           new CustomEvent(gestureName, {
-            detail: { scale },
+            detail: { scale, center: pinchCenter },
           })
         );
       }

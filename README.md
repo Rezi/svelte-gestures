@@ -184,12 +184,12 @@ See how doubletap custome gesture is implemented:
     parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
   ): { destroy: () => void } {
     const gestureName = 'doubletap';
+    const spread = 20;
 
     let startTime: number;
     let clientX: number;
     let clientY: number;
     let tapCount = 0;
-    let spread = 20;
     let timeout;
 
     function onUp(activeEvents: PointerEvent[], event: PointerEvent) {

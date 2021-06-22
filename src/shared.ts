@@ -15,6 +15,24 @@ function addEventListener<ET extends EventTarget, E extends Event>(
   return () => node.removeEventListener(event, handler as (evt: Event) => void);
 }
 
+export function getCenterOfTwoPoints(
+  node: HTMLElement,
+  activeEvents: PointerEvent[]
+) {
+  const rect = node.getBoundingClientRect();
+  const xDistance = Math.abs(activeEvents[0].clientX - activeEvents[1].clientX);
+  const yDistance = Math.abs(activeEvents[0].clientY - activeEvents[1].clientY);
+  const minX = Math.min(activeEvents[0].clientX, activeEvents[1].clientX);
+  const minY = Math.min(activeEvents[0].clientY, activeEvents[1].clientY);
+  const centerX = minX + xDistance / 2;
+  const centerY = minY + yDistance / 2;
+
+  const x = Math.round(centerX - rect.left);
+  const y = Math.round(centerY - rect.top);
+
+  return { x, y };
+}
+
 function removeEvent(
   event: PointerEvent,
   activeEvents: PointerEvent[]
