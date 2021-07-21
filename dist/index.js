@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 const DEFAULT_DELAY = 300;
 const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
 
@@ -46,7 +50,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
   function handlePointerdown(event) {
     activeEvents.push(event);
     dispatch(node, gestureName, event, activeEvents, 'down');
-    onDownCallback === null || onDownCallback === void 0 ? void 0 : onDownCallback(activeEvents, event);
+    onDownCallback?.(activeEvents, event);
     const pointerId = event.pointerId;
 
     function onup(e) {
@@ -60,7 +64,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         }
 
         dispatch(node, gestureName, e, activeEvents, 'up');
-        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
+        onUpCallback?.(activeEvents, e);
       }
     }
 
@@ -69,7 +73,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         return e.pointerId === activeEvent.pointerId ? e : activeEvent;
       });
       dispatch(node, gestureName, e, activeEvents, 'move');
-      onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, e);
+      onMoveCallback?.(activeEvents, e);
     });
     const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', e => {
       onup(e);
@@ -176,13 +180,13 @@ function getPointersAngleDeg(activeEvents) {
   const width = activeEvents[1].clientX - activeEvents[0].clientX;
   const height = activeEvents[0].clientY - activeEvents[1].clientY;
   /*
-       In quadrants 1 and 3 allworks as expected.
-    In quadrants 2 and 4, either height or width is negative,
-    so we get negative angle. It is even the other of the two angles.
-    As sum in triangle is 180 deg, we can simply sum the negative angle with 90 deg
-    and get the right angle's positive value. Then add 90 for each quadrant above 1st.
-    This way we dont need to code our own arc cotangent fn (it does not exist in JS)
-       */
+  In quadrants 1 and 3 allworks as expected. 
+  In quadrants 2 and 4, either height or width is negative,
+  so we get negative angle. It is even the other of the two angles.
+  As sum in triangle is 180 deg, we can simply sum the negative angle with 90 deg
+  and get the right angle's positive value. Then add 90 for each quadrant above 1st.
+  This way we dont need to code our own arc cotangent fn (it does not exist in JS)
+  */
 
   const angle = Math.atan(width / height) / (Math.PI / 180);
   const halfQuadrant = width > 0 ? quadrantsMap.right : quadrantsMap.left;
@@ -315,4 +319,13 @@ function tap(node, parameters = {
   return setPointerControls(gestureName, node, null, onDown, onUp);
 }
 
-export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_TOUCH_ACTION, getCenterOfTwoPoints, pan, pinch, rotate, setPointerControls, swipe, tap };
+exports.DEFAULT_DELAY = DEFAULT_DELAY;
+exports.DEFAULT_MIN_SWIPE_DISTANCE = DEFAULT_MIN_SWIPE_DISTANCE;
+exports.DEFAULT_TOUCH_ACTION = DEFAULT_TOUCH_ACTION;
+exports.getCenterOfTwoPoints = getCenterOfTwoPoints;
+exports.pan = pan;
+exports.pinch = pinch;
+exports.rotate = rotate;
+exports.setPointerControls = setPointerControls;
+exports.swipe = swipe;
+exports.tap = tap;

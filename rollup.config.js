@@ -1,32 +1,27 @@
-import typescript from 'rollup-plugin-typescript2';
 import babel from '@rollup/plugin-babel';
-import { terser } from 'rollup-plugin-terser';
+import resolve from '@rollup/plugin-node-resolve';
 import pkg from './package.json';
 
-export default [
-  // ES Modules
-  {
-    input: 'src/index.ts',
-    output: {
-      file: pkg.module,
-      format: 'es',
-    },
-    plugins: [typescript(), babel({ extensions: ['.ts'] })],
-  },
+const extensions = ['.js', '.ts'];
 
-  // UMD
+export default [
   {
     input: 'src/index.ts',
-    output: {
-      file: pkg.main,
-      format: 'umd',
-      name: 'svelteGestures',
-      indent: false,
-    },
+    output: [
+      {
+        file: pkg.main,
+        format: 'cjs',
+      },
+      {
+        file: pkg.module,
+        format: 'es',
+      },
+    ],
     plugins: [
-      typescript(),
-      babel({ extensions: ['.ts'], exclude: 'node_modules/**' }),
-      terser(),
+      resolve({
+        extensions,
+      }),
+      babel({ extensions, exclude: 'node_modules/**' }),
     ],
   },
 ];

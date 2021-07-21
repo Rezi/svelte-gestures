@@ -1,21 +1,18 @@
 {
-    "compilerOptions": {
-        "noImplicitAny": true,
-        "diagnostics": true,
-        "noImplicitThis": true,
-        "noEmitOnError": true,
-        "strict": true,
-        "strictNullChecks": false,
-        "declaration": true,
-        "declarationMap": true,
-        "module": "es2020",
-		"lib": ["es2020", "dom"],
-		"target": "es2019",
-    },
-    "include": [
-        "src"
-    ],
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "diagnostics": true,
+    "noImplicitThis": true,
+    "noEmitOnError": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "dist/types",
+    "module": "es2020",
+    "lib": ["es2020", "dom"],
+    "target": "es2019"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
