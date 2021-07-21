@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+Fixed TS types location
+
 ## 1.2.0
 
 `rotate` and `pinch` actions emit center coordinates of the gesture.
