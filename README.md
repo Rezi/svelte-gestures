@@ -16,7 +16,7 @@ For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispa
 
 ## Pan
 
-Pan action fires `pan` event: `event.detail` has `x` and `y` properties (x,y stand for position withing the `element` on which the action is used).
+Pan action fires `pan` event: `event.detail` has `x`, `y` and `target` properties (x,y stand for position withing the `element` on which the action is used). `target` is an EventTarget (HTMLElement) of the pan. The target is recorded when pan starts.
 
 It is triggered on pointer (mouse, touch, etc.) move. But not earlier than `delay` parameter. The `delay` parameter is optional. If used it overwrites 300ms default value. It prevents triggering of tap or swipe gestures when combined on single element.
 
@@ -27,10 +27,12 @@ It is triggered on pointer (mouse, touch, etc.) move. But not earlier than `dela
   import { pan } from 'svelte-gestures';
   let x;
   let y;
+  let target;
 
   function handler(event) {
     x = event.detail.x;
     y = event.detail.y;
+    target = event.detail.target;
   }
 </script>
 
@@ -111,7 +113,8 @@ Rotate action fires `rotate` event: `event.detail`. with properties`{rotation:nu
 
 ## Swipe
 
-Swipe action fires `swipe` event: `event.detail.direction`. It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number; touchAction: string }` with default values 300ms, 60px and `none`.
+Swipe action fires `swipe` event: `event.detail`. With properties `direction` and target. `target` is an EventTarget (HTMLElement) of the swipe action. The target is recorded when swipe starts.
+It accepts props as parameter: `{ timeframe: number; minSwipeDistance: number; touchAction: string }` with default values 300ms, 60px and `none`.
 Swipe is fired if preset distance in proper direction is done in preset time.
 You can use the [touchAction](https://developer.mozilla.org/en/docs/Web/CSS/touch-action) parameter to control the default behaviour of the browser.
 For example if you only use left/right swipe and want to keep the default browser behaviour (scrolling) for up/down swipe use `touchAction: 'pan-y'`.
@@ -124,9 +127,11 @@ For example if you only use left/right swipe and want to keep the default browse
 <script>
   import { swipe } from 'svelte-gestures';
   let direction;
+  let target;
 
   function handler(event) {
     direction = event.detail.direction;
+    target = event.detail.target;
   }
 </script>
 
@@ -137,7 +142,7 @@ For example if you only use left/right swipe and want to keep the default browse
 
 ## Tap
 
-Tap action fires `tap` event: `event.detail` has `x` and `y` properties (x,y stand for position withing the `element` on which the action is used).
+Tap action fires `tap` event: `event.detail` has `x`, `y` and `target` properties (x,y stand for position withing the `element` on which the action is used). `target` is an EventTarget (HTMLElement) of the tap.
 
 Tap action is fired only when the click/touch is finished within the give `timeframe`, the parameter is optional and overwrites defalut value of 300ms.
 
@@ -149,15 +154,44 @@ Tap action is fired only when the click/touch is finished within the give `timef
 
   let x;
   let y;
+  let target;
 
   function handler(event) {
     x = event.detail.x;
     y = event.detail.y;
+    target = event.detail.target;
   }
 </script>
 
 <div use:tap={{ timeframe: 300 }} on:tap={handler} style="width:500px;height:500px;border:1px solid black;">
   tap: {x} {y}
+</div>
+```
+
+## Press
+
+Press action fires `press` event: `event.detail` has `x`, `y`, `target` properties (x,y stand for position withing the `element` on which the action is used). `target` is an EventTarget (HTMLElement) of the press.
+
+Press action is fired only when the click/touch is finished after the give `timeframe`, the parameter is optional and overwrites defalut value of 300ms.
+
+[> repl Press demo](https://svelte.dev/repl/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
+
+```html
+<script>
+  import { press } from 'svelte-gestures';
+  let x;
+  let y;
+  let target;
+
+  function handler(event) {
+    x = event.detail.x;
+    y = event.detail.y;
+    target = event.detail.target
+  }
+</script>
+
+<div use:press={{ timeframe: 300 }} on:press={handler} style="width:500px;height:500px;border:1px solid black;">
+  press: {x} {y}
 </div>
 ```
 

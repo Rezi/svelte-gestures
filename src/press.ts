@@ -2,11 +2,11 @@
 
 import { DEFAULT_DELAY, setPointerControls } from './shared';
 
-export function tap(
+export function press(
 	node: HTMLElement,
 	parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
 ): { destroy: () => void } {
-	const gestureName = 'tap';
+	const gestureName = 'press';
 
 	let startTime: number;
 	let clientX: number;
@@ -16,7 +16,7 @@ export function tap(
 		if (
 			Math.abs(event.clientX - clientX) < 4 &&
 			Math.abs(event.clientY - clientY) < 4 &&
-			Date.now() - startTime < parameters.timeframe
+			Date.now() - startTime > parameters.timeframe
 		) {
 			const rect = node.getBoundingClientRect();
 			const x = Math.round(event.clientX - rect.left);

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+Added `press` gesture.
+Gestures `press`, `tap`, `swipe`, `pan` now also emit `target:EventTarget` in the event detail.
+
 ## 1.2.2
 
 Fixed TS types location

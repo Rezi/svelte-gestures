@@ -96,9 +96,11 @@ function pan(node, parameters = {
 }) {
   const gestureName = 'pan';
   let startTime;
+  let target;
 
-  function onDown() {
+  function onDown(activeEvents, event) {
     startTime = Date.now();
+    target = event.target;
   }
 
   function onMove(activeEvents, event) {
@@ -111,7 +113,8 @@ function pan(node, parameters = {
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
             x,
-            y
+            y,
+            target
           }
         }));
       }
@@ -163,6 +166,38 @@ function pinch(node) {
   }
 
   return setPointerControls(gestureName, node, onMove, onDown, onUp);
+}
+
+function press(node, parameters = {
+  timeframe: DEFAULT_DELAY
+}) {
+  const gestureName = 'press';
+  let startTime;
+  let clientX;
+  let clientY;
+
+  function onUp(activeEvents, event) {
+    if (Math.abs(event.clientX - clientX) < 4 && Math.abs(event.clientY - clientY) < 4 && Date.now() - startTime > parameters.timeframe) {
+      const rect = node.getBoundingClientRect();
+      const x = Math.round(event.clientX - rect.left);
+      const y = Math.round(event.clientY - rect.top);
+      node.dispatchEvent(new CustomEvent(gestureName, {
+        detail: {
+          x,
+          y,
+          target: event.target
+        }
+      }));
+    }
+  }
+
+  function onDown(activeEvents, event) {
+    clientX = event.clientX;
+    clientY = event.clientY;
+    startTime = Date.now();
+  }
+
+  return setPointerControls(gestureName, node, null, onDown, onUp);
 }
 
 function getPointersAngleDeg(activeEvents) {
@@ -252,11 +287,16 @@ function swipe(node, parameters = {
   let startTime;
   let clientX;
   let clientY;
+  let target;
 
   function onDown(activeEvents, event) {
     clientX = event.clientX;
     clientY = event.clientY;
     startTime = Date.now();
+
+    if (activeEvents.length === 1) {
+      target = event.target;
+    }
   }
 
   function onUp(activeEvents, event) {
@@ -278,7 +318,8 @@ function swipe(node, parameters = {
       if (direction) {
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
-            direction
+            direction,
+            target
           }
         }));
       }
@@ -304,7 +345,8 @@ function tap(node, parameters = {
       node.dispatchEvent(new CustomEvent(gestureName, {
         detail: {
           x,
-          y
+          y,
+          target: event.target
         }
       }));
     }
@@ -325,6 +367,7 @@ exports.DEFAULT_TOUCH_ACTION = DEFAULT_TOUCH_ACTION;
 exports.getCenterOfTwoPoints = getCenterOfTwoPoints;
 exports.pan = pan;
 exports.pinch = pinch;
+exports.press = press;
 exports.rotate = rotate;
 exports.setPointerControls = setPointerControls;
 exports.swipe = swipe;
