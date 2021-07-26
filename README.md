@@ -2,7 +2,7 @@
 
 1.5 KB gzipped - collection of gesture recognisers for Svelte.
 
-It contains the most popular gestures: `pan`, `pinch`, `rotate`, `swipe`, `tap`. It also exposes generic event handling core, which can be extended for your own specific gesture implementation (see sourcecode how gestures are implemented).
+It contains the most popular gestures: `pan`, `pinch`, `press`, `rotate`, `swipe`, `tap`. It also exposes generic event handling core, which can be extended for your own specific gesture implementation (see sourcecode how gestures are implemented).
 
 It uses pointer events under the hood, to make it really cross platform. Gestures will be recognized, if done by mouse, touche, stylus etc.
 
