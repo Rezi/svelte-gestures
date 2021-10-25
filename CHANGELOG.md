@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1
+
+Removing move listener when user leave active element.
+When the move capture on active element is lost, `activeEvents` are set to [] and `up` event is triggered.
+
 ## 1.3.0
 
 Added `press` gesture.
