@@ -80,14 +80,18 @@ export function setPointerControls(
         activeEvents = removeEvent(e, activeEvents);
 
         if (!activeEvents.length) {
-          removePointermoveHandler();
-          removeLostpointercaptureHandler();
-          removepointerupHandler();
+          removeEventHandlers();
         }
 
         dispatch(node, gestureName, e, activeEvents, 'up');
         onUpCallback?.(activeEvents, e);
       }
+    }
+    function removeEventHandlers() {
+      removePointermoveHandler();
+      removeLostpointercaptureHandler();
+      removepointerupHandler();
+      removepointerleaveHandler();
     }
 
     const removePointermoveHandler = addEventListener(
@@ -115,6 +119,16 @@ export function setPointerControls(
       'pointerup',
       (e: PointerEvent) => {
         onup(e);
+      }
+    );
+    const removepointerleaveHandler = addEventListener(
+      node,
+      'pointerleave',
+      (e: PointerEvent) => {
+        activeEvents = [];
+        removeEventHandlers();
+        dispatch(node, gestureName, e, activeEvents, 'up');
+        onUpCallback?.(activeEvents, e);
       }
     );
   }
