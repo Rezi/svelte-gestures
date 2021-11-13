@@ -5,3 +5,4 @@ export * from './rotate';
 export * from './shared';
 export * from './swipe';
 export * from './tap';
+export * from './hold';
