@@ -3,38 +3,43 @@
 import { DEFAULT_DELAY, setPointerControls } from './shared';
 
 export function press(
-	node: HTMLElement,
-	parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
+  node: HTMLElement,
+  parameters: { timeframe: number } = { timeframe: DEFAULT_DELAY }
 ): { destroy: () => void } {
-	const gestureName = 'press';
+  node.style.userSelect = 'none';
+  node.oncontextmenu = (e) => {
+    e.preventDefault();
+  };
 
-	let startTime: number;
-	let clientX: number;
-	let clientY: number;
+  const gestureName = 'press';
 
-	function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
-		if (
-			Math.abs(event.clientX - clientX) < 4 &&
-			Math.abs(event.clientY - clientY) < 4 &&
-			Date.now() - startTime > parameters.timeframe
-		) {
-			const rect = node.getBoundingClientRect();
-			const x = Math.round(event.clientX - rect.left);
-			const y = Math.round(event.clientY - rect.top);
+  let startTime: number;
+  let clientX: number;
+  let clientY: number;
 
-			node.dispatchEvent(
-				new CustomEvent(gestureName, {
-					detail: { x, y, target: event.target }
-				})
-			);
-		}
-	}
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+    if (
+      Math.abs(event.clientX - clientX) < 4 &&
+      Math.abs(event.clientY - clientY) < 4 &&
+      Date.now() - startTime > parameters.timeframe
+    ) {
+      const rect = node.getBoundingClientRect();
+      const x = Math.round(event.clientX - rect.left);
+      const y = Math.round(event.clientY - rect.top);
 
-	function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
-		clientX = event.clientX;
-		clientY = event.clientY;
-		startTime = Date.now();
-	}
+      node.dispatchEvent(
+        new CustomEvent(gestureName, {
+          detail: { x, y, target: event.target },
+        })
+      );
+    }
+  }
 
-	return setPointerControls(gestureName, node, null, onDown, onUp);
+  function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+    clientX = event.clientX;
+    clientY = event.clientY;
+    startTime = Date.now();
+  }
+
+  return setPointerControls(gestureName, node, null, onDown, onUp);
 }
