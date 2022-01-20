@@ -1,8 +1,14 @@
 # Changelog
 
-## 1.3.2
+## 1.3.3
 
 Types for svelte language tools added
+
+## 1.3.2
+
+`press` gesture now preventDefault on contextmenu of its element and also adds `style.userSelect = 'none';`
+
+Bug resolved for case when `swipe` gesture reported wrong directions if used on scrollable area.
 
 ## 1.3.1
 

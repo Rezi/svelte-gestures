@@ -178,6 +178,12 @@ function pinch(node) {
 function press(node, parameters = {
   timeframe: DEFAULT_DELAY
 }) {
+  node.style.userSelect = 'none';
+
+  node.oncontextmenu = e => {
+    e.preventDefault();
+  };
+
   const gestureName = 'press';
   let startTime;
   let clientX;
@@ -307,7 +313,7 @@ function swipe(node, parameters = {
   }
 
   function onUp(activeEvents, event) {
-    if (activeEvents.length === 0 && Date.now() - startTime < parameters.timeframe) {
+    if (event.type === 'pointerup' && activeEvents.length === 0 && Date.now() - startTime < parameters.timeframe) {
       const x = event.clientX - clientX;
       const y = event.clientY - clientY;
       const absX = Math.abs(x);
