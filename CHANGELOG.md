@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+Types for svelte language tools added
+
 ## 1.3.1
 
 Removing move listener when user leave active element.

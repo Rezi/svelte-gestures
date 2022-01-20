@@ -13,6 +13,7 @@
     "lib": ["es2020", "dom"],
     "target": "es2019"
   },
+  "files": ["src/svelte-gestures.jsx.d.ts"],
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
