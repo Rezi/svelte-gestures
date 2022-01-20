@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+More types for svelte language tools added
+
 ## 1.3.3
 
 Types for svelte language tools added
