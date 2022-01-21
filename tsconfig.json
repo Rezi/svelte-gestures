@@ -8,12 +8,10 @@
     "strictNullChecks": false,
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "dist/types",
     "module": "es2020",
     "lib": ["es2020", "dom"],
     "target": "es2019"
   },
-  "files": ["src/svelte-gestures.jsx.d.ts"],
-  "include": ["src"],
+  "include": ["src", "./global.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

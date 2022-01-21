@@ -6,6 +6,19 @@
 
 `npm install svelte-gestures`
 
+### Language tools types installation (optional)
+
+If you use Svelte language tools (Svelte for VS Code for instance) and you would appreciate seeing return types from svelte-gestures actions `<div on:swipe={fn} >` in your markup, add following line to your `global.d.ts` :
+
+`/// <reference types="svelte-gestures" />`
+
+if you use svelte kit, you already have a `global.d.ts` in `src` folder. Just add this line after
+`/// <reference types="@sveltejs/kit" />`
+
+It must be done this way as language tools use global types and regular npm package cannot expose global types as long as it is used by other package.
+
+## About
+
 It contains the most popular gestures: `pan`, `pinch`, `press`, `rotate`, `swipe`, `tap`. It also exposes generic event handling core, which can be extended for your own specific gesture implementation (see sourcecode how gestures are implemented).
 
 It uses pointer events under the hood, to make it really cross platform. Gestures will be recognized, if done by mouse, touche, stylus etc.

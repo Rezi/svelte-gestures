@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.3.4
+## 1.3.8
 
-More types for svelte language tools added
+Documentation added for how to use JSX types (used by language tools to recognize return types of functions returned by svelte HTML markup (on:action etc))
 
-## 1.3.3
+## 1.3.7
 
 Types for svelte language tools added
 
