@@ -10,7 +10,8 @@
     "declarationMap": true,
     "module": "es2020",
     "lib": ["es2020", "dom"],
-    "target": "es2019"
+    "target": "es2019",
+    "outDir": "dist/types"
   },
   "include": ["src", "./global.d.ts"],
   "exclude": ["node_modules", "dist"]
