@@ -1,5 +1,6 @@
-export declare function press(node: HTMLElement, parameters?: {
-    timeframe: number;
+export declare function press(node: HTMLElement, parameters: {
+    timeframe?: number;
+    triggerBeforeFinished?: boolean;
 }): {
     destroy: () => void;
 };

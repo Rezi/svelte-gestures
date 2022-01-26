@@ -175,9 +175,12 @@ function pinch(node) {
   return setPointerControls(gestureName, node, onMove, onDown, onUp);
 }
 
-function press(node, parameters = {
-  timeframe: DEFAULT_DELAY
-}) {
+function press(node, parameters) {
+  parameters = {
+    timeframe: DEFAULT_DELAY,
+    triggerBeforeFinished: false,
+    ...parameters
+  };
   node.style.userSelect = 'none';
 
   node.oncontextmenu = e => {
@@ -188,12 +191,47 @@ function press(node, parameters = {
   let startTime;
   let clientX;
   let clientY;
+  let clientMoved = {
+    x: 0,
+    y: 0
+  };
+  let timeout;
+  let triggeredOnTimeout = false;
 
   function onUp(activeEvents, event) {
-    if (Math.abs(event.clientX - clientX) < 4 && Math.abs(event.clientY - clientY) < 4 && Date.now() - startTime > parameters.timeframe) {
+    clearTimeout(timeout);
+
+    if (!triggeredOnTimeout) {
+      onDone(event.clientX, event.clientY, event);
+    }
+  }
+
+  function onMove(activeEvents, event) {
+    clientMoved.x = event.clientX;
+    clientMoved.y = event.clientY;
+  }
+
+  function onDown(activeEvents, event) {
+    clientX = event.clientX;
+    clientY = event.clientY;
+    startTime = Date.now();
+    triggeredOnTimeout = false;
+
+    if (parameters.triggerBeforeFinished) {
+      timeout = setTimeout(() => {
+        triggeredOnTimeout = true;
+        clientMoved.x = event.clientX;
+        clientMoved.y = event.clientY;
+        onDone(clientMoved.x, clientMoved.y, event);
+      }, parameters.timeframe + 1);
+    }
+  }
+
+  function onDone(eventX, eventY, event) {
+    if (Math.abs(eventX - clientX) < 4 && Math.abs(eventY - clientY) < 4 && Date.now() - startTime > parameters.timeframe) {
       const rect = node.getBoundingClientRect();
-      const x = Math.round(event.clientX - rect.left);
-      const y = Math.round(event.clientY - rect.top);
+      const x = Math.round(eventX - rect.left);
+      const y = Math.round(eventY - rect.top);
       node.dispatchEvent(new CustomEvent(gestureName, {
         detail: {
           x,
@@ -204,13 +242,13 @@ function press(node, parameters = {
     }
   }
 
-  function onDown(activeEvents, event) {
-    clientX = event.clientX;
-    clientY = event.clientY;
-    startTime = Date.now();
-  }
-
-  return setPointerControls(gestureName, node, null, onDown, onUp);
+  const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp);
+  return {
+    destroy: () => {
+      onSharedDestroy.destroy();
+      clearTimeout(timeout);
+    }
+  };
 }
 
 function getPointersAngleDeg(activeEvents) {

@@ -3,7 +3,7 @@
   "description": "Svelte cross-platform gesture actions",
   "repository": "https://github.com/Rezi/svelte-gestures",
   "license": "MIT",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "./index.d.ts",

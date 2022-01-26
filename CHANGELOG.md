@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.3.9
+## 1.4.1
 
 Press gesture now accepts `triggerBeforeFinished` option. By default it is set `false`. If set to true, press event is triggered after given `timeframe`, even if user still keeps pressing.
 
