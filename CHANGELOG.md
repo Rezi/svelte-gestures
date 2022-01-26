@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.9
+
+Press gesture now accepts `triggerBeforeFinished` option. By default it is set `false`. If set to true, press event is triggered after given `timeframe`, even if user still keeps pressing.
+
 ## 1.3.8
 
 Documentation added for how to use JSX types (used by language tools to recognize return types of functions returned by svelte HTML markup (on:action etc))

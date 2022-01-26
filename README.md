@@ -191,6 +191,8 @@ Press action fires `press` event: `event.detail` has `x`, `y`, `target` properti
 
 Press action is fired only when the click/touch is finished after the give `timeframe`, the parameter is optional and overwrites defalut value of 300ms.
 
+Another option is `triggerBeforeFinished`. By default it is set to `false`. If set to true, press event is triggered after given `timeframe`, even if user still keeps pressing (event hasn't finished).
+
 [> repl Press demo](https://svelte.dev/repl/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
 
 ```html
@@ -207,7 +209,7 @@ Press action is fired only when the click/touch is finished after the give `time
   }
 </script>
 
-<div use:press={{ timeframe: 300 }} on:press={handler} style="width:500px;height:500px;border:1px solid black;">
+<div use:press={{ timeframe: 300, triggerBeforeFinished: false }} on:press={handler} style="width:500px;height:500px;border:1px solid black;">
   press: {x} {y}
 </div>
 ```
