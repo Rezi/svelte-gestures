@@ -50,7 +50,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
   function handlePointerdown(event) {
     activeEvents.push(event);
     dispatch(node, gestureName, event, activeEvents, 'down');
-    onDownCallback?.(activeEvents, event);
+    onDownCallback === null || onDownCallback === void 0 ? void 0 : onDownCallback(activeEvents, event);
     const pointerId = event.pointerId;
 
     function onup(e) {
@@ -62,7 +62,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         }
 
         dispatch(node, gestureName, e, activeEvents, 'up');
-        onUpCallback?.(activeEvents, e);
+        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
       }
     }
 
@@ -78,7 +78,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         return e.pointerId === activeEvent.pointerId ? e : activeEvent;
       });
       dispatch(node, gestureName, e, activeEvents, 'move');
-      onMoveCallback?.(activeEvents, e);
+      onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, e);
     });
     const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', e => {
       onup(e);
@@ -90,7 +90,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
       activeEvents = [];
       removeEventHandlers();
       dispatch(node, gestureName, e, activeEvents, 'up');
-      onUpCallback?.(activeEvents, e);
+      onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
     });
   }
 

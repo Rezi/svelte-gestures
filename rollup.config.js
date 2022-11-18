@@ -21,7 +21,7 @@ export default [
       resolve({
         extensions,
       }),
-      babel({ extensions, exclude: 'node_modules/**' }),
+      babel({ extensions, exclude: 'node_modules/**', plugins: ['@babel/plugin-proposal-optional-chaining'] }),
     ],
   },
 ];
