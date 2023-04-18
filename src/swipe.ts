@@ -1,30 +1,39 @@
-'use strict';
-
 import {
   DEFAULT_DELAY,
   DEFAULT_MIN_SWIPE_DISTANCE,
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
+  type SvelteAction,
+  type SubGestureFunctions,
+  type BaseParams,
+type PointerType,
 } from './shared';
+
+type SwipeParameters = {
+  timeframe: number;
+  minSwipeDistance: number;
+  touchAction: string;
+} & BaseParams;
 
 export function swipe(
   node: HTMLElement,
-  parameters: {
-    timeframe: number;
-    minSwipeDistance: number;
-    touchAction: string;
-  } = {
+  inputParameters?: Partial<SwipeParameters>
+): SvelteAction | SubGestureFunctions {
+  const parameters: SwipeParameters = {
     timeframe: DEFAULT_DELAY,
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
     touchAction: DEFAULT_TOUCH_ACTION,
-  }
-): { destroy: () => void } {
+    composed: false,
+    conditionFor: ['all' as PointerType] ,
+    ...inputParameters,
+  };
+
   const gestureName = 'swipe';
 
   let startTime: number;
   let clientX: number;
   let clientY: number;
-  let target: EventTarget;
+  let target: EventTarget | null;
 
   function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
     clientX = event.clientX;
@@ -46,7 +55,7 @@ export function swipe(
       const absX = Math.abs(x);
       const absY = Math.abs(y);
 
-      let direction: 'top' | 'right' | 'bottom' | 'left' = null;
+      let direction: 'top' | 'right' | 'bottom' | 'left' | null = null;
       if (absX >= 2 * absY && absX > parameters.minSwipeDistance) {
         // horizontal (by *2 we eliminate diagonal movements)
         direction = x > 0 ? 'right' : 'left';
@@ -62,6 +71,10 @@ export function swipe(
         );
       }
     }
+  }
+
+  if (parameters.composed) {
+    return { onMove: null, onDown, onUp };
   }
 
   return setPointerControls(

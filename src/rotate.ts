@@ -1,6 +1,13 @@
-'use strict';
+import {
+  getCenterOfTwoPoints,
+  setPointerControls,
+  type SvelteAction,
+  type SubGestureFunctions,
+  type BaseParams,
+type PointerType,
+} from './shared';
 
-import { setPointerControls, getCenterOfTwoPoints } from './shared';
+type RotateParameters = BaseParams;
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   // instead of hell lot of conditions we use an object mapping
@@ -32,16 +39,20 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   return angle + quadrantAngleBonus;
 }
 
-export function rotate(node: HTMLElement): { destroy: () => void } {
+export function rotate(
+  node: HTMLElement,
+  inputParameters?: Partial<RotateParameters>
+): SvelteAction | SubGestureFunctions {
+  const parameters = { composed: false,conditionFor: ['all' as PointerType] , ...inputParameters };
   const gestureName = 'rotate';
 
-  let prevAngle: number = null;
+  let prevAngle: number | undefined;
   let initAngle = 0;
   let rotationCenter: { x: number; y: number };
 
   function onUp(activeEvents: PointerEvent[]) {
     if (activeEvents.length === 1) {
-      prevAngle = null;
+      prevAngle = undefined;
     }
   }
 
@@ -60,7 +71,7 @@ export function rotate(node: HTMLElement): { destroy: () => void } {
     if (activeEvents.length === 2) {
       const curAngle = getPointersAngleDeg(activeEvents);
 
-      if (prevAngle !== null && curAngle !== prevAngle) {
+      if (prevAngle !== undefined && curAngle !== prevAngle) {
         // Make sure we start at zero, doesnt matter what is the initial angle of fingers
         let rotation = curAngle - initAngle;
 
@@ -77,6 +88,12 @@ export function rotate(node: HTMLElement): { destroy: () => void } {
       }
       prevAngle = curAngle;
     }
+
+    return true;
+  }
+
+  if (parameters.composed) {
+    return { onMove, onDown, onUp };
   }
 
   return setPointerControls(gestureName, node, onMove, onDown, onUp);

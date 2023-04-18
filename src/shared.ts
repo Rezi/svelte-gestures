@@ -1,10 +1,37 @@
-'use strict';
-
-export const DEFAULT_DELAY = 300;
-export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // in pixels
+export const DEFAULT_DELAY = 300; // ms
+export const DEFAULT_PRESS_SPREAD = 4; // px
+export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // px
 export const DEFAULT_TOUCH_ACTION = 'none';
 
-type PointerType = 'up' | 'down' | 'move';
+export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
+export type BaseParams = { composed: boolean; conditionFor: PointerType[] };
+
+type ActionType = 'up' | 'down' | 'move';
+
+export type SvelteAction = {
+  update?: (parameters: any) => void;
+  destroy?: () => void;
+};
+
+export type PointerEventCallback<T> =
+  | ((activeEvents: PointerEvent[], event: PointerEvent) => T)
+  | null;
+
+export type SubGestureFunctions = {
+  onMove: PointerEventCallback<boolean>;
+  onUp: PointerEventCallback<void>;
+  onDown: PointerEventCallback<void>;
+};
+
+export function isConditionApplied(
+  conditionFor: PointerType[],
+  event: PointerEvent
+) {
+  return (
+    conditionFor[0] === 'all' ||
+    conditionFor.includes(event.pointerType as PointerType)
+  );
+}
 
 function addEventListener<ET extends EventTarget, E extends Event>(
   node: ET,
@@ -47,11 +74,15 @@ function dispatch(
   gestureName: string,
   event: PointerEvent,
   activeEvents: PointerEvent[],
-  pointerType: PointerType
+  actionType: ActionType
 ) {
   node.dispatchEvent(
-    new CustomEvent(`${gestureName}${pointerType}`, {
-      detail: { event, pointersCount: activeEvents.length },
+    new CustomEvent(`${gestureName}${actionType}`, {
+      detail: {
+        event,
+        pointersCount: activeEvents.length,
+        target: event.target,
+      },
     })
   );
 }
@@ -59,9 +90,9 @@ function dispatch(
 export function setPointerControls(
   gestureName: string,
   node: HTMLElement,
-  onMoveCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
-  onDownCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
-  onUpCallback: (activeEvents: PointerEvent[], event: PointerEvent) => void,
+  onMoveCallback: PointerEventCallback<boolean>,
+  onDownCallback: PointerEventCallback<void>,
+  onUpCallback: PointerEventCallback<void>,
   touchAction: string = DEFAULT_TOUCH_ACTION
 ): {
   destroy: () => void;
