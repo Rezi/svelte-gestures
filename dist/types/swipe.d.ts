@@ -1,8 +1,8 @@
-export declare function swipe(node: HTMLElement, parameters?: {
+import { type SvelteAction, type SubGestureFunctions, type BaseParams } from './shared';
+export type SwipeParameters = {
     timeframe: number;
     minSwipeDistance: number;
     touchAction: string;
-}): {
-    destroy: () => void;
-};
+} & BaseParams;
+export declare function swipe(node: HTMLElement, inputParameters?: Partial<SwipeParameters>): SvelteAction | SubGestureFunctions;
 //# sourceMappingURL=swipe.d.ts.map

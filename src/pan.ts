@@ -1,15 +1,28 @@
-'use strict';
+import {
+  DEFAULT_DELAY,
+  DEFAULT_TOUCH_ACTION,
+  setPointerControls,
+  type SvelteAction,
+  type SubGestureFunctions,
+  type BaseParams,
+} from './shared';
 
-import { DEFAULT_DELAY, setPointerControls } from './shared';
+export type PanParameters = { delay: number } & BaseParams;
 
 export function pan(
   node: HTMLElement,
-  parameters: { delay: number } = { delay: DEFAULT_DELAY }
-): { destroy: () => void } {
+  inputParameters?: Partial<PanParameters>
+): SvelteAction | SubGestureFunctions {
+  let parameters: PanParameters = {
+    delay: DEFAULT_DELAY,
+    composed: false,
+    touchAction: DEFAULT_TOUCH_ACTION,
+    ...inputParameters,
+  };
   const gestureName = 'pan';
 
   let startTime: number;
-  let target: EventTarget;
+  let target: EventTarget | null;
 
   function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
     startTime = Date.now();
@@ -24,6 +37,7 @@ export function pan(
       const rect = node.getBoundingClientRect();
       const x = Math.round(event.clientX - rect.left);
       const y = Math.round(event.clientY - rect.top);
+
       if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height) {
         node.dispatchEvent(
           new CustomEvent(gestureName, {
@@ -32,7 +46,25 @@ export function pan(
         );
       }
     }
+
+    return false;
   }
 
-  return setPointerControls(gestureName, node, onMove, onDown, null);
+  if (parameters.composed) {
+    return { onMove, onDown, onUp: null };
+  }
+
+  return {
+    ...setPointerControls(
+      gestureName,
+      node,
+      onMove,
+      onDown,
+      null,
+      parameters.touchAction
+    ),
+    update: (updateParameters: PanParameters) => {
+      parameters = { ...parameters, ...updateParameters };
+    },
+  };
 }

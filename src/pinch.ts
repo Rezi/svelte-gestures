@@ -1,6 +1,13 @@
-'use strict';
+import {
+  DEFAULT_TOUCH_ACTION,
+  getCenterOfTwoPoints,
+  setPointerControls,
+  type SvelteAction,
+  type SubGestureFunctions,
+  type BaseParams,
+} from './shared';
 
-import { setPointerControls, getCenterOfTwoPoints } from './shared';
+export type PinchParameters = BaseParams;
 
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
@@ -9,16 +16,25 @@ function getPointersDistance(activeEvents: PointerEvent[]) {
   );
 }
 
-export function pinch(node: HTMLElement): { destroy: () => void } {
+export function pinch(
+  node: HTMLElement,
+  inputParameters?: Partial<PinchParameters>
+): SvelteAction | SubGestureFunctions {
+  const parameters: PinchParameters = {
+    touchAction: DEFAULT_TOUCH_ACTION,
+    composed: false,
+    ...inputParameters,
+  };
+
   const gestureName = 'pinch';
 
-  let prevDistance: number = null;
+  let prevDistance: number | undefined;
   let initDistance = 0;
   let pinchCenter: { x: number; y: number };
 
   function onUp(activeEvents: PointerEvent[]) {
     if (activeEvents.length === 1) {
-      prevDistance = null;
+      prevDistance = undefined;
     }
   }
 
@@ -33,7 +49,7 @@ export function pinch(node: HTMLElement): { destroy: () => void } {
     if (activeEvents.length === 2) {
       const curDistance = getPointersDistance(activeEvents);
 
-      if (prevDistance !== null && curDistance !== prevDistance) {
+      if (prevDistance !== undefined && curDistance !== prevDistance) {
         const scale = curDistance / initDistance;
         node.dispatchEvent(
           new CustomEvent(gestureName, {
@@ -43,7 +59,20 @@ export function pinch(node: HTMLElement): { destroy: () => void } {
       }
       prevDistance = curDistance;
     }
+
+    return false;
   }
 
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
+  if (parameters.composed) {
+    return { onMove, onDown, onUp: null };
+  }
+
+  return setPointerControls(
+    gestureName,
+    node,
+    onMove,
+    onDown,
+    onUp,
+    parameters.touchAction
+  );
 }
