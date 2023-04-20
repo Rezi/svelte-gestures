@@ -1,10 +1,11 @@
 import {
   getCenterOfTwoPoints,
   setPointerControls,
+  DEFAULT_TOUCH_ACTION,
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-type PointerType,
+  type PointerType,
 } from './shared';
 
 type RotateParameters = BaseParams;
@@ -43,7 +44,12 @@ export function rotate(
   node: HTMLElement,
   inputParameters?: Partial<RotateParameters>
 ): SvelteAction | SubGestureFunctions {
-  const parameters = { composed: false,conditionFor: ['all' as PointerType] , ...inputParameters };
+  const parameters: RotateParameters = {
+    touchAction: DEFAULT_TOUCH_ACTION,
+    composed: false,
+    conditionFor: ['all' as PointerType],
+    ...inputParameters,
+  };
   const gestureName = 'rotate';
 
   let prevAngle: number | undefined;
@@ -96,5 +102,12 @@ export function rotate(
     return { onMove, onDown, onUp };
   }
 
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
+  return setPointerControls(
+    gestureName,
+    node,
+    onMove,
+    onDown,
+    onUp,
+    parameters.touchAction
+  );
 }

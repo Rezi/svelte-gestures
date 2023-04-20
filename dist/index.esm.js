@@ -94,6 +94,7 @@ function pan(node, inputParameters) {
   let parameters = {
     delay: DEFAULT_DELAY,
     composed: false,
+    touchAction: DEFAULT_TOUCH_ACTION,
     conditionFor: ['all'],
     ...inputParameters
   };
@@ -144,6 +145,7 @@ function getPointersDistance(activeEvents) {
 }
 function pinch(node, inputParameters) {
   const parameters = {
+    touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
     conditionFor: ['all'],
     ...inputParameters
@@ -196,6 +198,7 @@ function press(node, inputParameters) {
     timeframe: DEFAULT_DELAY,
     triggerBeforeFinished: false,
     spread: DEFAULT_PRESS_SPREAD,
+    touchAction: 'auto',
     ...inputParameters
   };
   node.style.userSelect = 'none';
@@ -255,7 +258,7 @@ function press(node, inputParameters) {
       }, parameters.timeframe + 1);
     }
   }
-  const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp);
+  const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
   if (parameters.composed) {
     return {
       onMove,
@@ -302,6 +305,7 @@ function getPointersAngleDeg(activeEvents) {
 }
 function rotate(node, inputParameters) {
   const parameters = {
+    touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
     conditionFor: ['all'],
     ...inputParameters
@@ -439,7 +443,6 @@ function gesture(node, gestureCallback) {
     onMoveCallback(activeEvents, event);
     return true;
   }
-  console.log('a');
   return setPointerControls(gestureName, node, onMove, onDown, onUp);
 }
 
@@ -467,6 +470,7 @@ function scroll(node, inputParameters) {
   let parameters = {
     ...{
       delay: DEFAULT_DELAY,
+      touchAction: DEFAULT_TOUCH_ACTION,
       conditionFor: ['all'],
       composed: false
     },
@@ -564,6 +568,7 @@ function tap(node, inputParameters) {
     timeframe: DEFAULT_DELAY,
     composed: false,
     conditionFor: ['all'],
+    touchAction: 'auto',
     ...inputParameters
   };
   const gestureName = 'tap';
@@ -596,7 +601,7 @@ function tap(node, inputParameters) {
       onUp
     };
   }
-  return setPointerControls(gestureName, node, null, onDown, onUp);
+  return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
 }
 
 export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, gesture, getCenterOfTwoPoints, isConditionApplied, pan, pinch, press, rotate, scroll, setPointerControls, swipe, tap };

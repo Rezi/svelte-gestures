@@ -1,10 +1,11 @@
 import {
+  DEFAULT_TOUCH_ACTION,
   getCenterOfTwoPoints,
   setPointerControls,
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-type PointerType,
+  type PointerType,
 } from './shared';
 
 type PinchParameters = BaseParams;
@@ -20,7 +21,12 @@ export function pinch(
   node: HTMLElement,
   inputParameters?: Partial<PinchParameters>
 ): SvelteAction | SubGestureFunctions {
-  const parameters: PinchParameters = { composed: false,conditionFor: ['all' as PointerType] , ...inputParameters };
+  const parameters: PinchParameters = {
+    touchAction: DEFAULT_TOUCH_ACTION,
+    composed: false,
+    conditionFor: ['all' as PointerType],
+    ...inputParameters,
+  };
 
   const gestureName = 'pinch';
 
@@ -63,5 +69,12 @@ export function pinch(
     return { onMove, onDown, onUp: null };
   }
 
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
+  return setPointerControls(
+    gestureName,
+    node,
+    onMove,
+    onDown,
+    onUp,
+    parameters.touchAction
+  );
 }

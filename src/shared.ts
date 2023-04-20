@@ -3,8 +3,28 @@ export const DEFAULT_PRESS_SPREAD = 4; // px
 export const DEFAULT_MIN_SWIPE_DISTANCE = 60; // px
 export const DEFAULT_TOUCH_ACTION = 'none';
 
+export type TouchAction =
+  | 'auto'
+  | 'none'
+  | 'pan-x'
+  | 'pan-left'
+  | 'pan-right'
+  | 'pan-y'
+  | 'pan-up'
+  | 'pan-down'
+  | 'pinch-zoom'
+  | 'manipulation'
+  | 'inherit'
+  | 'initial'
+  | 'revert'
+  | 'revert-layer'
+  | 'unset';
 export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
-export type BaseParams = { composed: boolean; conditionFor: PointerType[] };
+export type BaseParams = {
+  composed: boolean;
+  conditionFor: PointerType[];
+  touchAction: TouchAction;
+};
 
 type ActionType = 'up' | 'down' | 'move';
 
@@ -93,7 +113,7 @@ export function setPointerControls(
   onMoveCallback: PointerEventCallback<boolean>,
   onDownCallback: PointerEventCallback<void>,
   onUpCallback: PointerEventCallback<void>,
-  touchAction: string = DEFAULT_TOUCH_ACTION
+  touchAction: TouchAction = DEFAULT_TOUCH_ACTION
 ): {
   destroy: () => void;
 } {

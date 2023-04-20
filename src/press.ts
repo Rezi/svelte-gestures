@@ -6,7 +6,7 @@ import {
   type SubGestureFunctions,
   type BaseParams,
   type PointerType,
-isConditionApplied,
+  isConditionApplied,
 } from './shared';
 
 type PressParameters = {
@@ -21,10 +21,11 @@ export function press(
 ): SvelteAction | SubGestureFunctions {
   const parameters: PressParameters = {
     composed: false,
-    conditionFor: ['touch' as PointerType] ,
+    conditionFor: ['touch' as PointerType],
     timeframe: DEFAULT_DELAY,
     triggerBeforeFinished: false,
     spread: DEFAULT_PRESS_SPREAD,
+    touchAction: 'auto',
     ...inputParameters,
   };
 
@@ -90,7 +91,6 @@ export function press(
     clientMoved.x = event.clientX;
     clientMoved.y = event.clientY;
 
-
     if (parameters.triggerBeforeFinished) {
       timeout = setTimeout(() => {
         triggeredOnTimeout = true;
@@ -105,7 +105,8 @@ export function press(
     node,
     onMove,
     onDown,
-    onUp
+    onUp,
+    parameters.touchAction
   );
 
   if (parameters.composed) {

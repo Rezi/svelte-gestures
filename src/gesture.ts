@@ -64,7 +64,5 @@ export function gesture(
     return true;
   }
 
-  console.log('a');
-
   return setPointerControls(gestureName, node, onMove, onDown, onUp);
 }

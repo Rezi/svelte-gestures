@@ -1,10 +1,11 @@
 import {
   DEFAULT_DELAY,
+  DEFAULT_TOUCH_ACTION,
   setPointerControls,
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-type PointerType,
+  type PointerType,
 } from './shared';
 
 type PanParameters = { delay: number } & BaseParams;
@@ -16,7 +17,8 @@ export function pan(
   let parameters: PanParameters = {
     delay: DEFAULT_DELAY,
     composed: false,
-    conditionFor: ['all' as PointerType] ,
+    touchAction: DEFAULT_TOUCH_ACTION,
+    conditionFor: ['all' as PointerType],
     ...inputParameters,
   };
   const gestureName = 'pan';
@@ -55,7 +57,14 @@ export function pan(
   }
 
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, null),
+    ...setPointerControls(
+      gestureName,
+      node,
+      onMove,
+      onDown,
+      null,
+      parameters.touchAction
+    ),
     update: (updateParameters: PanParameters) => {
       parameters = { ...parameters, ...updateParameters };
     },
