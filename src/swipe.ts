@@ -6,10 +6,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-type PointerType,
 } from './shared';
 
-type SwipeParameters = {
+export type SwipeParameters = {
   timeframe: number;
   minSwipeDistance: number;
   touchAction: string;
@@ -24,7 +23,6 @@ export function swipe(
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all' as PointerType] ,
     ...inputParameters,
   };
 

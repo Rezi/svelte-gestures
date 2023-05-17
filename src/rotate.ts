@@ -5,13 +5,11 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
 } from './shared';
 
-type RotateParameters = BaseParams;
+export type RotateParameters = BaseParams;
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
-  // instead of hell lot of conditions we use an object mapping
   const quadrantsMap = {
     left: { top: 360, bottom: 180 },
     right: { top: 0, bottom: 180 },
@@ -47,7 +45,6 @@ export function rotate(
   const parameters: RotateParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all' as PointerType],
     ...inputParameters,
   };
   const gestureName = 'rotate';
@@ -95,7 +92,7 @@ export function rotate(
       prevAngle = curAngle;
     }
 
-    return true;
+    return false;
   }
 
   if (parameters.composed) {

@@ -19,10 +19,9 @@ export type TouchAction =
   | 'revert'
   | 'revert-layer'
   | 'unset';
-export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
+// export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
 export type BaseParams = {
   composed: boolean;
-  conditionFor: PointerType[];
   touchAction: TouchAction;
 };
 
@@ -42,16 +41,6 @@ export type SubGestureFunctions = {
   onUp: PointerEventCallback<void>;
   onDown: PointerEventCallback<void>;
 };
-
-export function isConditionApplied(
-  conditionFor: PointerType[],
-  event: PointerEvent
-) {
-  return (
-    conditionFor[0] === 'all' ||
-    conditionFor.includes(event.pointerType as PointerType)
-  );
-}
 
 function addEventListener<ET extends EventTarget, E extends Event>(
   node: ET,

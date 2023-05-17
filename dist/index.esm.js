@@ -2,9 +2,9 @@ const DEFAULT_DELAY = 300; // ms
 const DEFAULT_PRESS_SPREAD = 4; // px
 const DEFAULT_MIN_SWIPE_DISTANCE = 60; // px
 const DEFAULT_TOUCH_ACTION = 'none';
-function isConditionApplied(conditionFor, event) {
-  return conditionFor[0] === 'all' || conditionFor.includes(event.pointerType);
-}
+
+// export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
+
 function addEventListener(node, event, handler) {
   node.addEventListener(event, handler);
   return () => node.removeEventListener(event, handler);
@@ -95,7 +95,6 @@ function pan(node, inputParameters) {
     delay: DEFAULT_DELAY,
     composed: false,
     touchAction: DEFAULT_TOUCH_ACTION,
-    conditionFor: ['all'],
     ...inputParameters
   };
   const gestureName = 'pan';
@@ -120,7 +119,7 @@ function pan(node, inputParameters) {
         }));
       }
     }
-    return true;
+    return false;
   }
   if (parameters.composed) {
     return {
@@ -130,7 +129,7 @@ function pan(node, inputParameters) {
     };
   }
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, null),
+    ...setPointerControls(gestureName, node, onMove, onDown, null, parameters.touchAction),
     update: updateParameters => {
       parameters = {
         ...parameters,
@@ -147,7 +146,6 @@ function pinch(node, inputParameters) {
   const parameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all'],
     ...inputParameters
   };
   const gestureName = 'pinch';
@@ -179,7 +177,7 @@ function pinch(node, inputParameters) {
       }
       prevDistance = curDistance;
     }
-    return true;
+    return false;
   }
   if (parameters.composed) {
     return {
@@ -188,13 +186,12 @@ function pinch(node, inputParameters) {
       onUp: null
     };
   }
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
+  return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
 }
 
 function press(node, inputParameters) {
   const parameters = {
     composed: false,
-    conditionFor: ['touch'],
     timeframe: DEFAULT_DELAY,
     triggerBeforeFinished: false,
     spread: DEFAULT_PRESS_SPREAD,
@@ -241,7 +238,7 @@ function press(node, inputParameters) {
   function onMove(activeEvents, event) {
     clientMoved.x = event.clientX;
     clientMoved.y = event.clientY;
-    return !isConditionApplied(parameters.conditionFor, event) || triggered;
+    return triggered;
   }
   function onDown(activeEvents, event) {
     triggered = false;
@@ -275,7 +272,6 @@ function press(node, inputParameters) {
 }
 
 function getPointersAngleDeg(activeEvents) {
-  // instead of hell lot of conditions we use an object mapping
   const quadrantsMap = {
     left: {
       top: 360,
@@ -307,7 +303,6 @@ function rotate(node, inputParameters) {
   const parameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all'],
     ...inputParameters
   };
   const gestureName = 'rotate';
@@ -348,7 +343,7 @@ function rotate(node, inputParameters) {
       }
       prevAngle = curAngle;
     }
-    return true;
+    return false;
   }
   if (parameters.composed) {
     return {
@@ -357,7 +352,7 @@ function rotate(node, inputParameters) {
       onUp
     };
   }
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
+  return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
 }
 
 function swipe(node, inputParameters) {
@@ -366,7 +361,6 @@ function swipe(node, inputParameters) {
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all'],
     ...inputParameters
   };
   const gestureName = 'swipe';
@@ -421,7 +415,7 @@ function callAllByType(ListenerType, subGestureFunctions, activeEvents, event) {
     gesture[ListenerType]?.(activeEvents, event);
   });
 }
-function gesture(node, gestureCallback) {
+function composedGesture(node, gestureCallback) {
   const gestureFunctions = [];
   function registerGesture(gestureFn, parameters) {
     const subGestureFns = gestureFn(node, {
@@ -432,7 +426,7 @@ function gesture(node, gestureCallback) {
     return subGestureFns;
   }
   const onMoveCallback = gestureCallback(registerGesture);
-  const gestureName = 'gesture';
+  const gestureName = 'composedGesture';
   function onUp(activeEvents, event) {
     callAllByType('onUp', gestureFunctions, activeEvents, event);
   }
@@ -444,6 +438,258 @@ function gesture(node, gestureCallback) {
     return true;
   }
   return setPointerControls(gestureName, node, onMove, onDown, onUp);
+}
+
+const DEFAULT_TRESHOLD = 0.9;
+const DEFAULT_NB_OF_SAMPLE_POINTS = 64;
+const PHI = (Math.sqrt(5.0) - 1) / 2;
+const ANGLE_RANGE_RAD = deg2Rad(45.0);
+const ANGLE_PRECISION_RAD = deg2Rad(2.0);
+function deg2Rad(d) {
+  return d * Math.PI / 180;
+}
+function getDistance(a, b) {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+function distanceAtBestAngle(pattern, points, center) {
+  let fromAngleRad = -ANGLE_RANGE_RAD;
+  let toAngleRad = ANGLE_RANGE_RAD;
+  let angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
+  let distanceOne = distanceAtAngle(pattern, angleOne, points, center);
+  let angleTwo = (1.0 - PHI) * fromAngleRad + PHI * toAngleRad;
+  let distanceTwo = distanceAtAngle(pattern, angleTwo, points, center);
+  while (Math.abs(toAngleRad - fromAngleRad) > ANGLE_PRECISION_RAD) {
+    if (distanceOne < distanceTwo) {
+      toAngleRad = angleTwo;
+      angleTwo = angleOne;
+      distanceTwo = distanceOne;
+      angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
+      distanceOne = distanceAtAngle(pattern, angleOne, points, center);
+    } else {
+      fromAngleRad = angleOne;
+      angleOne = angleTwo;
+      distanceOne = distanceTwo;
+      angleTwo = (1.0 - PHI) * fromAngleRad + PHI * toAngleRad;
+      distanceTwo = distanceAtAngle(pattern, angleTwo, points, center);
+    }
+  }
+  return Math.min(distanceOne, distanceTwo);
+}
+function distanceAtAngle(pattern, angle, points, center) {
+  const strokePoints = rotateBy(angle, points, center);
+  const d = strokePoints.reduce((accu, sPoint, i) => {
+    return accu += getDistance(sPoint, pattern.points[i]);
+  }, 0);
+  return d / strokePoints.length;
+}
+function rotateBy(angle, points, center) {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return points.map(point => {
+    return {
+      x: (point.x - center.x) * cos - (point.y - center.y) * sin + center.x,
+      y: (point.x - center.x) * sin + (point.y - center.y) * cos + center.y
+    };
+  });
+}
+function shapeDetector(inputPatterns, options = {}) {
+  const threshold = options.threshold || 0;
+  const NUMBER_OF_SAMPLE_POINTS = options.nbOfSamplePoints || DEFAULT_NB_OF_SAMPLE_POINTS;
+  const SQUARE_SIZE = 250;
+  const HALF_SQUARE_DIAGONAL = Math.sqrt(SQUARE_SIZE ** 2 + SQUARE_SIZE ** 2) / 2;
+  const patterns = inputPatterns.flatMap(pattern => learn(pattern.name, pattern.points, pattern.allowRotation ?? false, pattern.bothDirections ?? true));
+  function getStroke(points, name, allowRotation) {
+    points = resample();
+    const center = getCenterPoint();
+    if (allowRotation) {
+      points = rotateBy(-indicativeAngle(center), points, center);
+    }
+    points = scaleToSquare();
+    points = translateToOrigin(getCenterPoint());
+    return {
+      name,
+      points,
+      center: {
+        x: 0,
+        y: 0
+      },
+      allowRotation
+    };
+    function resample() {
+      let localDistance, q;
+      let distance = 0;
+      const interval = strokeLength() / (NUMBER_OF_SAMPLE_POINTS - 1);
+      const newPoints = [points[0]];
+      for (let i = 1; i < points.length; i++) {
+        localDistance = getDistance(points[i - 1], points[i]);
+        if (distance + localDistance >= interval) {
+          q = {
+            x: points[i - 1].x + (interval - distance) / localDistance * (points[i].x - points[i - 1].x),
+            y: points[i - 1].y + (interval - distance) / localDistance * (points[i].y - points[i - 1].y)
+          };
+          newPoints.push(q);
+          points.splice(i, 0, q);
+          distance = 0;
+        } else {
+          distance += localDistance;
+        }
+      }
+      if (newPoints.length === NUMBER_OF_SAMPLE_POINTS - 1) {
+        newPoints.push(points[points.length - 1]);
+      }
+      return newPoints;
+    }
+    function scaleToSquare() {
+      const box = {
+        minX: +Infinity,
+        maxX: -Infinity,
+        minY: +Infinity,
+        maxY: -Infinity,
+        width: 0,
+        height: 0
+      };
+      points.forEach(point => {
+        box.minX = Math.min(box.minX, point.x);
+        box.minY = Math.min(box.minY, point.y);
+        box.maxX = Math.max(box.maxX, point.x);
+        box.maxY = Math.max(box.maxY, point.y);
+      });
+      box.width = box.maxX - box.minX;
+      box.height = box.maxY - box.minY;
+      return points.map(point => {
+        return {
+          x: point.x * (SQUARE_SIZE / box.width),
+          y: point.y * (SQUARE_SIZE / box.height)
+        };
+      });
+    }
+    function translateToOrigin(center) {
+      return points.map(point => ({
+        x: point.x - center.x,
+        y: point.y - center.y
+      }));
+    }
+    function getCenterPoint() {
+      const centre = points.reduce((acc, point) => {
+        acc.x += point.x;
+        acc.y += point.y;
+        return acc;
+      }, {
+        x: 0,
+        y: 0
+      });
+      centre.x /= points.length;
+      centre.y /= points.length;
+      return centre;
+    }
+    function indicativeAngle(center) {
+      return Math.atan2(center.y - points[0].y, center.x - points[0].x);
+    }
+    function strokeLength() {
+      let d = 0;
+      for (let i = 1; i < points.length; i++) {
+        d += getDistance(points[i - 1], points[i]);
+      }
+      return d;
+    }
+  }
+  function detect(points, patternName = '') {
+    const strokeRotated = getStroke(points, patternName, true);
+    const strokeUnrotated = getStroke(points, patternName, false);
+    let bestDistance = +Infinity;
+    let bestPattern = null;
+    let bestScore = 0;
+    patterns.forEach(pattern => {
+      if (pattern.name.indexOf(patternName) > -1) {
+        const distance = pattern.allowRotation ? distanceAtBestAngle(pattern, strokeRotated.points, strokeRotated.center) : distanceAtAngle(pattern, 0, strokeUnrotated.points, strokeUnrotated.center);
+        const score = 1.0 - distance / HALF_SQUARE_DIAGONAL;
+        if (distance < bestDistance && score > threshold) {
+          bestDistance = distance;
+          bestPattern = pattern.name;
+          bestScore = score;
+        }
+      }
+    });
+    return {
+      pattern: bestPattern,
+      score: bestScore
+    };
+  }
+  function learn(name, points, allowRotation, bothDirections) {
+    const response = [getStroke([...points], name, allowRotation)];
+    if (bothDirections) {
+      response.push(getStroke([...points.reverse()], name, allowRotation));
+    }
+    return response;
+  }
+  return {
+    detect
+  };
+}
+
+function shapeGesture(node, inputParameters) {
+  let parameters = {
+    composed: false,
+    shapes: [],
+    threshold: DEFAULT_TRESHOLD,
+    timeframe: 1000,
+    nbOfSamplePoints: DEFAULT_NB_OF_SAMPLE_POINTS,
+    touchAction: DEFAULT_TOUCH_ACTION,
+    ...inputParameters
+  };
+  const gestureName = 'shapeGesture';
+  const detector = shapeDetector(parameters.shapes, {
+    ...parameters
+  });
+  let startTime;
+  let target;
+  let stroke = [];
+  function onDown(activeEvents, event) {
+    startTime = Date.now();
+    target = event.target;
+    stroke = [];
+  }
+  function onMove(activeEvents, event) {
+    if (activeEvents.length === 1) {
+      const rect = node.getBoundingClientRect();
+      const x = Math.round(event.clientX - rect.left);
+      const y = Math.round(event.clientY - rect.top);
+      stroke.push({
+        x,
+        y
+      });
+    }
+    return false;
+  }
+  function onUp() {
+    if (stroke.length > 2 && Date.now() - startTime < parameters.timeframe) {
+      const detectionResult = detector.detect(stroke);
+      node.dispatchEvent(new CustomEvent(gestureName, {
+        detail: {
+          ...detectionResult,
+          target
+        }
+      }));
+    }
+  }
+  if (parameters.composed) {
+    return {
+      onMove,
+      onDown,
+      onUp
+    };
+  }
+  return {
+    ...setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction),
+    update: updateParameters => {
+      parameters = {
+        ...parameters,
+        ...updateParameters
+      };
+    }
+  };
 }
 
 function isScrollMode(event) {
@@ -471,7 +717,6 @@ function scroll(node, inputParameters) {
     ...{
       delay: DEFAULT_DELAY,
       touchAction: DEFAULT_TOUCH_ACTION,
-      conditionFor: ['all'],
       composed: false
     },
     ...inputParameters
@@ -499,9 +744,6 @@ function scroll(node, inputParameters) {
   function onDown(activeEvents, event) {
     nearestScrollEl.y = getScrollParent(node, 'y');
     nearestScrollEl.x = getScrollParent(node, 'x');
-    console.log({
-      nearestScrollEl
-    });
     prevCoords = undefined;
   }
   function onMove(activeEvents, event) {
@@ -517,7 +759,7 @@ function scroll(node, inputParameters) {
         y: event.clientY
       };
     }
-    return true;
+    return false;
   }
   function onUp(activeEvents, event) {
     if (isScrollMode(event)) {
@@ -553,7 +795,7 @@ function scroll(node, inputParameters) {
     };
   }
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, onUp),
+    ...setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction),
     update: updateParameters => {
       parameters = {
         ...parameters,
@@ -567,7 +809,6 @@ function tap(node, inputParameters) {
   const parameters = {
     timeframe: DEFAULT_DELAY,
     composed: false,
-    conditionFor: ['all'],
     touchAction: 'auto',
     ...inputParameters
   };
@@ -604,4 +845,4 @@ function tap(node, inputParameters) {
   return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
 }
 
-export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, gesture, getCenterOfTwoPoints, isConditionApplied, pan, pinch, press, rotate, scroll, setPointerControls, swipe, tap };
+export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, composedGesture, getCenterOfTwoPoints, pan, pinch, press, rotate, scroll, setPointerControls, shapeGesture, swipe, tap };

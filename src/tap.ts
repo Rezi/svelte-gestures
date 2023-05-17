@@ -4,10 +4,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
 } from './shared';
 
-type TapParameters = {
+export type TapParameters = {
   timeframe: number;
 } & BaseParams;
 
@@ -18,7 +17,6 @@ export function tap(
   const parameters: TapParameters = {
     timeframe: DEFAULT_DELAY,
     composed: false,
-    conditionFor: ['all' as PointerType],
     touchAction: 'auto',
     ...inputParameters,
   };

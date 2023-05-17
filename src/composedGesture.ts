@@ -27,7 +27,7 @@ function callAllByType(
   });
 }
 
-export function gesture(
+export function composedGesture(
   node: HTMLElement,
   gestureCallback: GestureCallback
 ): SvelteAction {
@@ -48,7 +48,7 @@ export function gesture(
     event: PointerEvent
   ) => boolean = gestureCallback(registerGesture);
 
-  const gestureName = 'gesture';
+  const gestureName = 'composedGesture';
 
   function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     callAllByType('onUp', gestureFunctions, activeEvents, event);

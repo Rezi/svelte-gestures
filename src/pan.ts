@@ -5,10 +5,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
 } from './shared';
 
-type PanParameters = { delay: number } & BaseParams;
+export type PanParameters = { delay: number } & BaseParams;
 
 export function pan(
   node: HTMLElement,
@@ -18,7 +17,6 @@ export function pan(
     delay: DEFAULT_DELAY,
     composed: false,
     touchAction: DEFAULT_TOUCH_ACTION,
-    conditionFor: ['all' as PointerType],
     ...inputParameters,
   };
   const gestureName = 'pan';
@@ -49,7 +47,7 @@ export function pan(
       }
     }
 
-    return true;
+    return false;
   }
 
   if (parameters.composed) {

@@ -5,11 +5,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
-  isConditionApplied,
 } from './shared';
 
-type PressParameters = {
+export type PressParameters = {
   timeframe: number;
   triggerBeforeFinished: boolean;
   spread: number;
@@ -21,7 +19,6 @@ export function press(
 ): SvelteAction | SubGestureFunctions {
   const parameters: PressParameters = {
     composed: false,
-    conditionFor: ['touch' as PointerType],
     timeframe: DEFAULT_DELAY,
     triggerBeforeFinished: false,
     spread: DEFAULT_PRESS_SPREAD,
@@ -79,7 +76,7 @@ export function press(
     clientMoved.x = event.clientX;
     clientMoved.y = event.clientY;
 
-    return !isConditionApplied(parameters.conditionFor, event) || triggered;
+    return triggered;
   }
 
   function onDown(activeEvents: PointerEvent[], event: PointerEvent) {

@@ -1,5 +1,11 @@
 export type Options = { threshold?: number; nbOfSamplePoints?: number };
-export type Pattern = { name: string; points: Coord[]; center?: Coord };
+export type Pattern = {
+  name: string;
+  points: Coord[];
+  center?: Coord;
+  allowRotation?: boolean;
+  bothDirections?: boolean;
+};
 export type Coord = { x: number; y: number };
 export type Result = { score: number; pattern: string | null };
 
@@ -21,25 +27,25 @@ function getDistance(a: Coord, b: Coord) {
 }
 
 function distanceAtBestAngle(pattern: Pattern, points: Coord[], center: Coord) {
-  let from_angle_rad = -ANGLE_RANGE_RAD;
-  let to_angle_rad = ANGLE_RANGE_RAD;
-  let angleOne = PHI * from_angle_rad + (1.0 - PHI) * to_angle_rad;
+  let fromAngleRad = -ANGLE_RANGE_RAD;
+  let toAngleRad = ANGLE_RANGE_RAD;
+  let angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
   let distanceOne = distanceAtAngle(pattern, angleOne, points, center);
-  let angleTwo = (1.0 - PHI) * from_angle_rad + PHI * to_angle_rad;
+  let angleTwo = (1.0 - PHI) * fromAngleRad + PHI * toAngleRad;
   let distanceTwo = distanceAtAngle(pattern, angleTwo, points, center);
 
-  while (Math.abs(to_angle_rad - from_angle_rad) > ANGLE_PRECISION_RAD) {
+  while (Math.abs(toAngleRad - fromAngleRad) > ANGLE_PRECISION_RAD) {
     if (distanceOne < distanceTwo) {
-      to_angle_rad = angleTwo;
+      toAngleRad = angleTwo;
       angleTwo = angleOne;
       distanceTwo = distanceOne;
-      angleOne = PHI * from_angle_rad + (1.0 - PHI) * to_angle_rad;
+      angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
       distanceOne = distanceAtAngle(pattern, angleOne, points, center);
     } else {
-      from_angle_rad = angleOne;
+      fromAngleRad = angleOne;
       angleOne = angleTwo;
       distanceOne = distanceTwo;
-      angleTwo = (1.0 - PHI) * from_angle_rad + PHI * to_angle_rad;
+      angleTwo = (1.0 - PHI) * fromAngleRad + PHI * toAngleRad;
       distanceTwo = distanceAtAngle(pattern, angleTwo, points, center);
     }
   }
@@ -83,21 +89,28 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
     Math.sqrt(SQUARE_SIZE ** 2 + SQUARE_SIZE ** 2) / 2;
 
   const patterns: Pattern[] = inputPatterns.flatMap((pattern) =>
-    learn(pattern.name, pattern.points)
+    learn(
+      pattern.name,
+      pattern.points,
+      pattern.allowRotation ?? false,
+      pattern.bothDirections ?? true
+    )
   );
 
-  function getStroke(points: Coord[], name: string): Pattern {
-    return processStroke();
-
-    function processStroke() {
-      points = resample();
-      let center = getCenterPoint();
+  function getStroke(
+    points: Coord[],
+    name: string,
+    allowRotation: boolean
+  ): Pattern {
+    points = resample();
+    const center = getCenterPoint();
+    if (allowRotation) {
       points = rotateBy(-indicativeAngle(center), points, center);
-      points = scaleToSquare();
-      center = getCenterPoint();
-      points = translateToOrigin(center);
-      return { name, points, center: { x: 0, y: 0 } };
     }
+    points = scaleToSquare();
+    points = translateToOrigin(getCenterPoint());
+
+    return { name, points, center: { x: 0, y: 0 }, allowRotation };
 
     function resample() {
       let localDistance, q;
@@ -206,19 +219,27 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
   }
 
   function detect(points: Coord[], patternName = ''): Result {
-    const stroke = getStroke(points, patternName);
+    const strokeRotated = getStroke(points, patternName, true);
+    const strokeUnrotated = getStroke(points, patternName, false);
 
     let bestDistance = +Infinity;
     let bestPattern = null;
     let bestScore = 0;
 
     patterns.forEach((pattern) => {
-      if (stroke.center && pattern.name.indexOf(patternName) > -1) {
-        const distance = distanceAtBestAngle(
-          pattern,
-          stroke.points,
-          stroke.center
-        );
+      if (pattern.name.indexOf(patternName) > -1) {
+        const distance = pattern.allowRotation
+          ? distanceAtBestAngle(
+              pattern,
+              strokeRotated.points,
+              strokeRotated.center
+            )
+          : distanceAtAngle(
+              pattern,
+              0,
+              strokeUnrotated.points,
+              strokeUnrotated.center
+            );
         const score = 1.0 - distance / HALF_SQUARE_DIAGONAL;
 
         if (distance < bestDistance && score > threshold) {
@@ -232,11 +253,17 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
     return { pattern: bestPattern, score: bestScore };
   }
 
-  function learn(name: string, points: Coord[]) {
-    return [
-      getStroke([...points], name),
-      getStroke([...points.reverse()], name),
-    ];
+  function learn(
+    name: string,
+    points: Coord[],
+    allowRotation: boolean,
+    bothDirections: boolean
+  ) {
+    const response = [getStroke([...points], name, allowRotation)];
+    if (bothDirections) {
+      response.push(getStroke([...points.reverse()], name, allowRotation));
+    }
+    return response;
   }
 
   return { detect };

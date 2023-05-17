@@ -23,7 +23,10 @@ export default [
         format: 'cjs',
         plugins: [
           getBabelOutputPlugin({
-            plugins: ['@babel/plugin-proposal-optional-chaining'],
+            plugins: [
+              '@babel/plugin-proposal-optional-chaining',
+              '@babel/plugin-proposal-nullish-coalescing-operator',
+            ],
           }),
         ],
       },

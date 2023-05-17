@@ -5,10 +5,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
 } from './shared';
 
-type PinchParameters = BaseParams;
+export type PinchParameters = BaseParams;
 
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
@@ -24,7 +23,6 @@ export function pinch(
   const parameters: PinchParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
-    conditionFor: ['all' as PointerType],
     ...inputParameters,
   };
 
@@ -62,7 +60,7 @@ export function pinch(
       prevDistance = curDistance;
     }
 
-    return true;
+    return false;
   }
 
   if (parameters.composed) {

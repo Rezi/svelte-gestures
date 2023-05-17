@@ -5,10 +5,9 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
-  type PointerType,
 } from './shared';
 
-type ScrollParameters = {
+export type ScrollParameters = {
   delay: number;
 } & BaseParams;
 
@@ -56,7 +55,6 @@ export function scroll(
     ...{
       delay: DEFAULT_DELAY,
       touchAction: DEFAULT_TOUCH_ACTION,
-      conditionFor: ['all' as PointerType],
       composed: false,
     },
     ...inputParameters,
@@ -88,7 +86,7 @@ export function scroll(
   function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
     nearestScrollEl.y = getScrollParent(node, 'y');
     nearestScrollEl.x = getScrollParent(node, 'x');
-    console.log({ nearestScrollEl });
+
     prevCoords = undefined;
   }
 
@@ -106,7 +104,7 @@ export function scroll(
       prevCoords = { x: event.clientX, y: event.clientY };
     }
 
-    return true;
+    return false;
   }
 
   function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
