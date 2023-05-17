@@ -4,8 +4,8 @@
 
 ##### New in svelte-gestures 1.5:
 
-- New `composedGesture` lets you combine gestures together. You can even use it to maintain scrolling behavior on elements with `pan` or `shapeGesture` (see example bellow)
-- New `shapeGesture` let you define shape/s to be recognized. Just define shapes by coordinates.
+- New `composedGesture` lets you combine gestures. You can even use it to maintain scrolling behavior on elements with `pan` or `shapeGesture` (see example below)
+- New `shapeGesture` lets you define shape/s to be recognized. Just define shapes by coordinates.
 - Bugfixes
 
 ## installation

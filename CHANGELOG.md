@@ -1,8 +1,14 @@
 # Changelog
 
+## 1.5.0
+
+- New `composedGesture` lets you combine gestures. You can even use it to maintain scrolling behavior on elements with `pan` or `shapeGesture` (see example below)
+- New `shapeGesture` lets you define shape/s to be recognized. Just define shapes by coordinates.
+- Bugfixes
+
 ## 1.4.1
 
-Press gesture now accepts `triggerBeforeFinished` option. By default it is set `false`. If set to true, press event is triggered after given `timeframe`, even if user still keeps pressing.
+Press gesture now accepts `triggerBeforeFinished` option. By default, it is set `false`. If set to true, press event is triggered after the given `timeframe`, even if a user still keeps pressing.
 
 ## 1.3.8
 
