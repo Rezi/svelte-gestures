@@ -1,6 +1,6 @@
-import { type SvelteAction, type SubGestureFunctions, type BaseParams } from './shared';
+import { type ParametersSwitch, type BaseParams, type GestureReturnType } from './shared';
 export type PanParameters = {
     delay: number;
 } & BaseParams;
-export declare function pan(node: HTMLElement, inputParameters?: Partial<PanParameters>): SvelteAction | SubGestureFunctions;
+export declare function pan<R extends ParametersSwitch<PanParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<PanParameters, R>;
 //# sourceMappingURL=pan.d.ts.map

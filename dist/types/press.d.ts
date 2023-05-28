@@ -1,8 +1,8 @@
-import { type SvelteAction, type SubGestureFunctions, type BaseParams } from './shared';
+import { type BaseParams, type ParametersSwitch, type GestureReturnType } from './shared';
 export type PressParameters = {
     timeframe: number;
     triggerBeforeFinished: boolean;
     spread: number;
 } & BaseParams;
-export declare function press(node: HTMLElement, inputParameters?: Partial<PressParameters>): SvelteAction | SubGestureFunctions;
+export declare function press<R extends ParametersSwitch<PressParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<PressParameters, R>;
 //# sourceMappingURL=press.d.ts.map

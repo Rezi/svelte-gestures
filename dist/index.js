@@ -152,18 +152,18 @@ function pinch(node, inputParameters) {
   let prevDistance;
   let initDistance = 0;
   let pinchCenter;
-  function onUp(activeEvents) {
+  function onUp(activeEvents, event) {
     if (activeEvents.length === 1) {
       prevDistance = undefined;
     }
   }
-  function onDown(activeEvents) {
+  function onDown(activeEvents, event) {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
       pinchCenter = getCenterOfTwoPoints(node, activeEvents);
     }
   }
-  function onMove(activeEvents) {
+  function onMove(activeEvents, event) {
     if (activeEvents.length === 2) {
       const curDistance = getPointersDistance(activeEvents);
       if (prevDistance !== undefined && curDistance !== prevDistance) {
@@ -307,12 +307,12 @@ function rotate(node, inputParameters) {
   let prevAngle;
   let initAngle = 0;
   let rotationCenter;
-  function onUp(activeEvents) {
+  function onUp(activeEvents, event) {
     if (activeEvents.length === 1) {
       prevAngle = undefined;
     }
   }
-  function onDown(activeEvents) {
+  function onDown(activeEvents, event) {
     if (activeEvents.length === 2) {
       activeEvents = activeEvents.sort((a, b) => {
         return a.clientX - b.clientX;
@@ -321,7 +321,7 @@ function rotate(node, inputParameters) {
       initAngle = getPointersAngleDeg(activeEvents);
     }
   }
-  function onMove(activeEvents) {
+  function onMove(activeEvents, event) {
     if (activeEvents.length === 2) {
       const curAngle = getPointersAngleDeg(activeEvents);
       if (prevAngle !== undefined && curAngle !== prevAngle) {
@@ -661,7 +661,7 @@ function shapeGesture(node, inputParameters) {
     }
     return false;
   }
-  function onUp() {
+  function onUp(activeEvents, event) {
     if (stroke.length > 2 && Date.now() - startTime < parameters.timeframe) {
       const detectionResult = detector.detect(stroke);
       node.dispatchEvent(new CustomEvent(gestureName, {
@@ -719,16 +719,16 @@ function scroll(node, inputParameters) {
     ...inputParameters
   };
   const gestureName = 'scroll';
-  let nearestScrollEl = {
+  const nearestScrollEl = {
     x: undefined,
     y: undefined
   };
   let prevCoords;
-  let scrollDelta = {
+  const scrollDelta = {
     x: 0,
     y: 0
   };
-  let scrollDirectionPositive = {
+  const scrollDirectionPositive = {
     x: true,
     y: true
   };

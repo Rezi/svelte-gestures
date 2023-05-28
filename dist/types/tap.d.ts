@@ -1,6 +1,6 @@
-import { type SvelteAction, type SubGestureFunctions, type BaseParams } from './shared';
+import { type BaseParams, type ParametersSwitch, type GestureReturnType } from './shared';
 export type TapParameters = {
     timeframe: number;
 } & BaseParams;
-export declare function tap(node: HTMLElement, inputParameters?: Partial<TapParameters>): SvelteAction | SubGestureFunctions;
+export declare function tap<R extends ParametersSwitch<TapParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<TapParameters, R>;
 //# sourceMappingURL=tap.d.ts.map

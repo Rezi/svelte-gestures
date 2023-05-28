@@ -1,4 +1,4 @@
-import { type SvelteAction, type SubGestureFunctions, type BaseParams } from './shared';
+import { type BaseParams, type ParametersSwitch, type GestureReturnType } from './shared';
 export type PinchParameters = BaseParams;
-export declare function pinch(node: HTMLElement, inputParameters?: Partial<PinchParameters>): SvelteAction | SubGestureFunctions;
+export declare function pinch<R extends ParametersSwitch<PinchParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<PinchParameters, R>;
 //# sourceMappingURL=pinch.d.ts.map
