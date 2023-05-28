@@ -38,6 +38,9 @@ It uses pointer events under the hood, to make it cross-platform. Gestures will 
 
 Recognizers are kept as simple as possible but still provide desired basic functionality. They are made in the form of svelte actions with custom event emitters. **Any number of different recognizers can be used on one element**, but it is recommended to use `composedGesture` for combined gestures.
 
+In order to avoid your IDE type errors, if you need to use action without parameters, always supply empty brackets as options. See example:
+`use:pan={{}}`
+
 ## API events
 
 Except for the main event, each recognizer triggers, three more events with names composed of action name (`pan` | `pinch` | `tap` | `swipe` | `rotate` | `shapeGesture` | `composedGesture`) and event type (`up` | `down` | `move`).

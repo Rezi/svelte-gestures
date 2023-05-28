@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1
+
+Types fix for usage in svelte templates
+
 ## 1.5.0
 
 - New `composedGesture` lets you combine gestures. You can even use it to maintain scrolling behavior on elements with `pan` or `shapeGesture` (see example below)
