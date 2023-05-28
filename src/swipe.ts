@@ -3,9 +3,9 @@ import {
   DEFAULT_MIN_SWIPE_DISTANCE,
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type SwipeParameters = {
@@ -14,10 +14,10 @@ export type SwipeParameters = {
   touchAction: string;
 } & BaseParams;
 
-export function swipe(
+export function swipe<R extends ParametersSwitch<SwipeParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<SwipeParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<SwipeParameters, R> {
   const parameters: SwipeParameters = {
     timeframe: DEFAULT_DELAY,
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
@@ -72,7 +72,10 @@ export function swipe(
   }
 
   if (parameters.composed) {
-    return { onMove: null, onDown, onUp };
+    return { onMove: null, onDown, onUp } as GestureReturnType<
+      SwipeParameters,
+      R
+    >;
   }
 
   return setPointerControls(
@@ -82,5 +85,5 @@ export function swipe(
     onDown,
     onUp,
     parameters.touchAction
-  );
+  ) as GestureReturnType<SwipeParameters, R>;
 }

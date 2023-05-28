@@ -1,19 +1,19 @@
 import {
   DEFAULT_DELAY,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type TapParameters = {
   timeframe: number;
 } & BaseParams;
 
-export function tap(
+export function tap<R extends ParametersSwitch<TapParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<TapParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<TapParameters, R> {
   const parameters: TapParameters = {
     timeframe: DEFAULT_DELAY,
     composed: false,
@@ -51,7 +51,10 @@ export function tap(
   }
 
   if (parameters.composed) {
-    return { onMove: null, onDown, onUp };
+    return { onMove: null, onDown, onUp } as GestureReturnType<
+      TapParameters,
+      R
+    >;
   }
 
   return setPointerControls(
@@ -61,5 +64,5 @@ export function tap(
     onDown,
     onUp,
     parameters.touchAction
-  );
+  ) as GestureReturnType<TapParameters, R>;
 }

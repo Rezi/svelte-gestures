@@ -20,10 +20,31 @@ export type TouchAction =
   | 'revert-layer'
   | 'unset';
 // export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
-export type BaseParams = {
-  composed: boolean;
+
+export type Composed = { composed: boolean };
+
+export type BaseParams = Composed & {
   touchAction: TouchAction;
 };
+
+type PartialParameters<GestureParams> = Partial<GestureParams>;
+type PartialParametersWithComposed<GestureParams> =
+  PartialParameters<GestureParams> & Composed;
+
+export type ParametersSwitch<GestureParams> =
+  | PartialParameters<GestureParams>
+  | PartialParametersWithComposed<GestureParams>
+  | undefined;
+export type GestureReturnType<
+  GestureParams,
+  R extends ParametersSwitch<GestureParams> | undefined
+> = R extends undefined
+  ? SvelteAction
+  : R extends PartialParametersWithComposed<GestureParams>
+  ? SubGestureFunctions
+  : R extends PartialParameters<GestureParams>
+  ? SvelteAction
+  : never;
 
 type ActionType = 'up' | 'down' | 'move';
 

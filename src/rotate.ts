@@ -5,6 +5,8 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type RotateParameters = BaseParams;
@@ -38,10 +40,10 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   return angle + quadrantAngleBonus;
 }
 
-export function rotate(
+export function rotate<R extends ParametersSwitch<RotateParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<RotateParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<RotateParameters, R> {
   const parameters: RotateParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -53,13 +55,13 @@ export function rotate(
   let initAngle = 0;
   let rotationCenter: { x: number; y: number };
 
-  function onUp(activeEvents: PointerEvent[]) {
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 1) {
       prevAngle = undefined;
     }
   }
 
-  function onDown(activeEvents: PointerEvent[]) {
+  function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 2) {
       activeEvents = activeEvents.sort((a, b) => {
         return a.clientX - b.clientX;
@@ -70,7 +72,7 @@ export function rotate(
     }
   }
 
-  function onMove(activeEvents: PointerEvent[]) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 2) {
       const curAngle = getPointersAngleDeg(activeEvents);
 
@@ -96,7 +98,7 @@ export function rotate(
   }
 
   if (parameters.composed) {
-    return { onMove, onDown, onUp };
+    return { onMove, onDown, onUp } as GestureReturnType<RotateParameters, R>;
   }
 
   return setPointerControls(
@@ -106,5 +108,5 @@ export function rotate(
     onDown,
     onUp,
     parameters.touchAction
-  );
+  ) as GestureReturnType<RotateParameters, R>;
 }

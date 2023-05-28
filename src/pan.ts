@@ -2,17 +2,17 @@ import {
   DEFAULT_DELAY,
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
+  type ParametersSwitch,
   type BaseParams,
+  type GestureReturnType,
 } from './shared';
 
 export type PanParameters = { delay: number } & BaseParams;
 
-export function pan(
+export function pan<R extends ParametersSwitch<PanParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<PanParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<PanParameters, R> {
   let parameters: PanParameters = {
     delay: DEFAULT_DELAY,
     composed: false,
@@ -51,7 +51,10 @@ export function pan(
   }
 
   if (parameters.composed) {
-    return { onMove, onDown, onUp: null };
+    return { onMove, onDown, onUp: null } as GestureReturnType<
+      PanParameters,
+      R
+    >;
   }
 
   return {
@@ -66,5 +69,5 @@ export function pan(
     update: (updateParameters: PanParameters) => {
       parameters = { ...parameters, ...updateParameters };
     },
-  };
+  } as GestureReturnType<PanParameters, R>;
 }

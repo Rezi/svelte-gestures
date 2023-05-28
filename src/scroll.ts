@@ -2,9 +2,9 @@ import {
   DEFAULT_DELAY,
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type ScrollParameters = {
@@ -47,10 +47,10 @@ function getScrollParent(
   }
 }
 
-export function scroll(
+export function scroll<R extends ParametersSwitch<ScrollParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<ScrollParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<ScrollParameters, R> {
   let parameters: ScrollParameters = {
     ...{
       delay: DEFAULT_DELAY,
@@ -61,16 +61,16 @@ export function scroll(
   };
   const gestureName = 'scroll';
 
-  let nearestScrollEl: {
+  const nearestScrollEl: {
     x: HTMLElement | undefined;
     y: HTMLElement | undefined;
   } = { x: undefined, y: undefined };
   let prevCoords: { x: number; y: number } | undefined;
-  let scrollDelta: { x: number; y: number } = {
+  const scrollDelta: { x: number; y: number } = {
     x: 0,
     y: 0,
   };
-  let scrollDirectionPositive = { x: true, y: true };
+  const scrollDirectionPositive = { x: true, y: true };
 
   function scrollElementTo(
     el: HTMLElement | undefined,
@@ -149,7 +149,7 @@ export function scroll(
       onMove,
       onUp,
       onDown,
-    };
+    } as GestureReturnType<ScrollParameters, R>;
   }
 
   return {
@@ -164,5 +164,5 @@ export function scroll(
     update: (updateParameters: ScrollParameters) => {
       parameters = { ...parameters, ...updateParameters };
     },
-  };
+  } as GestureReturnType<ScrollParameters, R>;
 }

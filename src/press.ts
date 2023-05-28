@@ -2,9 +2,9 @@ import {
   DEFAULT_DELAY,
   DEFAULT_PRESS_SPREAD,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type PressParameters = {
@@ -13,10 +13,10 @@ export type PressParameters = {
   spread: number;
 } & BaseParams;
 
-export function press(
+export function press<R extends ParametersSwitch<PressParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<PressParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<PressParameters, R> {
   const parameters: PressParameters = {
     composed: false,
     timeframe: DEFAULT_DELAY,
@@ -107,7 +107,7 @@ export function press(
   );
 
   if (parameters.composed) {
-    return { onMove, onDown, onUp };
+    return { onMove, onDown, onUp } as GestureReturnType<PressParameters, R>;
   }
 
   return {
@@ -115,5 +115,5 @@ export function press(
       onSharedDestroy.destroy();
       clearTimeout(timeout);
     },
-  };
+  } as GestureReturnType<PressParameters, R>;
 }

@@ -2,9 +2,9 @@ import {
   DEFAULT_TOUCH_ACTION,
   getCenterOfTwoPoints,
   setPointerControls,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 export type PinchParameters = BaseParams;
@@ -16,10 +16,10 @@ function getPointersDistance(activeEvents: PointerEvent[]) {
   );
 }
 
-export function pinch(
+export function pinch<R extends ParametersSwitch<PinchParameters>>(
   node: HTMLElement,
-  inputParameters?: Partial<PinchParameters>
-): SvelteAction | SubGestureFunctions {
+  inputParameters?: R
+): GestureReturnType<PinchParameters, R> {
   const parameters: PinchParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -32,20 +32,20 @@ export function pinch(
   let initDistance = 0;
   let pinchCenter: { x: number; y: number };
 
-  function onUp(activeEvents: PointerEvent[]) {
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 1) {
       prevDistance = undefined;
     }
   }
 
-  function onDown(activeEvents: PointerEvent[]) {
+  function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
       pinchCenter = getCenterOfTwoPoints(node, activeEvents);
     }
   }
 
-  function onMove(activeEvents: PointerEvent[]) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 2) {
       const curDistance = getPointersDistance(activeEvents);
 
@@ -64,7 +64,10 @@ export function pinch(
   }
 
   if (parameters.composed) {
-    return { onMove, onDown, onUp: null };
+    return { onMove, onDown, onUp: null } as GestureReturnType<
+      PinchParameters,
+      R
+    >;
   }
 
   return setPointerControls(
@@ -74,5 +77,5 @@ export function pinch(
     onDown,
     onUp,
     parameters.touchAction
-  );
+  ) as GestureReturnType<PinchParameters, R>;
 }

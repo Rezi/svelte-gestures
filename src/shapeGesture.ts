@@ -4,6 +4,8 @@ import {
   type SvelteAction,
   type SubGestureFunctions,
   type BaseParams,
+  type ParametersSwitch,
+  type GestureReturnType,
 } from './shared';
 
 import {
@@ -21,9 +23,11 @@ export type ShapeGestureParameters = {
 } & Options &
   BaseParams;
 
-export function shapeGesture(
+export function shapeGesture<
+  R extends ParametersSwitch<ShapeGestureParameters>
+>(
   node: HTMLElement,
-  inputParameters?: Partial<ShapeGestureParameters>
+  inputParameters?: GestureReturnType<ShapeGestureParameters, R>
 ): SvelteAction | SubGestureFunctions {
   let parameters: ShapeGestureParameters = {
     composed: false,
@@ -61,7 +65,7 @@ export function shapeGesture(
     return false;
   }
 
-  function onUp() {
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     if (stroke.length > 2 && Date.now() - startTime < parameters.timeframe) {
       const detectionResult = detector.detect(stroke);
       node.dispatchEvent(
@@ -73,7 +77,10 @@ export function shapeGesture(
   }
 
   if (parameters.composed) {
-    return { onMove, onDown, onUp };
+    return { onMove, onDown, onUp } as GestureReturnType<
+      ShapeGestureParameters,
+      R
+    >;
   }
 
   return {
@@ -88,5 +95,5 @@ export function shapeGesture(
     update: (updateParameters: ShapeGestureParameters) => {
       parameters = { ...parameters, ...updateParameters };
     },
-  };
+  } as GestureReturnType<ShapeGestureParameters, R>;
 }
