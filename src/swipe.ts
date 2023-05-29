@@ -14,7 +14,7 @@ export type SwipeParameters = {
   touchAction: string;
 } & BaseParams;
 
-export function swipe<R extends ParametersSwitch<SwipeParameters>>(
+export function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<SwipeParameters, R> {

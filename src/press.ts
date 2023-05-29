@@ -13,7 +13,7 @@ export type PressParameters = {
   spread: number;
 } & BaseParams;
 
-export function press<R extends ParametersSwitch<PressParameters>>(
+export function press<R extends ParametersSwitch<PressParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<PressParameters, R> {

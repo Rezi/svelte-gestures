@@ -4,5 +4,5 @@ export type ShapeGestureParameters = {
     shapes: Pattern[];
     timeframe: number;
 } & Options & BaseParams;
-export declare function shapeGesture<R extends ParametersSwitch<ShapeGestureParameters>>(node: HTMLElement, inputParameters?: GestureReturnType<ShapeGestureParameters, R>): SvelteAction | SubGestureFunctions;
+export declare function shapeGesture<R extends ParametersSwitch<ShapeGestureParameters> = undefined>(node: HTMLElement, inputParameters?: GestureReturnType<ShapeGestureParameters, R>): SvelteAction | SubGestureFunctions;
 //# sourceMappingURL=shapeGesture.d.ts.map

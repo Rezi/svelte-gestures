@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.
+
+Types fix for usage in svelte templates (no params are no required)
+
 ## 1.5.1
 
 Types fix for usage in svelte templates

@@ -10,7 +10,7 @@ export type TapParameters = {
   timeframe: number;
 } & BaseParams;
 
-export function tap<R extends ParametersSwitch<TapParameters>>(
+export function tap<R extends ParametersSwitch<TapParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<TapParameters, R> {

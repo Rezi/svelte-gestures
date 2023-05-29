@@ -4,5 +4,5 @@ export type SwipeParameters = {
     minSwipeDistance: number;
     touchAction: string;
 } & BaseParams;
-export declare function swipe<R extends ParametersSwitch<SwipeParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<SwipeParameters, R>;
+export declare function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(node: HTMLElement, inputParameters?: R): GestureReturnType<SwipeParameters, R>;
 //# sourceMappingURL=swipe.d.ts.map

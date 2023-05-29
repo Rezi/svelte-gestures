@@ -9,7 +9,7 @@ import {
 
 export type PanParameters = { delay: number } & BaseParams;
 
-export function pan<R extends ParametersSwitch<PanParameters>>(
+export function pan<R extends ParametersSwitch<PanParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<PanParameters, R> {

@@ -47,7 +47,9 @@ function getScrollParent(
   }
 }
 
-export function scroll<R extends ParametersSwitch<ScrollParameters>>(
+export function scroll<
+  R extends ParametersSwitch<ScrollParameters> = undefined
+>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<ScrollParameters, R> {

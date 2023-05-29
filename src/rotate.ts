@@ -40,7 +40,9 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   return angle + quadrantAngleBonus;
 }
 
-export function rotate<R extends ParametersSwitch<RotateParameters>>(
+export function rotate<
+  R extends ParametersSwitch<RotateParameters> = undefined
+>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<RotateParameters, R> {

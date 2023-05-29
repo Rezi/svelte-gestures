@@ -24,7 +24,7 @@ export type ShapeGestureParameters = {
   BaseParams;
 
 export function shapeGesture<
-  R extends ParametersSwitch<ShapeGestureParameters>
+  R extends ParametersSwitch<ShapeGestureParameters> = undefined
 >(
   node: HTMLElement,
   inputParameters?: GestureReturnType<ShapeGestureParameters, R>

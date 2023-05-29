@@ -16,7 +16,7 @@ function getPointersDistance(activeEvents: PointerEvent[]) {
   );
 }
 
-export function pinch<R extends ParametersSwitch<PinchParameters>>(
+export function pinch<R extends ParametersSwitch<PinchParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
 ): GestureReturnType<PinchParameters, R> {

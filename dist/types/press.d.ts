@@ -4,5 +4,5 @@ export type PressParameters = {
     triggerBeforeFinished: boolean;
     spread: number;
 } & BaseParams;
-export declare function press<R extends ParametersSwitch<PressParameters>>(node: HTMLElement, inputParameters?: R): GestureReturnType<PressParameters, R>;
+export declare function press<R extends ParametersSwitch<PressParameters> = undefined>(node: HTMLElement, inputParameters?: R): GestureReturnType<PressParameters, R>;
 //# sourceMappingURL=press.d.ts.map
