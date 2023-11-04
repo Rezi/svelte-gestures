@@ -24,7 +24,7 @@ export type TouchAction =
 export type Composed = { composed: boolean };
 
 export type BaseParams = Composed & {
-  touchAction: TouchAction;
+  touchAction: TouchAction | TouchAction[];
 };
 
 type PartialParameters<GestureParams> = Partial<GestureParams>;
@@ -62,6 +62,11 @@ export type SubGestureFunctions = {
   onUp: PointerEventCallback<void>;
   onDown: PointerEventCallback<void>;
 };
+
+function ensureArray<T>(o: T | T[]): T[] {
+  if (Array.isArray(o)) return o
+  return [o]
+}
 
 function addEventListener<ET extends EventTarget, E extends Event>(
   node: ET,
@@ -123,11 +128,11 @@ export function setPointerControls(
   onMoveCallback: PointerEventCallback<boolean>,
   onDownCallback: PointerEventCallback<void>,
   onUpCallback: PointerEventCallback<void>,
-  touchAction: TouchAction = DEFAULT_TOUCH_ACTION
+  touchAction: TouchAction | TouchAction[] = DEFAULT_TOUCH_ACTION
 ): {
   destroy: () => void;
 } {
-  node.style.touchAction = touchAction;
+  node.style.touchAction = ensureArray(touchAction).join(' ');
   let activeEvents: PointerEvent[] = [];
 
   function handlePointerdown(event: PointerEvent) {

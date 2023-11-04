@@ -55,7 +55,7 @@ Pan action (on:pan) fires `pan` event:
 The `pan` accepts the following options
 
 - `delay` (default value is 300ms)
-- `touchAction` (defaults value is `none`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
+- `touchAction` (defaults value is `none`) Apply css _touch-action_ style, to leave handling of some touch actions to the browser; see [`touch-action` on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/touch-action). You can pass an array, the values will be joined with spaces.
 - `composed` is only applicable when used inside `composedGesture`.
 
 on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier than `delay` parameter.
