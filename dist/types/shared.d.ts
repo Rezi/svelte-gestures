@@ -7,7 +7,7 @@ export type Composed = {
     composed: boolean;
 };
 export type BaseParams = Composed & {
-    touchAction: TouchAction;
+    touchAction: TouchAction | TouchAction[];
 };
 type PartialParameters<GestureParams> = Partial<GestureParams>;
 type PartialParametersWithComposed<GestureParams> = PartialParameters<GestureParams> & Composed;
@@ -27,7 +27,7 @@ export declare function getCenterOfTwoPoints(node: HTMLElement, activeEvents: Po
     x: number;
     y: number;
 };
-export declare function setPointerControls(gestureName: string, node: HTMLElement, onMoveCallback: PointerEventCallback<boolean>, onDownCallback: PointerEventCallback<void>, onUpCallback: PointerEventCallback<void>, touchAction?: TouchAction): {
+export declare function setPointerControls(gestureName: string, node: HTMLElement, onMoveCallback: PointerEventCallback<boolean>, onDownCallback: PointerEventCallback<void>, onUpCallback: PointerEventCallback<void>, touchAction?: TouchAction | TouchAction[]): {
     destroy: () => void;
 };
 export {};

@@ -12,6 +12,8 @@
 
 `npm install svelte-gestures`
 
+Svelte 4 projects should use svelte-gestures version 4, while older Svelte projects should use version 1.5.2 and lower.
+
 ### Language tools types installation (optional)
 
 If you use Svelte language tools (Svelte for VS Code for instance) and you would appreciate seeing return types from svelte-gestures actions `<div on:swipe={fn} >` in your markup, add the following line to your `global.d.ts` :

@@ -7,6 +7,10 @@ const DEFAULT_TOUCH_ACTION = 'none';
 
 // export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
 
+function ensureArray(o) {
+  if (Array.isArray(o)) return o;
+  return [o];
+}
 function addEventListener(node, event, handler) {
   node.addEventListener(event, handler);
   return () => node.removeEventListener(event, handler);
@@ -41,7 +45,7 @@ function dispatch(node, gestureName, event, activeEvents, actionType) {
   }));
 }
 function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, onUpCallback, touchAction = DEFAULT_TOUCH_ACTION) {
-  node.style.touchAction = touchAction;
+  node.style.touchAction = ensureArray(touchAction).join(' ');
   let activeEvents = [];
   function handlePointerdown(event) {
     activeEvents.push(event);

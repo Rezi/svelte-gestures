@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.0.0
+
+To keep versioning according to Svelte itself, I am moving to version 4 straight away.
+The new version supports correct typing for Svelte 4 (while Svelte 3's namespace is svelte.JSX, Svelte 4 uses svelteHTML)
+Support for multiple touch-action values added. You can now pass touchAction also as an array.
+Thanks to xpengy and ewen-lbh for their contribution.
+
 ## 1.5.
 
 Types fix for usage in svelte templates (no params are no required)
