@@ -1,78 +1,78 @@
-declare namespace svelte.JSX {
+declare namespace svelteHTML {
   interface HTMLAttributes<T> {
-    onpan?: (
+    'on:pan'?: (
       event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>
     ) => void;
-    onpanup?: (
+    'on:panup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpandown?: (
+    'on:pandown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpanmove?: (
+    'on:panmove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpinch?: (
+    'on:pinch'?: (
       event: CustomEvent<{ scale: number; center: { x: number; y: number } }>
     ) => void;
-    onpinchup?: (
+    'on:pinchup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpinchdown?: (
+    'on:pinchdown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpinchmove?: (
+    'on:pinchmove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onrotate?: (
+    'on:rotate'?: (
       event: CustomEvent<{ rotation: number; center: { x: number; y: number } }>
     ) => void;
-    onrotateup?: (
+    'on:rotateup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onrotatedown?: (
+    'on:rotatedown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onrotatemove?: (
+    'on:rotatemove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onswipe?: (
+    'on:swipe'?: (
       event: CustomEvent<{
         direction: 'top' | 'right' | 'bottom' | 'left';
         target: EventTarget;
       }>
     ) => void;
-    onswipeup?: (
+    'on:swipeup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onswipedown?: (
+    'on:swipedown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onswipemove?: (
+    'on:swipemove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    ontap?: (
+    'on:tap'?: (
       event: CustomEvent<{ x: number; y: number; target: EventTarget }>
     ) => void;
-    ontapup?: (
+    'on:tapup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    ontapdown?: (
+    'on:tapdown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    ontapmove?: (
+    'on:tapmove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpress?: (
+    'on:press'?: (
       event: CustomEvent<{ x: number; y: number; target: EventTarget }>
     ) => void;
-    onpressup?: (
+    'on:pressup'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpressdown?: (
+    'on:pressdown'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
-    onpressmove?: (
+    'on:pressmove'?: (
       event: CustomEvent<{ event: PointerEvent; pointersCount: number }>
     ) => void;
   }
