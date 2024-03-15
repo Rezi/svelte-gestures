@@ -12,6 +12,16 @@
 
 `npm install svelte-gestures`
 
+**Npm**
+
+Installing from JSR
+
+`npx jsr add @rezi/svelte-gestures`
+
+**Deno**
+
+`deno add @rezi/svelte-gestures`
+
 Svelte 4 projects should use svelte-gestures version 4, while older Svelte projects should use version 1.5.2 and lower.
 
 ### Language tools types installation (optional)

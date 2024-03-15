@@ -6,6 +6,7 @@ import {
   type BaseParams,
   type ParametersSwitch,
   type GestureReturnType,
+  type Coord,
 } from './shared';
 
 import {
@@ -14,7 +15,6 @@ import {
   DEFAULT_TRESHOLD,
   type Pattern,
   type Options,
-  type Coord,
 } from './detector';
 
 export type ShapeGestureParameters = {

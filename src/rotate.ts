@@ -7,6 +7,7 @@ import {
   type BaseParams,
   type ParametersSwitch,
   type GestureReturnType,
+  type Coord,
 } from './shared';
 
 export type RotateParameters = BaseParams;
@@ -55,7 +56,7 @@ export function rotate<
 
   let prevAngle: number | undefined;
   let initAngle = 0;
-  let rotationCenter: { x: number; y: number };
+  let rotationCenter: Coord;
 
   function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 1) {

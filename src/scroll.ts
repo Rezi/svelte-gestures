@@ -5,6 +5,7 @@ import {
   type BaseParams,
   type ParametersSwitch,
   type GestureReturnType,
+  type Coord,
 } from './shared';
 
 export type ScrollParameters = {
@@ -67,8 +68,8 @@ export function scroll<
     x: HTMLElement | undefined;
     y: HTMLElement | undefined;
   } = { x: undefined, y: undefined };
-  let prevCoords: { x: number; y: number } | undefined;
-  const scrollDelta: { x: number; y: number } = {
+  let prevCoords: Coord | undefined;
+  const scrollDelta: Coord = {
     x: 0,
     y: 0,
   };

@@ -21,6 +21,7 @@ export type TouchAction =
   | 'unset';
 // export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
 
+export type Coord = { x: number; y: number };
 export type Composed = { composed: boolean };
 
 export type BaseParams = Composed & {
@@ -64,8 +65,8 @@ export type SubGestureFunctions = {
 };
 
 function ensureArray<T>(o: T | T[]): T[] {
-  if (Array.isArray(o)) return o
-  return [o]
+  if (Array.isArray(o)) return o;
+  return [o];
 }
 
 function addEventListener<ET extends EventTarget, E extends Event>(
@@ -80,7 +81,7 @@ function addEventListener<ET extends EventTarget, E extends Event>(
 export function getCenterOfTwoPoints(
   node: HTMLElement,
   activeEvents: PointerEvent[]
-) {
+): Coord {
   const rect = node.getBoundingClientRect();
   const xDistance = Math.abs(activeEvents[0].clientX - activeEvents[1].clientX);
   const yDistance = Math.abs(activeEvents[0].clientY - activeEvents[1].clientY);

@@ -8,4 +8,5 @@
 6. Try destribution locally
 7. git add, commit, push
 8. npm publish
-9. check distribution online https://www.npmjs.com/package/svelte-gestures
+9. jsr publish
+10. check distribution online https://www.npmjs.com/package/svelte-gestures

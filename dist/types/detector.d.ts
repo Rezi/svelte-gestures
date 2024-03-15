@@ -1,3 +1,4 @@
+import { type Coord } from './shared';
 export type Options = {
     threshold?: number;
     nbOfSamplePoints?: number;
@@ -8,10 +9,6 @@ export type Pattern = {
     center?: Coord;
     allowRotation?: boolean;
     bothDirections?: boolean;
-};
-export type Coord = {
-    x: number;
-    y: number;
 };
 export type Result = {
     score: number;

@@ -1,4 +1,7 @@
+import { type Coord } from './shared';
+
 export type Options = { threshold?: number; nbOfSamplePoints?: number };
+
 export type Pattern = {
   name: string;
   points: Coord[];
@@ -6,7 +9,6 @@ export type Pattern = {
   allowRotation?: boolean;
   bothDirections?: boolean;
 };
-export type Coord = { x: number; y: number };
 export type Result = { score: number; pattern: string | null };
 
 export const DEFAULT_TRESHOLD = 0.9;

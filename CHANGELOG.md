@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.2
+
+Fixed missing return type
+Support for JSR repository
+
 ## 4.0.0
 
 To keep versioning according to Svelte itself, I am moving to version 4 straight away.

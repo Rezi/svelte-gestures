@@ -5,6 +5,7 @@ import {
   type BaseParams,
   type ParametersSwitch,
   type GestureReturnType,
+  type Coord,
 } from './shared';
 
 export type PinchParameters = BaseParams;
@@ -30,7 +31,7 @@ export function pinch<R extends ParametersSwitch<PinchParameters> = undefined>(
 
   let prevDistance: number | undefined;
   let initDistance = 0;
-  let pinchCenter: { x: number; y: number };
+  let pinchCenter: Coord;
 
   function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
     if (activeEvents.length === 1) {

@@ -1,0 +1,5 @@
+{
+  "name": "@rezi/svelte-gestures",
+  "version": "4.0.3",
+  "exports": "./src/index.ts"
+}
