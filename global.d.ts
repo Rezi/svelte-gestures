@@ -8,8 +8,10 @@ import { SwipePointerEventDetail } from './src/swipe';
 import { TapPointerEventDetail } from './src/tap';
 
 declare namespace svelteHTML {
-  interface HTMLAttributes {
-    'on:pan'?: (event: CustomEvent<PanPointerEventDetail>) => void;
+  interface HTMLAttributes<T> {
+    'on:pan'?: (
+      event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>
+    ) => void;
     'on:panup'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:pandown'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:panmove'?: (event: CustomEvent<GestureCustomEvent>) => void;
@@ -37,7 +39,9 @@ declare namespace svelteHTML {
     'on:shapeGestureup'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:shapeGesturedown'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:shapeGesturemove'?: (event: CustomEvent<GestureCustomEvent>) => void;
-    onpan?: (event: CustomEvent<PanPointerEventDetail>) => void;
+    onpan?: (
+      event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>
+    ) => void;
     onpanup?: (event: CustomEvent<GestureCustomEvent>) => void;
     onpandown?: (event: CustomEvent<GestureCustomEvent>) => void;
     onpanmove?: (event: CustomEvent<GestureCustomEvent>) => void;

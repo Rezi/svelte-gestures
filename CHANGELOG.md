@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0
+## 5.0.1
 
 - Added typescript types for CustomEvents
 - Support for Svelte 5 syntax, while keeping the old as well. You can use `on:pan` as well as `onpan` now.
