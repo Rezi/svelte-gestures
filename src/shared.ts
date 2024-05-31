@@ -54,6 +54,12 @@ export type SvelteAction = {
   destroy?: () => void;
 };
 
+export type GestureCustomEvent = CustomEvent<{
+  event: PointerEvent;
+  pointersCount: number;
+  target: HTMLElement;
+}>;
+
 export type PointerEventCallback<T> =
   | ((activeEvents: PointerEvent[], event: PointerEvent) => T)
   | null;
@@ -157,8 +163,8 @@ export function setPointerControls(
     function removeEventHandlers() {
       removePointermoveHandler();
       removeLostpointercaptureHandler();
-      removepointerupHandler();
-      removepointerleaveHandler();
+      removePointerUpHandler();
+      removePointerLeaveHandler();
     }
 
     const removePointermoveHandler = addEventListener(
@@ -181,14 +187,14 @@ export function setPointerControls(
       }
     );
 
-    const removepointerupHandler = addEventListener(
+    const removePointerUpHandler = addEventListener(
       node,
       'pointerup',
       (e: PointerEvent) => {
         onup(e);
       }
     );
-    const removepointerleaveHandler = addEventListener(
+    const removePointerLeaveHandler = addEventListener(
       node,
       'pointerleave',
       (e: PointerEvent) => {

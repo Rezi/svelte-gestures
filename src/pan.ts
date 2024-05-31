@@ -9,6 +9,14 @@ import {
 
 export type PanParameters = { delay: number } & BaseParams;
 
+export type PanPointerEventDetail = {
+  x: number;
+  y: number;
+  target: EventTarget;
+};
+
+export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;
+
 export function pan<R extends ParametersSwitch<PanParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
@@ -40,7 +48,7 @@ export function pan<R extends ParametersSwitch<PanParameters> = undefined>(
 
       if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height) {
         node.dispatchEvent(
-          new CustomEvent(gestureName, {
+          new CustomEvent<PanPointerEventDetail>(gestureName, {
             detail: { x, y, target },
           })
         );

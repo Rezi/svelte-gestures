@@ -1,6 +1,12 @@
 # Changelog
 
-## 4.0.2
+## 5.0.0
+
+- Added typescript types for CustomEvents
+- Support for Svelte 5 syntax, while keeping the old as well. You can use `on:pan` as well as `onpan` now.
+
+
+## 4.0.2 (only released in JSR)
 
 Fixed missing return type
 Support for JSR repository

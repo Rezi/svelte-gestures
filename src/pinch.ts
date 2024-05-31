@@ -10,6 +10,13 @@ import {
 
 export type PinchParameters = BaseParams;
 
+export type PinchPointerEventDetail = {
+  scale: number;
+  center: Coord;
+};
+
+export type PinchCustomEvent = CustomEvent<PinchPointerEventDetail>;
+
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
     activeEvents[0].clientX - activeEvents[1].clientX,
@@ -53,7 +60,7 @@ export function pinch<R extends ParametersSwitch<PinchParameters> = undefined>(
       if (prevDistance !== undefined && curDistance !== prevDistance) {
         const scale = curDistance / initDistance;
         node.dispatchEvent(
-          new CustomEvent(gestureName, {
+          new CustomEvent<PinchPointerEventDetail>(gestureName, {
             detail: { scale, center: pinchCenter },
           })
         );

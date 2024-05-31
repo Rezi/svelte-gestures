@@ -21,6 +21,11 @@ export type SvelteAction = {
     update?: (parameters: any) => void;
     destroy?: () => void;
 };
+export type GestureCustomEvent = CustomEvent<{
+    event: PointerEvent;
+    pointersCount: number;
+    target: HTMLElement;
+}>;
 export type PointerEventCallback<T> = ((activeEvents: PointerEvent[], event: PointerEvent) => T) | null;
 export type SubGestureFunctions = {
     onMove: PointerEventCallback<boolean>;

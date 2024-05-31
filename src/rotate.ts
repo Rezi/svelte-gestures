@@ -2,8 +2,6 @@ import {
   getCenterOfTwoPoints,
   setPointerControls,
   DEFAULT_TOUCH_ACTION,
-  type SvelteAction,
-  type SubGestureFunctions,
   type BaseParams,
   type ParametersSwitch,
   type GestureReturnType,
@@ -11,6 +9,13 @@ import {
 } from './shared';
 
 export type RotateParameters = BaseParams;
+
+export type RotatePointerEventDetail = {
+  rotation: number;
+  center: Coord;
+};
+
+export type RotateCustomEvent = CustomEvent<RotatePointerEventDetail>;
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   const quadrantsMap = {
@@ -89,7 +94,7 @@ export function rotate<
         }
 
         node.dispatchEvent(
-          new CustomEvent(gestureName, {
+          new CustomEvent<RotatePointerEventDetail>(gestureName, {
             detail: { rotation, center: rotationCenter },
           })
         );

@@ -14,6 +14,15 @@ export type SwipeParameters = {
   touchAction: string;
 } & BaseParams;
 
+export type SwipePointerEventDetail = {
+  direction: Direction;
+  target: EventTarget;
+};
+
+type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
+
+export type SwipeCustomEvent = CustomEvent<SwipePointerEventDetail>;
+
 export function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
@@ -53,7 +62,7 @@ export function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(
       const absX = Math.abs(x);
       const absY = Math.abs(y);
 
-      let direction: 'top' | 'right' | 'bottom' | 'left' | null = null;
+      let direction: Direction = null;
       if (absX >= 2 * absY && absX > parameters.minSwipeDistance) {
         // horizontal (by *2 we eliminate diagonal movements)
         direction = x > 0 ? 'right' : 'left';
@@ -63,7 +72,7 @@ export function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(
       }
       if (direction) {
         node.dispatchEvent(
-          new CustomEvent(gestureName, {
+          new CustomEvent<SwipePointerEventDetail>(gestureName, {
             detail: { direction, target },
           })
         );

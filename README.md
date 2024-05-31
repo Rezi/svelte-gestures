@@ -54,7 +54,7 @@ Recognizers are kept as simple as possible but still provide desired basic funct
 
 Except for the main event, each recognizer triggers, three more events with names composed of action name (`pan` | `pinch` | `tap` | `swipe` | `rotate` | `shapeGesture` | `composedGesture`) and event type (`up` | `down` | `move`).
 
-For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.`detail` with the following property`{` event: PointerEvent, pointersCount: number , target:HTMLElement}`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied)
+For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.`detail` with the following property`{` event: PointerEvent, pointersCount: number , target:HTMLElement}`. You can import this event type as `GestureCustomEvent`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied)
 
 ## Pan
 
@@ -76,12 +76,12 @@ on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier th
 
 ```html
 <script>
-  import { pan } from 'svelte-gestures';
+  import { pan, type PanCustomEvent } from 'svelte-gestures';
   let x;
   let y;
   let target;
 
-  function handler(event) {
+  function handler(event: PanCustomEvent) {
     x = event.detail.x;
     y = event.detail.y;
     target = event.detail.target;
@@ -115,12 +115,12 @@ The `pinch` accepts the following options
 
 ```html
 <script>
-  import { pinch } from 'svelte-gestures';
+  import { pinch, type PinchCustomEvent } from 'svelte-gestures';
   let scale;
   let x;
   let y;
 
-  function handler(event) {
+  function handler(event: PinchCustomEvent) {
     scale = event.detail.scale;
     x = event.detail.center.x;
     y = event.detail.center.y;
@@ -155,12 +155,12 @@ The `rotate` accepts the following options
 
 ```html
 <script>
-  import { rotate } from 'svelte-gestures';
+  import { rotate, type RotateCustomEvent } from 'svelte-gestures';
   let rotation;
   let x;
   let y;
 
-  function handler(event) {
+  function handler(event: RotateCustomEvent) {
     rotation = event.detail.rotation;
     x = event.detail.center.x;
     y = event.detail.center.y;
@@ -201,11 +201,11 @@ For example, if you only use left/right swipe and want to keep the default brows
 
 ```html
 <script>
-import { swipe } from 'svelte-gestures';
+import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 let direction;
 let target;
 
-function handler(event) {
+function handler(event: SwipeCustomEvent) {
   direction = event.detail.direction;
   target = event.detail.target;
 }
@@ -238,13 +238,13 @@ Tap action is fired only when the click/touch is finished within the given `time
 
 ```html
 <script>
-import { tap } from 'svelte-gestures';
+import { tap, type TapCustomEvent } from 'svelte-gestures';
 
 let x;
 let y;
 let target;
 
-function handler(event) {
+function handler(event: TapCustomEvent) {
   x = event.detail.x;
   y = event.detail.y;
   target = event.detail.target;
@@ -280,12 +280,12 @@ Press action is fired only when the click/touch is released after the given `tim
 
 ```html
 <script>
-import { press } from 'svelte-gestures';
+import { press, type PressCustomEvent } from 'svelte-gestures';
 let x;
 let y;
 let target;
 
-function handler(event) {
+function handler(event: PressCustomEvent) {
 x = event.detail.x;
 y = event.detail.y;
 target = event.detail.target
@@ -332,7 +332,7 @@ bothDirections?: boolean (default `true`)
 
 ```html
 <script>
-  import { shapeGesture } from 'svelte-gestures';
+  import { shapeGesture, type ShapeCustomEvent } from 'svelte-gestures';
   const shapeOptions = {
     threshold: 0.5,
     shapes: [
@@ -368,7 +368,7 @@ bothDirections?: boolean (default `true`)
 
   let result;
 
-  function handler(event) {
+  function handler(event: ShapeCustomEvent) {
     result = event.detail;
   }
 </script>

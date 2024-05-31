@@ -13,6 +13,15 @@ export type PressParameters = {
   spread: number;
 } & BaseParams;
 
+export type PressPointerEventDetail = {
+  x: number;
+  y: number;
+  target: EventTarget;
+  pointerType: string;
+};
+
+export type PressCustomEvent = CustomEvent<PressPointerEventDetail>;
+
 export function press<R extends ParametersSwitch<PressParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
@@ -53,7 +62,7 @@ export function press<R extends ParametersSwitch<PressParameters> = undefined>(
 
       triggered = true;
       node.dispatchEvent(
-        new CustomEvent(gestureName, {
+        new CustomEvent<PressPointerEventDetail>(gestureName, {
           detail: {
             x,
             y,

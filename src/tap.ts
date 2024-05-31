@@ -10,6 +10,14 @@ export type TapParameters = {
   timeframe: number;
 } & BaseParams;
 
+export type TapPointerEventDetail = {
+  x: number;
+  y: number;
+  target: EventTarget;
+};
+
+export type TapCustomEvent = CustomEvent<TapPointerEventDetail>;
+
 export function tap<R extends ParametersSwitch<TapParameters> = undefined>(
   node: HTMLElement,
   inputParameters?: R
@@ -37,7 +45,7 @@ export function tap<R extends ParametersSwitch<TapParameters> = undefined>(
       const y = Math.round(event.clientY - rect.top);
 
       node.dispatchEvent(
-        new CustomEvent(gestureName, {
+        new CustomEvent<TapPointerEventDetail>(gestureName, {
           detail: { x, y, target: event.target },
         })
       );

@@ -23,6 +23,14 @@ export type ShapeGestureParameters = {
 } & Options &
   BaseParams;
 
+export type ShapePointerEventDetail = {
+  score: number;
+  pattern: string | null;
+  target: EventTarget;
+};
+
+export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;
+
 export function shapeGesture<
   R extends ParametersSwitch<ShapeGestureParameters> = undefined
 >(
@@ -69,7 +77,7 @@ export function shapeGesture<
     if (stroke.length > 2 && Date.now() - startTime < parameters.timeframe) {
       const detectionResult = detector.detect(stroke);
       node.dispatchEvent(
-        new CustomEvent(gestureName, {
+        new CustomEvent<ShapePointerEventDetail>(gestureName, {
           detail: { ...detectionResult, target },
         })
       );
