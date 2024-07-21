@@ -7,11 +7,10 @@ import { GestureCustomEvent } from './src/shared';
 import { SwipePointerEventDetail } from './src/swipe';
 import { TapPointerEventDetail } from './src/tap';
 
-declare namespace svelteHTML {
-  interface HTMLAttributes<T> {
-    'on:pan'?: (
-      event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>
-    ) => void;
+declare module 'svelte/elements' {
+  // allows for more granular control over what element to add the typings to
+  export interface DOMAttributes {
+    'on:pan'?: (event: CustomEvent<PanPointerEventDetail>) => void;
     'on:panup'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:pandown'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:panmove'?: (event: CustomEvent<GestureCustomEvent>) => void;
@@ -39,9 +38,7 @@ declare namespace svelteHTML {
     'on:shapeGestureup'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:shapeGesturedown'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:shapeGesturemove'?: (event: CustomEvent<GestureCustomEvent>) => void;
-    onpan?: (
-      event: CustomEvent<{ x: number; y: number; target: EventTarget & T }>
-    ) => void;
+    onpan?: (event: CustomEvent<PanPointerEventDetail>) => void;
     onpanup?: (event: CustomEvent<GestureCustomEvent>) => void;
     onpandown?: (event: CustomEvent<GestureCustomEvent>) => void;
     onpanmove?: (event: CustomEvent<GestureCustomEvent>) => void;

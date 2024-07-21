@@ -26,15 +26,16 @@ Svelte 4 projects should use svelte-gestures version 4, while older Svelte proje
 
 ### Language tools types installation (optional)
 
-If you use Svelte language tools (Svelte for VS Code for instance) and you would appreciate seeing return types from svelte-gestures actions `<div on:swipe={fn} >` in your markup, add the following line to your `global.d.ts` :
+If you use Svelte language tools (Svelte for VS Code for instance) and you would appreciate seeing return types from svelte-gestures actions `<div on:swipe={fn} >` in your markup,and running on svelte version 4.2 or below add the following line to your `global.d.ts` or sililar definition ts file :
 
 `/// <reference types="svelte-gestures" />`
 
-if you use the Svelte kit, you already have a `global.d.ts` in `src` folder. Just add this line after
+if you use older version of Svelte kit, you already have a `global.d.ts` in `src` folder. Just add this line after
 
 `/// <reference types="@sveltejs/kit" />`
 
 It must be done this way as language tools use global types and a regular npm package cannot expose global types as long as it is used by another package.
+In case `global.d.ts` does not exist in your project and you run svelte version 4.1 or below, you need to create such a file and add it to yout tsconfig.json file inside `include:[]`.
 
 ## About
 
