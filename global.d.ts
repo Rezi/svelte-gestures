@@ -1,3 +1,4 @@
+import { DOMAttributes } from 'svelte/elements';
 import { PanPointerEventDetail } from './src/pan';
 import { PinchPointerEventDetail } from './src/pinch';
 import { PressPointerEventDetail } from './src/press';
@@ -9,7 +10,7 @@ import { TapPointerEventDetail } from './src/tap';
 
 declare module 'svelte/elements' {
   // allows for more granular control over what element to add the typings to
-  export interface DOMAttributes {
+  export interface DOMAttributes<T> {
     'on:pan'?: (event: CustomEvent<PanPointerEventDetail>) => void;
     'on:panup'?: (event: CustomEvent<GestureCustomEvent>) => void;
     'on:pandown'?: (event: CustomEvent<GestureCustomEvent>) => void;
@@ -68,3 +69,5 @@ declare module 'svelte/elements' {
     onshapeGesturemove?: (event: CustomEvent<GestureCustomEvent>) => void;
   }
 }
+
+export {};
