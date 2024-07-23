@@ -55,7 +55,51 @@ Recognizers are kept as simple as possible but still provide desired basic funct
 
 Except for the main event, each recognizer triggers, three more events with names composed of action name (`pan` | `pinch` | `tap` | `swipe` | `rotate` | `shapeGesture` | `composedGesture`) and event type (`up` | `down` | `move`).
 
-For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.`detail` with the following property`{` event: PointerEvent, pointersCount: number , target:HTMLElement}`. You can import this event type as `GestureCustomEvent`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied)
+For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.detail` with the following property
+
+```
+{ 
+  event: PointerEvent, 
+  pointersCount: number , 
+  target:HTMLElement,
+  x: number,
+  y: number,
+} 
+```
+
+```html
+<script lang="ts">
+  import { pan, type PanCustomEvent, type GestureCustomEvent } from 'svelte-gestures';
+  let x: number;
+  let y: number;
+  let target: EventTarget;
+
+  function handler(event: PanCustomEvent) {
+    x = event.detail.x;
+    y = event.detail.y;
+    target = event.detail.target;
+	}
+
+  function panDown(gestureEvent: GestureCustomEvent) {
+    const { event, pointersCount, target, x, y } = gestureEvent.detail;
+  }
+
+  function panMove(gestureEvent: GestureCustomEvent) {
+    console.log(gestureEvent.detail);
+  }
+</script>
+
+<div
+  use:pan
+  on:pan={handler}
+  on:pandown={panDown}
+  on:panmove={panMove}
+  style="width:500px;height:500px;border:1px solid black;"
+></div>
+
+```
+
+ You can import this event type as `GestureCustomEvent`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied). `x` and `y` refer to coordinates within the gesture element.
 
 ## Pan
 
@@ -76,7 +120,7 @@ on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier th
 [> repl Pan demo](https://svelte.dev/repl/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
   import { pan, type PanCustomEvent } from 'svelte-gestures';
   let x;
   let y;
@@ -115,7 +159,7 @@ The `pinch` accepts the following options
 [> repl Pinch demo](https://svelte.dev/repl/6f6d34e2b4ab420ab4e192a5046c86b4?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
   import { pinch, type PinchCustomEvent } from 'svelte-gestures';
   let scale;
   let x;
@@ -155,7 +199,7 @@ The `rotate` accepts the following options
 [> repl Rotation demo](https://svelte.dev/repl/498077b73d384910825719cd27254f8c?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
   import { rotate, type RotateCustomEvent } from 'svelte-gestures';
   let rotation;
   let x;
@@ -201,7 +245,7 @@ For example, if you only use left/right swipe and want to keep the default brows
 [> repl Swipe demo](https://svelte.dev/repl/f696ca27e6374f2cab1691727409a31d?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
 import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 let direction;
 let target;
@@ -227,7 +271,7 @@ Tap action (on:tap) fires `tap` event:
   - `y`: number. Y coordinate
   - `target`: HTMLElement.
 
-The `pinch` accepts the following options
+The `tap` accepts the following options
 
 - `timeframe`:number (default value is *300*ms )
 - `touchAction` (defaults value is `auto`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
@@ -238,7 +282,7 @@ Tap action is fired only when the click/touch is finished within the given `time
 [> repl Tap demo](https://svelte.dev/repl/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
 import { tap, type TapCustomEvent } from 'svelte-gestures';
 
 let x;
@@ -280,7 +324,7 @@ Press action is fired only when the click/touch is released after the given `tim
 [> repl Press demo](https://svelte.dev/repl/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
 import { press, type PressCustomEvent } from 'svelte-gestures';
 let x;
 let y;
@@ -332,7 +376,7 @@ bothDirections?: boolean (default `true`)
 [> repl ShapeGesture demo](https://svelte.dev/repl/3634b5a64a74418ebb2ce35ec766a30e?version=3.59.1)
 
 ```html
-<script>
+<script lang="ts">
   import { shapeGesture, type ShapeCustomEvent } from 'svelte-gestures';
   const shapeOptions = {
     threshold: 0.5,
@@ -473,7 +517,7 @@ See how a doubletap custom gesture is implemented:
 [> repl Custom gesture (doubletap) demo](https://svelte.dev/repl/c56082d9d056460d80e53cd71efddefe?version=3.38.2)
 
 ```html
-<script>
+<script lang="ts">
   import { setPointerControls, DEFAULT_DELAY } from 'svelte-gestures';
 
   let dx;

@@ -25,6 +25,8 @@ export type GestureCustomEvent = CustomEvent<{
     event: PointerEvent;
     pointersCount: number;
     target: HTMLElement;
+    x: number;
+    y: number;
 }>;
 export type PointerEventCallback<T> = ((activeEvents: PointerEvent[], event: PointerEvent) => T) | null;
 export type SubGestureFunctions = {

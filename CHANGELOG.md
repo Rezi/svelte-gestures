@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.0.3
+
+- `x` and `y` added to event detail of up, down and move events
+  - Fix for related `GestureCustomEvent` types.
+
 ## 5.0.2
 
 - Fixed typescript types for CustomEvents

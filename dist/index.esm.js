@@ -34,11 +34,16 @@ function removeEvent(event, activeEvents) {
   });
 }
 function dispatch(node, gestureName, event, activeEvents, actionType) {
+  const rect = node.getBoundingClientRect();
+  const x = Math.round(event.clientX - rect.left);
+  const y = Math.round(event.clientY - rect.top);
   node.dispatchEvent(new CustomEvent(`${gestureName}${actionType}`, {
     detail: {
       event,
       pointersCount: activeEvents.length,
-      target: event.target
+      target: event.target,
+      x,
+      y
     }
   }));
 }

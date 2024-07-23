@@ -58,6 +58,8 @@ export type GestureCustomEvent = CustomEvent<{
   event: PointerEvent;
   pointersCount: number;
   target: HTMLElement;
+  x: number;
+  y: number;
 }>;
 
 export type PointerEventCallback<T> =
@@ -118,12 +120,18 @@ function dispatch(
   activeEvents: PointerEvent[],
   actionType: ActionType
 ) {
+  const rect = node.getBoundingClientRect();
+  const x = Math.round(event.clientX - rect.left);
+  const y = Math.round(event.clientY - rect.top);
+
   node.dispatchEvent(
     new CustomEvent(`${gestureName}${actionType}`, {
       detail: {
         event,
         pointersCount: activeEvents.length,
         target: event.target,
+        x,
+        y,
       },
     })
   );
