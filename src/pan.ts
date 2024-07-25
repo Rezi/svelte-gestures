@@ -12,7 +12,7 @@ export type PanParameters = { delay: number } & BaseParams;
 export type PanPointerEventDetail = {
   x: number;
   y: number;
-  target: EventTarget;
+  target: EventTarget | null;
 };
 
 export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;

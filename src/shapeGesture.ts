@@ -26,7 +26,7 @@ export type ShapeGestureParameters = {
 export type ShapePointerEventDetail = {
   score: number;
   pattern: string | null;
-  target: EventTarget;
+  target: EventTarget | null;
 };
 
 export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;

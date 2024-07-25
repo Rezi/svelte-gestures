@@ -6,9 +6,11 @@ export type Options = {
 export type Pattern = {
     name: string;
     points: Coord[];
-    center?: Coord;
     allowRotation?: boolean;
     bothDirections?: boolean;
+};
+export type PatternWithCenter = Pattern & {
+    center: Coord;
 };
 export type Result = {
     score: number;

@@ -13,7 +13,7 @@ export type TapParameters = {
 export type TapPointerEventDetail = {
   x: number;
   y: number;
-  target: EventTarget;
+  target: EventTarget | null;
 };
 
 export type TapCustomEvent = CustomEvent<TapPointerEventDetail>;

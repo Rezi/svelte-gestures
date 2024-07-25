@@ -16,7 +16,7 @@ export type SwipeParameters = {
 
 export type SwipePointerEventDetail = {
   direction: Direction;
-  target: EventTarget;
+  target: EventTarget | null;
 };
 
 type Direction = 'top' | 'right' | 'bottom' | 'left' | null;

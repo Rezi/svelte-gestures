@@ -5,10 +5,13 @@ export type Options = { threshold?: number; nbOfSamplePoints?: number };
 export type Pattern = {
   name: string;
   points: Coord[];
-  center?: Coord;
   allowRotation?: boolean;
   bothDirections?: boolean;
 };
+export type PatternWithCenter = Pattern & {
+  center: Coord;
+};
+
 export type Result = { score: number; pattern: string | null };
 
 export const DEFAULT_TRESHOLD = 0.9;
@@ -103,7 +106,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
     points: Coord[],
     name: string,
     allowRotation: boolean
-  ): Pattern {
+  ): PatternWithCenter {
     points = resample();
     const center = getCenterPoint();
     if (allowRotation) {
@@ -221,8 +224,16 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
   }
 
   function detect(points: Coord[], patternName = ''): Result {
-    const strokeRotated = getStroke(points, patternName, true);
-    const strokeUnrotated = getStroke(points, patternName, false);
+    const strokeRotated: PatternWithCenter = getStroke(
+      points,
+      patternName,
+      true
+    );
+    const strokeUnrotated: PatternWithCenter = getStroke(
+      points,
+      patternName,
+      false
+    );
 
     let bestDistance = +Infinity;
     let bestPattern = null;

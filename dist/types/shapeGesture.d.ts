@@ -7,7 +7,7 @@ export type ShapeGestureParameters = {
 export type ShapePointerEventDetail = {
     score: number;
     pattern: string | null;
-    target: EventTarget;
+    target: EventTarget | null;
 };
 export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;
 export declare function shapeGesture<R extends ParametersSwitch<ShapeGestureParameters> = undefined>(node: HTMLElement, inputParameters?: GestureReturnType<ShapeGestureParameters, R>): SvelteAction | SubGestureFunctions;

@@ -7,7 +7,7 @@ export type PressParameters = {
 export type PressPointerEventDetail = {
     x: number;
     y: number;
-    target: EventTarget;
+    target: EventTarget | null;
     pointerType: string;
 };
 export type PressCustomEvent = CustomEvent<PressPointerEventDetail>;
