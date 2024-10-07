@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.5
+## 5.0.6
 
 - pointerType added to all gestures' events
 
