@@ -175,7 +175,7 @@ The `pinch` accepts the following options
     scale = event.detail.scale;
     x = event.detail.center.x;
     y = event.detail.center.y;
-    pointerType = event.detail.center.pointerType;
+    pointerType = event.detail.pointerType;
   }
 </script>
 
@@ -218,7 +218,7 @@ The `rotate` accepts the following options
     rotation = event.detail.rotation;
     x = event.detail.center.x;
     y = event.detail.center.y;
-    pointerType = event.detail.center.pointerType;
+    pointerType = event.detail.pointerType;
   }
 </script>
 <div
