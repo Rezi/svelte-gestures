@@ -123,7 +123,8 @@ function pan(node, inputParameters) {
           detail: {
             x,
             y,
-            target
+            target,
+            pointerType: event.pointerType
           }
         }));
       }
@@ -180,7 +181,8 @@ function pinch(node, inputParameters) {
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
             scale,
-            center: pinchCenter
+            center: pinchCenter,
+            pointerType: event.pointerType
           }
         }));
       }
@@ -346,7 +348,8 @@ function rotate(node, inputParameters) {
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
             rotation,
-            center: rotationCenter
+            center: rotationCenter,
+            pointerType: event.pointerType
           }
         }));
       }
@@ -403,7 +406,8 @@ function swipe(node, inputParameters) {
         node.dispatchEvent(new CustomEvent(gestureName, {
           detail: {
             direction,
-            target
+            target,
+            pointerType: event.pointerType
           }
         }));
       }
@@ -678,7 +682,8 @@ function shapeGesture(node, inputParameters) {
       node.dispatchEvent(new CustomEvent(gestureName, {
         detail: {
           ...detectionResult,
-          target
+          target,
+          pointerType: event.pointerType
         }
       }));
     }
@@ -834,7 +839,8 @@ function tap(node, inputParameters) {
         detail: {
           x,
           y,
-          target: event.target
+          target: event.target,
+          pointerType: event.pointerType
         }
       }));
     }

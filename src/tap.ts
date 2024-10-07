@@ -14,6 +14,7 @@ export type TapPointerEventDetail = {
   x: number;
   y: number;
   target: EventTarget | null;
+  pointerType: string;
 };
 
 export type TapCustomEvent = CustomEvent<TapPointerEventDetail>;
@@ -46,7 +47,12 @@ export function tap<R extends ParametersSwitch<TapParameters> = undefined>(
 
       node.dispatchEvent(
         new CustomEvent<TapPointerEventDetail>(gestureName, {
-          detail: { x, y, target: event.target },
+          detail: {
+            x,
+            y,
+            target: event.target,
+            pointerType: event.pointerType,
+          },
         })
       );
     }

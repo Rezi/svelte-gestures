@@ -13,6 +13,7 @@ export type PanPointerEventDetail = {
   x: number;
   y: number;
   target: EventTarget | null;
+  pointerType: string;
 };
 
 export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;
@@ -49,7 +50,7 @@ export function pan<R extends ParametersSwitch<PanParameters> = undefined>(
       if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height) {
         node.dispatchEvent(
           new CustomEvent<PanPointerEventDetail>(gestureName, {
-            detail: { x, y, target },
+            detail: { x, y, target, pointerType: event.pointerType },
           })
         );
       }

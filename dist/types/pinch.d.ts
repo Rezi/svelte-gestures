@@ -3,6 +3,7 @@ export type PinchParameters = BaseParams;
 export type PinchPointerEventDetail = {
     scale: number;
     center: Coord;
+    pointerType: string;
 };
 export type PinchCustomEvent = CustomEvent<PinchPointerEventDetail>;
 export declare function pinch<R extends ParametersSwitch<PinchParameters> = undefined>(node: HTMLElement, inputParameters?: R): GestureReturnType<PinchParameters, R>;

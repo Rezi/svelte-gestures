@@ -27,6 +27,7 @@ export type ShapePointerEventDetail = {
   score: number;
   pattern: string | null;
   target: EventTarget | null;
+  pointerType: string;
 };
 
 export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;
@@ -78,7 +79,11 @@ export function shapeGesture<
       const detectionResult = detector.detect(stroke);
       node.dispatchEvent(
         new CustomEvent<ShapePointerEventDetail>(gestureName, {
-          detail: { ...detectionResult, target },
+          detail: {
+            ...detectionResult,
+            target,
+            pointerType: event.pointerType,
+          },
         })
       );
     }

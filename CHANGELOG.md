@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.5
+
+- pointerType added to all gestures' events
+
 ## 5.0.4
 
 - Stricter type checking added: 

@@ -13,6 +13,7 @@ export type PinchParameters = BaseParams;
 export type PinchPointerEventDetail = {
   scale: number;
   center: Coord;
+  pointerType: string;
 };
 
 export type PinchCustomEvent = CustomEvent<PinchPointerEventDetail>;
@@ -61,7 +62,11 @@ export function pinch<R extends ParametersSwitch<PinchParameters> = undefined>(
         const scale = curDistance / initDistance;
         node.dispatchEvent(
           new CustomEvent<PinchPointerEventDetail>(gestureName, {
-            detail: { scale, center: pinchCenter },
+            detail: {
+              scale,
+              center: pinchCenter,
+              pointerType: event.pointerType,
+            },
           })
         );
       }

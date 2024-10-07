@@ -13,6 +13,7 @@ export type RotateParameters = BaseParams;
 export type RotatePointerEventDetail = {
   rotation: number;
   center: Coord;
+  pointerType: string;
 };
 
 export type RotateCustomEvent = CustomEvent<RotatePointerEventDetail>;
@@ -95,7 +96,11 @@ export function rotate<
 
         node.dispatchEvent(
           new CustomEvent<RotatePointerEventDetail>(gestureName, {
-            detail: { rotation, center: rotationCenter },
+            detail: {
+              rotation,
+              center: rotationCenter,
+              pointerType: event.pointerType,
+            },
           })
         );
       }

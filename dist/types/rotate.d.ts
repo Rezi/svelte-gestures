@@ -3,6 +3,7 @@ export type RotateParameters = BaseParams;
 export type RotatePointerEventDetail = {
     rotation: number;
     center: Coord;
+    pointerType: string;
 };
 export type RotateCustomEvent = CustomEvent<RotatePointerEventDetail>;
 export declare function rotate<R extends ParametersSwitch<RotateParameters> = undefined>(node: HTMLElement, inputParameters?: R): GestureReturnType<RotateParameters, R>;

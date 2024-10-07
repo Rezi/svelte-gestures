@@ -108,6 +108,7 @@ Pan action (on:pan) fires `pan` event:
 - `event.detail` object has the following properties
   - `x`, `y` (x,y stand for position within the `element`` on which the action is used)
   - `target` is an EventTarget (HTMLElement) of the pan. The target is recorded when the pan starts.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `pan` accepts the following options
 
@@ -125,11 +126,14 @@ on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier th
   let x;
   let y;
   let target;
+  let pointerType;
 
   function handler(event: PanCustomEvent) {
     x = event.detail.x;
     y = event.detail.y;
     target = event.detail.target;
+    pointerType = event.detail.pointerType;
+    
   }
 </script>
 
@@ -150,6 +154,7 @@ Pinch action (on:pinch) fires `pinch` event:
   - `center`: {x:number; y:number;}}
     - `x` and `y` represent coordinates in `px` of an imaginary center of the pinch gesture. They originate in the top left corner of the element on which pinch is used.
   - `scale`: number. The initial scale after the first two registered points is 1, then it either decreases toward zero as the points get nearer, or grow up as their distance grows.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `pinch` accepts the following options
 
@@ -164,11 +169,13 @@ The `pinch` accepts the following options
   let scale;
   let x;
   let y;
+  let pointerType;
 
   function handler(event: PinchCustomEvent) {
     scale = event.detail.scale;
     x = event.detail.center.x;
     y = event.detail.center.y;
+    pointerType = event.detail.center.pointerType;
   }
 </script>
 
@@ -190,6 +197,7 @@ Rotate action (on:rotate) fires `rotate` event:
   - `center`: {x:number; y:number;}}
     - `x` and `y` represent coordinates in `px` of an imaginary center of the rotation gesture. They originate in the top left corner of the element on which rotation is used.
   - `rotation`: number. Initial rotation after the first two registered points is 0, then it either decreases to -180 as the points rotate anti-clockwise or grows up to 180 as they rotate clockwise.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `rotate` accepts the following options
 
@@ -204,11 +212,13 @@ The `rotate` accepts the following options
   let rotation;
   let x;
   let y;
+  let pointerType;
 
   function handler(event: RotateCustomEvent) {
     rotation = event.detail.rotation;
     x = event.detail.center.x;
     y = event.detail.center.y;
+    pointerType = event.detail.center.pointerType;
   }
 </script>
 <div
@@ -228,6 +238,7 @@ Swipe action (on:swipe) fires `swipe` event:
 - `event.detail` object has following properties
   - `direction`: 'top' | 'right' | 'bottom' | 'left'
   - `target`: HTMLElement. The target is recorded when swipe starts.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `swipe` accepts the following options
 
@@ -249,10 +260,12 @@ For example, if you only use left/right swipe and want to keep the default brows
 import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 let direction;
 let target;
+let pointerType;
 
 function handler(event: SwipeCustomEvent) {
   direction = event.detail.direction;
   target = event.detail.target;
+  pointerType = event.detail.pointerType;
 }
 </script>
 
@@ -270,6 +283,7 @@ Tap action (on:tap) fires `tap` event:
   - `x`: number. X coordinate
   - `y`: number. Y coordinate
   - `target`: HTMLElement.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `tap` accepts the following options
 
@@ -288,11 +302,13 @@ import { tap, type TapCustomEvent } from 'svelte-gestures';
 let x;
 let y;
 let target;
+let pointerType;
 
 function handler(event: TapCustomEvent) {
   x = event.detail.x;
   y = event.detail.y;
   target = event.detail.target;
+  pointerType = event.detail.pointerType;
 }
 
 </script>
@@ -349,6 +365,7 @@ ShapeGesture action (on:shapeGesture) fires `shapeGesture` event:
   - `score`: number. A number between 0 and 1. The higher the number is, the bigger chance that shape has been recognized.
   - `pattern`: string | null. `name` of pattern with best match. `null` in case there is no match
   - `target`: HTMLElement.
+  - `pointerType`: 'touch' | 'mouse' | 'pen'.
 
 The `shapeGesture` accepts the following options
 

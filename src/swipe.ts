@@ -17,6 +17,7 @@ export type SwipeParameters = {
 export type SwipePointerEventDetail = {
   direction: Direction;
   target: EventTarget | null;
+  pointerType: string;
 };
 
 type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
@@ -73,7 +74,7 @@ export function swipe<R extends ParametersSwitch<SwipeParameters> = undefined>(
       if (direction) {
         node.dispatchEvent(
           new CustomEvent<SwipePointerEventDetail>(gestureName, {
-            detail: { direction, target },
+            detail: { direction, target, pointerType: event.pointerType },
           })
         );
       }

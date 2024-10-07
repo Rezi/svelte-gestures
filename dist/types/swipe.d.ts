@@ -7,6 +7,7 @@ export type SwipeParameters = {
 export type SwipePointerEventDetail = {
     direction: Direction;
     target: EventTarget | null;
+    pointerType: string;
 };
 type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
 export type SwipeCustomEvent = CustomEvent<SwipePointerEventDetail>;

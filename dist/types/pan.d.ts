@@ -6,6 +6,7 @@ export type PanPointerEventDetail = {
     x: number;
     y: number;
     target: EventTarget | null;
+    pointerType: string;
 };
 export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;
 export declare function pan<R extends ParametersSwitch<PanParameters> = undefined>(node: HTMLElement, inputParameters?: R): GestureReturnType<PanParameters, R>;
