@@ -118,7 +118,7 @@ The `pan` accepts the following options
 
 on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier than `delay` parameter.
 
-[> repl Pan demo](https://svelte.dev/repl/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
+[> repl Pan demo](https://svelte.dev/playground/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -161,7 +161,7 @@ The `pinch` accepts the following options
 - `touchAction` (defaults value is `none`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
 - `composed` is only applicable when used inside `composedGesture`.
 
-[> repl Pinch demo](https://svelte.dev/repl/6f6d34e2b4ab420ab4e192a5046c86b4?version=3.38.2)
+[> repl Pinch demo](https://svelte.dev/playground/6f6d34e2b4ab420ab4e192a5046c86b4?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -204,7 +204,7 @@ The `rotate` accepts the following options
 - `touchAction` (defaults value is `none`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
 - `composed` is only applicable when used inside `composedGesture`.
 
-[> repl Rotation demo](https://svelte.dev/repl/498077b73d384910825719cd27254f8c?version=3.38.2)
+[> repl Rotation demo](https://svelte.dev/playground/498077b73d384910825719cd27254f8c?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -253,7 +253,7 @@ You can use the [touchAction](https://developer.mozilla.org/en/docs/Web/CSS/touc
 
 For example, if you only use left/right swipe and want to keep the default browser behavior (scrolling) for up/down swipe use `touchAction: 'pan-y'`.
 
-[> repl Swipe demo](https://svelte.dev/repl/f696ca27e6374f2cab1691727409a31d?version=3.38.2)
+[> repl Swipe demo](https://svelte.dev/playground/f696ca27e6374f2cab1691727409a31d?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -293,7 +293,7 @@ The `tap` accepts the following options
 
 Tap action is fired only when the click/touch is finished within the given `timeframe`.
 
-[> repl Tap demo](https://svelte.dev/repl/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
+[> repl Tap demo](https://svelte.dev/playground/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -337,7 +337,7 @@ The `press` accepts the following options
 
 Press action is fired only when the click/touch is released after the given `timeframe`. Or when `triggerBeforeFinished` is set to `true`, after given `timeframe` even when click/touch continues.
 
-[> repl Press demo](https://svelte.dev/repl/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
+[> repl Press demo](https://svelte.dev/playground/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -390,7 +390,7 @@ bothDirections?: boolean (default `true`)
 3. You don't need to care about scale of your shapes, they are always scaled automaticaly for gesture/shape comparison.
 4. When `bothDirections` is set to false, order of points matters, even if the shape is closed (circle, suare, etc)
 
-[> repl ShapeGesture demo](https://svelte.dev/repl/3634b5a64a74418ebb2ce35ec766a30e?version=3.59.1)
+[> repl ShapeGesture demo](https://svelte.dev/playground/3634b5a64a74418ebb2ce35ec766a30e?version=3.59.1)
 
 ```html
 <script lang="ts">
@@ -467,7 +467,7 @@ You can register multiple gestures using the `register` function, and each call 
 
 Let's use `pan` gesture, but only after the press gesture has been successfully triggered; otherwise, we will trigger the special `scroll` gesture which mimics the default scroll behavior (it is needed, because default scrolling need to be disabled on elements where any kind of swiping gesture is done). The result will be, that a fast swipe over the element will let the user scroll thru as normal, while a move initiated with 100ms press, will end up with panning.
 
-[> repl ComposedGesture demo](https://svelte.dev/repl/bb47278283564ed08e36677d8b43186c?version=3.38.2)
+[> repl ComposedGesture demo](https://svelte.dev/playground/bb47278283564ed08e36677d8b43186c?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -531,7 +531,7 @@ You can pass `null` instead of a callback if you don't need to call it in that e
 
 See how a doubletap custom gesture is implemented:
 
-[> repl Custom gesture (doubletap) demo](https://svelte.dev/repl/c56082d9d056460d80e53cd71efddefe?version=3.38.2)
+[> repl Custom gesture (doubletap) demo](https://svelte.dev/playground/c56082d9d056460d80e53cd71efddefe?version=3.38.2)
 
 ```html
 <script lang="ts">

@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.7
+
+- updated README and repl links to fit new urls with /playground/
+  
 ## 5.0.6
 
 - pointerType added to all gestures' events
