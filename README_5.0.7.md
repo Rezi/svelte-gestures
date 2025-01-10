@@ -1,29 +1,41 @@
-# svelte-gestures (5.1.0)
+# svelte-gestures (5.0.7)
 
 3 KB gzipped (you can use just part of those 3 KB) - a collection of gesture recognizers for Svelte. It can be actually used in any framework or native JS as it does not use any specific Svelte syntax at all ;)
 
-##### New in svelte-gestures 5.1.0:
+##### New in svelte-gestures 1.5:
 
-- **Only works with Svelte 5**
-- Support for plugins (highlight plugin provided in the library for gesture visualization)
-- There are several **breaking changes** with new API. It changes how parameters are passed to gestures. If you want to follow readme and examples for `svelte-gestures` 5.0.7 and older please follow the old [README_5.0.7.md](README_5.0.7.md)
-
-### Migration
-For migration from 5.0.7 or older please follow [CHANGELOG.md](CHANGELOG.md)
+- New `composedGesture` lets you combine gestures. You can even use it to maintain scrolling behavior on elements with `pan` or `shapeGesture` (see example below)
+- New `shapeGesture` lets you define shape/s to be recognized. Just define shapes by coordinates.
+- Bugfixes
 
 ## installation
 
-**Npm** 
 `npm install svelte-gestures`
 
-**Npm Installing from JSR**
+**Npm**
+
+Installing from JSR
+
 `npx jsr add @rezi/svelte-gestures`
 
 **Deno**
+
 `deno add @rezi/svelte-gestures`
 
 Svelte 4 projects should use svelte-gestures version 4, while older Svelte projects should use version 1.5.2 and lower.
 
+### Language tools types installation (optional)
+
+If you use Svelte language tools (Svelte for VS Code for instance) and you would appreciate seeing return types from svelte-gestures actions `<div on:swipe={fn} >` in your markup,and running on svelte version 4.2 or below add the following line to your `global.d.ts` or sililar definition ts file :
+
+`/// <reference types="svelte-gestures" />`
+
+if you use older version of Svelte kit, you already have a `global.d.ts` in `src` folder. Just add this line after
+
+`/// <reference types="@sveltejs/kit" />`
+
+It must be done this way as language tools use global types and a regular npm package cannot expose global types as long as it is used by another package.
+In case `global.d.ts` does not exist in your project and you run svelte version 4.1 or below, you need to create such a file and add it to yout tsconfig.json file inside `include:[]`.
 
 ## About
 
@@ -106,7 +118,7 @@ The `pan` accepts the following options
 
 on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier than `delay` parameter.
 
-[> repl Pan demo](https://svelte.dev/playground/14f6d9028a57458a8d61cf4dff1f7e3f?version=5.17.0)
+[> repl Pan demo](https://svelte.dev/playground/5e8586cb44e54244948f1cd34ee379b3?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -126,7 +138,7 @@ on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier th
 </script>
 
 <div
-  use:pan="{()=>({delay:300})}"
+  use:pan="{{delay:300}}"
   on:pan="{handler}"
   style="width:500px;height:500px;border:1px solid black;"
 >
@@ -149,7 +161,7 @@ The `pinch` accepts the following options
 - `touchAction` (defaults value is `none`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
 - `composed` is only applicable when used inside `composedGesture`.
 
-[> repl Pinch demo](https://svelte.dev/playground/39ab0a49295c404d9eb569f9e70bea8a?version=5.17.0)
+[> repl Pinch demo](https://svelte.dev/playground/6f6d34e2b4ab420ab4e192a5046c86b4?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -192,7 +204,7 @@ The `rotate` accepts the following options
 - `touchAction` (defaults value is `none`) Apply css _touch-action_ style, letting the browser know which type of gesture is controlled by the browser and your program respectively.
 - `composed` is only applicable when used inside `composedGesture`.
 
-[> repl Rotation demo](https://svelte.dev/playground/c7e3dced77bc4ba5ae42d0689cb082fd?version=5.17.0)
+[> repl Rotation demo](https://svelte.dev/playground/498077b73d384910825719cd27254f8c?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -241,7 +253,7 @@ You can use the [touchAction](https://developer.mozilla.org/en/docs/Web/CSS/touc
 
 For example, if you only use left/right swipe and want to keep the default browser behavior (scrolling) for up/down swipe use `touchAction: 'pan-y'`.
 
-[> repl Swipe demo](https://svelte.dev/playground/024f24d276ea43a394f404d44768af37?version=5.17.0)
+[> repl Swipe demo](https://svelte.dev/playground/f696ca27e6374f2cab1691727409a31d?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -257,10 +269,7 @@ function handler(event: SwipeCustomEvent) {
 }
 </script>
 
-<div 
-  use:swipe={()=>({ timeframe: 300, minSwipeDistance: 60 })} 
-  on:swipe={handler} 
-  style="width:500px;height:500px;border:1px solid black;">
+<div use:swipe={{ timeframe: 300, minSwipeDistance: 60 }} on:swipe={handler} style="width:500px;height:500px;border:1px solid black;">
   direction: {direction}
 </div>
 
@@ -284,7 +293,7 @@ The `tap` accepts the following options
 
 Tap action is fired only when the click/touch is finished within the given `timeframe`.
 
-[> repl Tap demo](https://svelte.dev/playground/ea098032135a4101b07792adb9aaa478?version=5.17.0)
+[> repl Tap demo](https://svelte.dev/playground/98ec4843c217499b9dcdd3bf47a706f0?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -303,9 +312,7 @@ function handler(event: TapCustomEvent) {
 }
 
 </script>
-<div use:tap={()=>({ timeframe: 300 })} 
-  on:tap={handler} 
-  style="width:500px;height:500px;border:1px solid black;">
+<div use:tap={{ timeframe: 300 }} on:tap={handler} style="width:500px;height:500px;border:1px solid black;">
   tap: {x} {y}
 </div>
 ```
@@ -330,7 +337,7 @@ The `press` accepts the following options
 
 Press action is fired only when the click/touch is released after the given `timeframe`. Or when `triggerBeforeFinished` is set to `true`, after given `timeframe` even when click/touch continues.
 
-[> repl Press demo](https://svelte.dev/playground/23dbd6ea91ff44efafad867864a90961?version=5.17.0)
+[> repl Press demo](https://svelte.dev/playground/8bef691ad59f4b2285d2b8a6df5d178a?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -345,7 +352,7 @@ y = event.detail.y;
 target = event.detail.target
 }
 </script>
-<div use:press={()=>({ timeframe: 300, triggerBeforeFinished: false })} on:press={handler} style="width:500px;height:500px;border:1px solid black;">
+<div use:press={{ timeframe: 300, triggerBeforeFinished: false }} on:press={handler} style="width:500px;height:500px;border:1px solid black;">
   press: {x} {y}
 </div>
 ```
@@ -383,7 +390,7 @@ bothDirections?: boolean (default `true`)
 3. You don't need to care about scale of your shapes, they are always scaled automaticaly for gesture/shape comparison.
 4. When `bothDirections` is set to false, order of points matters, even if the shape is closed (circle, suare, etc)
 
-[> repl ShapeGesture demo](https://svelte.dev/playground/e9cb0cd0633a48988df1850f16921097?version=5.17.0)
+[> repl ShapeGesture demo](https://svelte.dev/playground/3634b5a64a74418ebb2ce35ec766a30e?version=3.59.1)
 
 ```html
 <script lang="ts">
@@ -429,7 +436,7 @@ bothDirections?: boolean (default `true`)
 </script>
 
 <div
-  use:shapeGesture="{()=>shapeOptions}"
+  use:shapeGesture="{shapeOptions}"
   on:shapeGesture="{handler}"
   style="width:500px;height:500px;background:#ddd;"
 >
@@ -460,7 +467,7 @@ You can register multiple gestures using the `register` function, and each call 
 
 Let's use `pan` gesture, but only after the press gesture has been successfully triggered; otherwise, we will trigger the special `scroll` gesture which mimics the default scroll behavior (it is needed, because default scrolling need to be disabled on elements where any kind of swiping gesture is done). The result will be, that a fast swipe over the element will let the user scroll thru as normal, while a move initiated with 100ms press, will end up with panning.
 
-[> repl ComposedGesture demo](https://svelte.dev/playground/2c6c0d305a2c40c08d97b68172ec8634?version=5.17.0)
+[> repl ComposedGesture demo](https://svelte.dev/playground/bb47278283564ed08e36677d8b43186c?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -506,62 +513,6 @@ Let's use `pan` gesture, but only after the press gesture has been successfully 
 </div>
 ```
 
-# Plugins
-
-You can pass plugin as parameter to a build in gesture to enhance the gesture functionality. Currently `svelte-gestures` library provide a highlight plugin to visualize a gesture move.
-
-In the following example the plugin options are used in form of $state which enable them to change after each use. On pan up event we simply change the highlighter color to random one.
-
-You are encouraged to create your own plugins. Just follow the source code of the highlight gesture.
-
-[> repl plugins demo](https://svelte.dev/playground/f02cb0b6dec94de6b0d8ce0fe75e61de?version=5.17.0)
-
-```html
-
-<script lang="ts">
-  import { pan, type PanCustomEvent, type GestureCustomEvent, highlightPlugin } from '../gestures';
-  
-  let lineWidth = 8;
-  
-  let x = $state(0);
-  let y = $state(0);
-  let target: EventTarget | null = $state(null);
-  
-  function handler(event: PanCustomEvent) {
-    x = event.detail.x;
-    y = event.detail.y;
-    target = event.detail.target;
-  }
-  
-  function panUp(gestureEvent: GestureCustomEvent) {
-    gesturePluginOptions = { color: getColor(), fadeTime: 2000, lineWidth };
-  }
-  
-  let gesturePluginOptions = $state({ color: '#00ff00', fadeTime: 2000, lineWidth });
-  
-  const getColor = (): string => {
-    let n = (Math.random() * 0xfffff * 1000000).toString(16);
-    return '#' + n.slice(0, 6);
-  };
-</script>
-
-<div
-  use:pan={() => ({ plugins: [highlightPlugin(gesturePluginOptions)] })}
-  onpan={handler}
-  onpanup={panUp}
-  style="width:500px;height:500px;border:1px solid black;max-width:100%;"
->
-  pan: {x}
-  {y}
-  <br />
-  target: {target}
-</div>
-
-
-
-```
-
-
 # Your own gestures
 
 You are encouraged to define your own custom gestures. There is a `setPointerControls` function exposed by the `svelte-gestures`. It handles all the events registration/deregistration needed for handling gestures; you just need to pass callbacks in it.
@@ -580,7 +531,7 @@ You can pass `null` instead of a callback if you don't need to call it in that e
 
 See how a doubletap custom gesture is implemented:
 
-[> repl Custom gesture (doubletap) demo](https://svelte.dev/playground/ef570f1a05f74e7f82ec7322299118a7?version=5.17.0)
+[> repl Custom gesture (doubletap) demo](https://svelte.dev/playground/c56082d9d056460d80e53cd71efddefe?version=3.38.2)
 
 ```html
 <script lang="ts">
@@ -645,7 +596,7 @@ See how a doubletap custom gesture is implemented:
     }
     return setPointerControls(gestureName, node, null, onDown, onUp);
   }
-</>
+</script>
 <div
   use:doubletap
   on:doubletap="{doubletapHandler}"

@@ -1,4 +1,4 @@
-import { type Coord } from './shared';
+import { type Coord } from '../../shared';
 
 export type Options = { threshold?: number; nbOfSamplePoints?: number };
 
