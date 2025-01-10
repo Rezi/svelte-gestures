@@ -29,6 +29,8 @@ Svelte 4 projects should use svelte-gestures version 4, while older Svelte proje
 
 It contains the most popular gestures: `pan`, `pinch`, `press`, `rotate`, `swipe`, `tap`. Besides that, it comes with `shapeGesture` which helps with the recognition of custom shapes declared by a set of x and y coordinates.
 
+Library **support additional plugins** which can add extra functionality to gestures. Currently there is highlight gesture plugin provided for gesture visualization.
+
 It also exposes a generic event handling core, which can be extended for your specific gesture implementation (see source code on how gestures are implemented).
 Besides above mentioned gestures, there are two more: `composedGesture` and `scroll` gestures:
 
@@ -534,10 +536,10 @@ You are encouraged to create your own plugins. Just follow the source code of th
   }
   
   function panUp(gestureEvent: GestureCustomEvent) {
-    gesturePluginOptions = { color: getColor(), fadeTime: 2000, lineWidth };
+    gesturePluginOptions = { color: getColor(), fadeTime: 500, lineWidth };
   }
   
-  let gesturePluginOptions = $state({ color: '#00ff00', fadeTime: 2000, lineWidth });
+  let gesturePluginOptions = $state({ color: '#00ff00', fadeTime: 500, lineWidth });
   
   const getColor = (): string => {
     let n = (Math.random() * 0xfffff * 1000000).toString(16);

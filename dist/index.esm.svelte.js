@@ -1,5 +1,3 @@
-'use strict';
-
 const DEFAULT_DELAY = 300; // ms
 const DEFAULT_PRESS_SPREAD = 4; // px
 const DEFAULT_MIN_SWIPE_DISTANCE = 60; // px
@@ -38,10 +36,9 @@ function removeEvent(event, activeEvents) {
   });
 }
 function callPlugins(plugins, event, activeEvents, node) {
-  plugins === null || plugins === void 0 ? void 0 : plugins.forEach(plugin => {
-    var _plugin$onMove;
+  plugins?.forEach(plugin => {
     const eventData = getDispatchEventData(node, event, activeEvents);
-    (_plugin$onMove = plugin['onMove']) === null || _plugin$onMove === void 0 ? void 0 : _plugin$onMove.call(plugin, eventData, activeEvents);
+    plugin['onMove']?.(eventData, activeEvents);
   });
 }
 function getDispatchEventData(node, event, activeEvents) {
@@ -70,10 +67,9 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
   function handlePointerdown(event) {
     activeEvents.push(event);
     const dispatchEvent = dispatch(node, gestureName, event, activeEvents, 'down');
-    onDownCallback === null || onDownCallback === void 0 ? void 0 : onDownCallback(activeEvents, event);
+    onDownCallback?.(activeEvents, event);
     plugins.forEach(plugin => {
-      var _plugin$onDown;
-      (_plugin$onDown = plugin.onDown) === null || _plugin$onDown === void 0 ? void 0 : _plugin$onDown.call(plugin, dispatchEvent, activeEvents);
+      plugin.onDown?.(dispatchEvent, activeEvents);
     });
     const pointerId = event.pointerId;
     function onup(e) {
@@ -83,10 +79,9 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
           removeEventHandlers();
         }
         const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'up');
-        onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
+        onUpCallback?.(activeEvents, e);
         plugins.forEach(plugin => {
-          var _plugin$onUp;
-          (_plugin$onUp = plugin.onUp) === null || _plugin$onUp === void 0 ? void 0 : _plugin$onUp.call(plugin, dispatchEvent, activeEvents);
+          plugin.onUp?.(dispatchEvent, activeEvents);
         });
       }
     }
@@ -101,10 +96,9 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         return e.pointerId === activeEvent.pointerId ? e : activeEvent;
       });
       const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'move');
-      onMoveCallback === null || onMoveCallback === void 0 ? void 0 : onMoveCallback(activeEvents, e);
+      onMoveCallback?.(activeEvents, e);
       plugins.forEach(plugin => {
-        var _plugin$onMove2;
-        (_plugin$onMove2 = plugin.onMove) === null || _plugin$onMove2 === void 0 ? void 0 : _plugin$onMove2.call(plugin, dispatchEvent, activeEvents);
+        plugin.onMove?.(dispatchEvent, activeEvents);
       });
     });
     const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', e => {
@@ -117,10 +111,9 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
       activeEvents = [];
       removeEventHandlers();
       const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'up');
-      onUpCallback === null || onUpCallback === void 0 ? void 0 : onUpCallback(activeEvents, e);
+      onUpCallback?.(activeEvents, e);
       plugins.forEach(plugin => {
-        var _plugin$onUp2;
-        (_plugin$onUp2 = plugin.onUp) === null || _plugin$onUp2 === void 0 ? void 0 : _plugin$onUp2.call(plugin, dispatchEvent, activeEvents);
+        plugin.onUp?.(dispatchEvent, activeEvents);
       });
     });
   }
@@ -131,6 +124,7 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
     }
   };
 }
+
 const pan = (node, inputParameters) => {
   $effect(() => {
     const {
@@ -138,7 +132,7 @@ const pan = (node, inputParameters) => {
       onDown,
       gestureName,
       parameters
-    } = panBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = panBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, onMove, onDown, null, parameters.touchAction, parameters.plugins).destroy;
   });
 };
@@ -194,6 +188,7 @@ function panBase(node, inputParameters) {
     parameters
   };
 }
+
 function getPointersDistance(activeEvents) {
   return Math.hypot(activeEvents[0].clientX - activeEvents[1].clientX, activeEvents[0].clientY - activeEvents[1].clientY);
 }
@@ -205,7 +200,7 @@ const pinch = (node, inputParameters) => {
       onUp,
       gestureName,
       parameters
-    } = pinchBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = pinchBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction, parameters.plugins).destroy;
   });
 };
@@ -268,6 +263,7 @@ function pinchBase(node, inputParameters) {
     parameters
   };
 }
+
 const press = (node, inputParameters) => {
   $effect(() => {
     const {
@@ -277,7 +273,7 @@ const press = (node, inputParameters) => {
       parameters,
       gestureName,
       clearTimeoutWrap
-    } = pressBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = pressBase(node, inputParameters?.());
     const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
     return () => {
       onSharedDestroy.destroy();
@@ -377,6 +373,7 @@ function pressBase(node, inputParameters) {
     clearTimeoutWrap
   };
 }
+
 function getPointersAngleDeg(activeEvents) {
   const quadrantsMap = {
     left: {
@@ -413,7 +410,7 @@ const rotate = (node, inputParameters) => {
       onDown,
       onUp,
       parameters
-    } = rotateBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = rotateBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
   });
 };
@@ -486,6 +483,7 @@ function rotateBase(node, inputParameters) {
     parameters
   };
 }
+
 const swipe = (node, inputParameters) => {
   $effect(() => {
     const {
@@ -493,7 +491,7 @@ const swipe = (node, inputParameters) => {
       onUp,
       parameters,
       gestureName
-    } = swipeBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = swipeBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction).destroy;
   });
 };
@@ -563,14 +561,13 @@ function swipeBase(node, inputParameters) {
     gestureName
   };
 }
+
 function callAllByType(listenerType, composedGestureFnsWithPlugins, activeEvents, event, node) {
   composedGestureFnsWithPlugins.forEach(gestureWithPlugin => {
-    var _gestureWithPlugin$fn, _gestureWithPlugin$fn2;
-    (_gestureWithPlugin$fn = (_gestureWithPlugin$fn2 = gestureWithPlugin.fns)[listenerType]) === null || _gestureWithPlugin$fn === void 0 ? void 0 : _gestureWithPlugin$fn.call(_gestureWithPlugin$fn2, activeEvents, event);
+    gestureWithPlugin.fns[listenerType]?.(activeEvents, event);
     gestureWithPlugin.plugins.forEach(plugin => {
-      var _plugin$listenerType;
       const eventData = getDispatchEventData(node, event, activeEvents);
-      (_plugin$listenerType = plugin[listenerType]) === null || _plugin$listenerType === void 0 ? void 0 : _plugin$listenerType.call(plugin, eventData, activeEvents);
+      plugin[listenerType]?.(eventData, activeEvents);
     });
   });
 }
@@ -603,6 +600,7 @@ const composedGesture = (node, gestureCallback) => {
     return setPointerControls(gestureName, node, onMove, onDown, onUp).destroy;
   });
 };
+
 const DEFAULT_TRESHOLD = 0.9;
 const DEFAULT_NB_OF_SAMPLE_POINTS = 64;
 const PHI = (Math.sqrt(5.0) - 1) / 2;
@@ -662,10 +660,7 @@ function shapeDetector(inputPatterns, options = {}) {
   const NUMBER_OF_SAMPLE_POINTS = options.nbOfSamplePoints || DEFAULT_NB_OF_SAMPLE_POINTS;
   const SQUARE_SIZE = 250;
   const HALF_SQUARE_DIAGONAL = Math.sqrt(SQUARE_SIZE ** 2 + SQUARE_SIZE ** 2) / 2;
-  const patterns = inputPatterns.flatMap(pattern => {
-    var _pattern$allowRotatio, _pattern$bothDirectio;
-    return learn(pattern.name, pattern.points, (_pattern$allowRotatio = pattern.allowRotation) !== null && _pattern$allowRotatio !== void 0 ? _pattern$allowRotatio : false, (_pattern$bothDirectio = pattern.bothDirections) !== null && _pattern$bothDirectio !== void 0 ? _pattern$bothDirectio : true);
-  });
+  const patterns = inputPatterns.flatMap(pattern => learn(pattern.name, pattern.points, pattern.allowRotation ?? false, pattern.bothDirections ?? true));
   function getStroke(points, name, allowRotation) {
     points = resample();
     const center = getCenterPoint();
@@ -794,6 +789,7 @@ function shapeDetector(inputPatterns, options = {}) {
     detect
   };
 }
+
 const shapeGesture = (node, inputParameters) => {
   $effect(() => {
     const {
@@ -802,7 +798,7 @@ const shapeGesture = (node, inputParameters) => {
       onUp,
       parameters,
       gestureName
-    } = shapeGestureBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = shapeGestureBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
   });
 };
@@ -874,6 +870,7 @@ function shapeGestureBase(node, inputParameters) {
     parameters
   };
 }
+
 function isScrollMode(event) {
   return event.pointerType === 'touch';
 }
@@ -902,7 +899,7 @@ const scroll = (node, inputParameters) => {
       onDown,
       onUp,
       parameters
-    } = scrollBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = scrollBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
   });
 };
@@ -944,7 +941,7 @@ function scrollBase(node, inputParameters) {
     y: true
   };
   function scrollElementTo(el, scrollValue, direction) {
-    el === null || el === void 0 ? void 0 : el.scrollBy({
+    el?.scrollBy({
       [direction === 'x' ? 'left' : 'top']: scrollValue,
       behavior: 'auto'
     });
@@ -1011,6 +1008,7 @@ function scrollBase(node, inputParameters) {
     parameters
   };
 }
+
 const tap = (node, inputParameters) => {
   $effect(() => {
     const {
@@ -1018,7 +1016,7 @@ const tap = (node, inputParameters) => {
       onUp,
       parameters,
       gestureName
-    } = tapBase(node, inputParameters === null || inputParameters === void 0 ? void 0 : inputParameters());
+    } = tapBase(node, inputParameters?.());
     return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction).destroy;
   });
 };
@@ -1073,6 +1071,7 @@ function tapBase(node, inputParameters) {
     gestureName
   };
 }
+
 const highlightPlugin = options => {
   const fallbacks = {
     color: '#00ff00',
@@ -1081,7 +1080,7 @@ const highlightPlugin = options => {
     lineWidth: 4
   };
   let canvas = undefined;
-  let ctx;
+  let ctx = null;
   let offScreenCanvas = undefined;
   let offScreenCtx;
   let fadingRunning = false;
@@ -1091,14 +1090,14 @@ const highlightPlugin = options => {
     y: 0
   };
   function animate() {
+    const fadeTime = options.fadeTime ?? fallbacks.fadeTime;
     const now = Date.now();
     const deltaTime = now - animationStepTime;
-    if (deltaTime > 100) {
+    if (deltaTime > fadeTime / 20) {
       if (ctx && offScreenCanvas && offScreenCtx && canvas) {
-        var _options$fadeTime;
         offScreenCtx.drawImage(canvas, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha = 1 - deltaTime * 3 / ((_options$fadeTime = options.fadeTime) !== null && _options$fadeTime !== void 0 ? _options$fadeTime : fallbacks.fadeTime);
+        ctx.globalAlpha = 1 - deltaTime * 3 / fadeTime;
         ctx.drawImage(offScreenCanvas, 0, 0);
         ctx.globalAlpha = 1;
         offScreenCtx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1121,11 +1120,10 @@ const highlightPlugin = options => {
   }
   function draw(e) {
     if (ctx) {
-      var _options$lineWidth, _options$color;
       ctx.beginPath();
-      ctx.lineWidth = (_options$lineWidth = options.lineWidth) !== null && _options$lineWidth !== void 0 ? _options$lineWidth : fallbacks.lineWidth;
+      ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
       ctx.lineCap = 'round';
-      ctx.strokeStyle = (_options$color = options.color) !== null && _options$color !== void 0 ? _options$color : fallbacks.color;
+      ctx.strokeStyle = options.color ?? fallbacks.color;
       ctx.moveTo(pos.x, pos.y);
       setPosition(e);
       ctx.lineTo(pos.x, pos.y);
@@ -1133,9 +1131,8 @@ const highlightPlugin = options => {
     }
   }
   function onDestroy() {
-    var _window$document$getE;
     fadingRunning = false;
-    (_window$document$getE = window.document.getElementById('svelte-gestures-highlight-plugin')) === null || _window$document$getE === void 0 ? void 0 : _window$document$getE.remove();
+    window.document.getElementById('svelte-gestures-highlight-plugin')?.remove();
     window.removeEventListener('resize', resize);
   }
   return {
@@ -1143,7 +1140,6 @@ const highlightPlugin = options => {
       draw(dispatchEvent.event);
     },
     onDown: dispatchEvent => {
-      var _options$zIndex;
       // Reset if already running (could caused by some unexpected browser behavior)
       onDestroy();
       canvas = window.document.createElement('canvas');
@@ -1157,7 +1153,7 @@ top: 0;
 left: 0;
 position: fixed;
 pointer-events: none;
-z-index: ${(_options$zIndex = options.zIndex) !== null && _options$zIndex !== void 0 ? _options$zIndex : fallbacks.zIndex};
+z-index: ${options.zIndex ?? fallbacks.zIndex};
 `;
       window.document.body.appendChild(canvas);
       window.addEventListener('resize', resize);
@@ -1173,29 +1169,5 @@ z-index: ${(_options$zIndex = options.zIndex) !== null && _options$zIndex !== vo
     onUp: onDestroy
   };
 };
-exports.DEFAULT_DELAY = DEFAULT_DELAY;
-exports.DEFAULT_MIN_SWIPE_DISTANCE = DEFAULT_MIN_SWIPE_DISTANCE;
-exports.DEFAULT_PRESS_SPREAD = DEFAULT_PRESS_SPREAD;
-exports.DEFAULT_TOUCH_ACTION = DEFAULT_TOUCH_ACTION;
-exports.callPlugins = callPlugins;
-exports.composedGesture = composedGesture;
-exports.getCenterOfTwoPoints = getCenterOfTwoPoints;
-exports.getDispatchEventData = getDispatchEventData;
-exports.highlightPlugin = highlightPlugin;
-exports.pan = pan;
-exports.panComposition = panComposition;
-exports.pinch = pinch;
-exports.pinchComposition = pinchComposition;
-exports.press = press;
-exports.pressComposition = pressComposition;
-exports.rotate = rotate;
-exports.rotateComposition = rotateComposition;
-exports.scroll = scroll;
-exports.scrollComposition = scrollComposition;
-exports.setPointerControls = setPointerControls;
-exports.shapeGesture = shapeGesture;
-exports.shapeGestureComposition = shapeGestureComposition;
-exports.swipe = swipe;
-exports.swipeComposition = swipeComposition;
-exports.tap = tap;
-exports.tapComposition = tapComposition;
+
+export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, callPlugins, composedGesture, getCenterOfTwoPoints, getDispatchEventData, highlightPlugin, pan, panComposition, pinch, pinchComposition, press, pressComposition, rotate, rotateComposition, scroll, scrollComposition, setPointerControls, shapeGesture, shapeGestureComposition, swipe, swipeComposition, tap, tapComposition };

@@ -19,6 +19,6 @@
     "outDir": "dist/types",
     "moduleResolution": "bundler"
   },
-  "include": ["src", "./global.d.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

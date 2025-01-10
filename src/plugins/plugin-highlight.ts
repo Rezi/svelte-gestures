@@ -16,7 +16,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
   };
 
   let canvas: HTMLCanvasElement | undefined = undefined;
-  let ctx: CanvasRenderingContext2D | null;
+  let ctx: CanvasRenderingContext2D | null = null;
   let offScreenCanvas: HTMLCanvasElement | undefined = undefined;
   let offScreenCtx: CanvasRenderingContext2D | null;
   let fadingRunning = false;
@@ -25,15 +25,15 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
   const pos = { x: 0, y: 0 };
 
   function animate() {
+    const fadeTime = options.fadeTime ?? fallbacks.fadeTime;
     const now = Date.now();
     const deltaTime = now - animationStepTime;
 
-    if (deltaTime > 100) {
+    if (deltaTime > fadeTime / 20) {
       if (ctx && offScreenCanvas && offScreenCtx && canvas) {
         offScreenCtx.drawImage(canvas, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.globalAlpha =
-          1 - (deltaTime * 3) / (options.fadeTime ?? fallbacks.fadeTime);
+        ctx.globalAlpha = 1 - (deltaTime * 3) / fadeTime;
         ctx.drawImage(offScreenCanvas, 0, 0);
         ctx.globalAlpha = 1;
         offScreenCtx.clearRect(0, 0, canvas.width, canvas.height);
@@ -59,7 +59,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
     }
   }
 
-  function draw(e: { x: number; y: number }): void {
+  function draw(e: { x: number; y: number }) {
     if (ctx) {
       ctx.beginPath();
       ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
@@ -72,7 +72,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
     }
   }
 
-  function onDestroy(): void {
+  function onDestroy() {
     fadingRunning = false;
     window.document
       .getElementById('svelte-gestures-highlight-plugin')
