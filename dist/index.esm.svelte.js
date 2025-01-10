@@ -389,13 +389,13 @@ function getPointersAngleDeg(activeEvents) {
   const height = activeEvents[0].clientY - activeEvents[1].clientY;
 
   /*
-  	In quadrants 1 and 3 all works as expected. 
+  In quadrants 1 and 3 all works as expected. 
   In quadrants 2 and 4, either height or width is negative,
   so we get negative angle. It is even the other of the two angles.
   As sum in triangle is 180 deg, we can simply sum the negative angle with 90 deg
   and get the right angle's positive value. Then add 90 for each quadrant above 1st.
   This way we don't need to code our own arc cotangent fn (it does not exist in JS)
-  	*/
+  */
 
   const angle = Math.atan(width / height) / (Math.PI / 180);
   const halfQuadrant = width > 0 ? quadrantsMap.right : quadrantsMap.left;
