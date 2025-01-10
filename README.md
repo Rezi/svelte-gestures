@@ -1,8 +1,8 @@
-# svelte-gestures (5.1.0)
+# svelte-gestures (5.1.2)
 
 3 KB gzipped (you can use just part of those 3 KB) - a collection of gesture recognizers for Svelte. It can be actually used in any framework or native JS as it does not use any specific Svelte syntax at all ;)
 
-##### New in svelte-gestures 5.1.0:
+##### New in svelte-gestures 5.1.2:
 
 - **Only works with Svelte 5**
 - Support for plugins (highlight plugin provided in the library for gesture visualization)
@@ -521,7 +521,7 @@ You are encouraged to create your own plugins. Just follow the source code of th
 ```html
 
 <script lang="ts">
-  import { pan, type PanCustomEvent, type GestureCustomEvent, highlightPlugin } from '../gestures';
+  import { pan, type PanCustomEvent, type GestureCustomEvent, highlightPlugin } from 'svelte-gestures';
   
   let lineWidth = 8;
   
