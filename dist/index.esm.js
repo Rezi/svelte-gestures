@@ -5,6 +5,8 @@ const DEFAULT_TOUCH_ACTION = 'none';
 
 // export type PointerType = 'mouse' | 'touch' | 'pen' | 'all';
 
+//export type SvelteAction = () => void;
+
 function ensureArray(o) {
   if (Array.isArray(o)) return o;
   return [o];
@@ -33,27 +35,42 @@ function removeEvent(event, activeEvents) {
     return event.pointerId !== activeEvent.pointerId;
   });
 }
-function dispatch(node, gestureName, event, activeEvents, actionType) {
+function callPlugins(plugins, event, activeEvents, node) {
+  plugins?.forEach(plugin => {
+    const eventData = getDispatchEventData(node, event, activeEvents);
+    plugin['onMove']?.(eventData, activeEvents);
+  });
+}
+function getDispatchEventData(node, event, activeEvents) {
   const rect = node.getBoundingClientRect();
   const x = Math.round(event.clientX - rect.left);
   const y = Math.round(event.clientY - rect.top);
-  node.dispatchEvent(new CustomEvent(`${gestureName}${actionType}`, {
-    detail: {
-      event,
-      pointersCount: activeEvents.length,
-      target: event.target,
-      x,
-      y
-    }
-  }));
+  const eventData = {
+    event,
+    pointersCount: activeEvents.length,
+    target: event.target,
+    x,
+    y
+  };
+  return eventData;
 }
-function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, onUpCallback, touchAction = DEFAULT_TOUCH_ACTION) {
+function dispatch(node, gestureName, event, activeEvents, actionType) {
+  const eventData = getDispatchEventData(node, event, activeEvents);
+  node.dispatchEvent(new CustomEvent(`${gestureName}${actionType}`, {
+    detail: eventData
+  }));
+  return eventData;
+}
+function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, onUpCallback, touchAction = DEFAULT_TOUCH_ACTION, plugins = []) {
   node.style.touchAction = ensureArray(touchAction).join(' ');
   let activeEvents = [];
   function handlePointerdown(event) {
     activeEvents.push(event);
-    dispatch(node, gestureName, event, activeEvents, 'down');
+    const dispatchEvent = dispatch(node, gestureName, event, activeEvents, 'down');
     onDownCallback?.(activeEvents, event);
+    plugins.forEach(plugin => {
+      plugin.onDown?.(dispatchEvent, activeEvents);
+    });
     const pointerId = event.pointerId;
     function onup(e) {
       if (pointerId === e.pointerId) {
@@ -61,8 +78,11 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
         if (!activeEvents.length) {
           removeEventHandlers();
         }
-        dispatch(node, gestureName, e, activeEvents, 'up');
+        const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'up');
         onUpCallback?.(activeEvents, e);
+        plugins.forEach(plugin => {
+          plugin.onUp?.(dispatchEvent, activeEvents);
+        });
       }
     }
     function removeEventHandlers() {
@@ -75,8 +95,11 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
       activeEvents = activeEvents.map(activeEvent => {
         return e.pointerId === activeEvent.pointerId ? e : activeEvent;
       });
-      dispatch(node, gestureName, e, activeEvents, 'move');
+      const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'move');
       onMoveCallback?.(activeEvents, e);
+      plugins.forEach(plugin => {
+        plugin.onMove?.(dispatchEvent, activeEvents);
+      });
     });
     const removeLostpointercaptureHandler = addEventListener(node, 'lostpointercapture', e => {
       onup(e);
@@ -87,8 +110,11 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
     const removePointerLeaveHandler = addEventListener(node, 'pointerleave', e => {
       activeEvents = [];
       removeEventHandlers();
-      dispatch(node, gestureName, e, activeEvents, 'up');
+      const dispatchEvent = dispatch(node, gestureName, e, activeEvents, 'up');
       onUpCallback?.(activeEvents, e);
+      plugins.forEach(plugin => {
+        plugin.onUp?.(dispatchEvent, activeEvents);
+      });
     });
   }
   const removePointerdownHandler = addEventListener(node, 'pointerdown', handlePointerdown);
@@ -99,8 +125,32 @@ function setPointerControls(gestureName, node, onMoveCallback, onDownCallback, o
   };
 }
 
-function pan(node, inputParameters) {
-  let parameters = {
+const pan = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onMove,
+      onDown,
+      gestureName,
+      parameters
+    } = panBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, onMove, onDown, null, parameters.touchAction, parameters.plugins).destroy;
+  });
+};
+const panComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    parameters
+  } = panBase(node, inputParameters);
+  return {
+    onMove,
+    onDown,
+    onUp: null,
+    plugins: parameters.plugins
+  };
+};
+function panBase(node, inputParameters) {
+  const parameters = {
     delay: DEFAULT_DELAY,
     composed: false,
     touchAction: DEFAULT_TOUCH_ACTION,
@@ -131,28 +181,43 @@ function pan(node, inputParameters) {
     }
     return false;
   }
-  if (parameters.composed) {
-    return {
-      onMove,
-      onDown,
-      onUp: null
-    };
-  }
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, null, parameters.touchAction),
-    update: updateParameters => {
-      parameters = {
-        ...parameters,
-        ...updateParameters
-      };
-    }
+    onDown,
+    onMove,
+    gestureName,
+    parameters
   };
 }
 
 function getPointersDistance(activeEvents) {
   return Math.hypot(activeEvents[0].clientX - activeEvents[1].clientX, activeEvents[0].clientY - activeEvents[1].clientY);
 }
-function pinch(node, inputParameters) {
+const pinch = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onMove,
+      onDown,
+      onUp,
+      gestureName,
+      parameters
+    } = pinchBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction, parameters.plugins).destroy;
+  });
+};
+const pinchComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    parameters
+  } = pinchBase(node, inputParameters);
+  return {
+    onMove,
+    onDown,
+    onUp: null,
+    plugins: parameters.plugins
+  };
+};
+function pinchBase(node, inputParameters) {
   const parameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -162,12 +227,12 @@ function pinch(node, inputParameters) {
   let prevDistance;
   let initDistance = 0;
   let pinchCenter;
-  function onUp(activeEvents, event) {
+  function onUp(activeEvents) {
     if (activeEvents.length === 1) {
       prevDistance = undefined;
     }
   }
-  function onDown(activeEvents, event) {
+  function onDown(activeEvents) {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
       pinchCenter = getCenterOfTwoPoints(node, activeEvents);
@@ -190,17 +255,47 @@ function pinch(node, inputParameters) {
     }
     return false;
   }
-  if (parameters.composed) {
-    return {
-      onMove,
-      onDown,
-      onUp: null
-    };
-  }
-  return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
+  return {
+    onMove,
+    onDown,
+    onUp,
+    gestureName,
+    parameters
+  };
 }
 
-function press(node, inputParameters) {
+const press = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onMove,
+      onDown,
+      onUp,
+      parameters,
+      gestureName,
+      clearTimeoutWrap
+    } = pressBase(node, inputParameters?.());
+    const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
+    return () => {
+      onSharedDestroy.destroy();
+      clearTimeoutWrap();
+    };
+  });
+};
+const pressComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    onUp,
+    parameters
+  } = pressBase(node, inputParameters);
+  return {
+    onMove,
+    onDown,
+    onUp,
+    plugins: parameters.plugins
+  };
+};
+function pressBase(node, inputParameters) {
   const parameters = {
     composed: false,
     timeframe: DEFAULT_DELAY,
@@ -266,19 +361,16 @@ function press(node, inputParameters) {
       }, parameters.timeframe + 1);
     }
   }
-  const onSharedDestroy = setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
-  if (parameters.composed) {
-    return {
-      onMove,
-      onDown,
-      onUp
-    };
+  function clearTimeoutWrap() {
+    clearTimeout(timeout);
   }
   return {
-    destroy: () => {
-      onSharedDestroy.destroy();
-      clearTimeout(timeout);
-    }
+    onDown,
+    onMove,
+    onUp,
+    gestureName,
+    parameters,
+    clearTimeoutWrap
   };
 }
 
@@ -297,20 +389,46 @@ function getPointersAngleDeg(activeEvents) {
   const height = activeEvents[0].clientY - activeEvents[1].clientY;
 
   /*
-  In quadrants 1 and 3 allworks as expected. 
+  	In quadrants 1 and 3 all works as expected. 
   In quadrants 2 and 4, either height or width is negative,
   so we get negative angle. It is even the other of the two angles.
   As sum in triangle is 180 deg, we can simply sum the negative angle with 90 deg
   and get the right angle's positive value. Then add 90 for each quadrant above 1st.
-  This way we dont need to code our own arc cotangent fn (it does not exist in JS)
-  */
+  This way we don't need to code our own arc cotangent fn (it does not exist in JS)
+  	*/
 
   const angle = Math.atan(width / height) / (Math.PI / 180);
   const halfQuadrant = width > 0 ? quadrantsMap.right : quadrantsMap.left;
   const quadrantAngleBonus = height > 0 ? halfQuadrant.top : halfQuadrant.bottom;
   return angle + quadrantAngleBonus;
 }
-function rotate(node, inputParameters) {
+const rotate = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      gestureName,
+      onMove,
+      onDown,
+      onUp,
+      parameters
+    } = rotateBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
+  });
+};
+const rotateComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    onUp,
+    parameters
+  } = rotateBase(node, inputParameters);
+  return {
+    onMove,
+    onDown,
+    onUp,
+    plugins: parameters.plugins
+  };
+};
+function rotateBase(node, inputParameters) {
   const parameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -320,12 +438,12 @@ function rotate(node, inputParameters) {
   let prevAngle;
   let initAngle = 0;
   let rotationCenter;
-  function onUp(activeEvents, event) {
+  function onUp(activeEvents) {
     if (activeEvents.length === 1) {
       prevAngle = undefined;
     }
   }
-  function onDown(activeEvents, event) {
+  function onDown(activeEvents) {
     if (activeEvents.length === 2) {
       activeEvents = activeEvents.sort((a, b) => {
         return a.clientX - b.clientX;
@@ -357,17 +475,40 @@ function rotate(node, inputParameters) {
     }
     return false;
   }
-  if (parameters.composed) {
-    return {
-      onMove,
-      onDown,
-      onUp
-    };
-  }
-  return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction);
+  return {
+    gestureName,
+    onMove,
+    onDown,
+    onUp,
+    parameters
+  };
 }
 
-function swipe(node, inputParameters) {
+const swipe = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onDown,
+      onUp,
+      parameters,
+      gestureName
+    } = swipeBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction).destroy;
+  });
+};
+const swipeComposition = (node, inputParameters) => {
+  const {
+    onDown,
+    onUp,
+    parameters
+  } = swipeBase(node, inputParameters);
+  return {
+    onMove: null,
+    onDown,
+    onUp,
+    plugins: parameters.plugins
+  };
+};
+function swipeBase(node, inputParameters) {
   const parameters = {
     timeframe: DEFAULT_DELAY,
     minSwipeDistance: DEFAULT_MIN_SWIPE_DISTANCE,
@@ -413,45 +554,52 @@ function swipe(node, inputParameters) {
       }
     }
   }
-  if (parameters.composed) {
-    return {
-      onMove: null,
-      onDown,
-      onUp
-    };
-  }
-  return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
+  return {
+    onDown,
+    onUp,
+    parameters,
+    gestureName
+  };
 }
 
-function callAllByType(ListenerType, subGestureFunctions, activeEvents, event) {
-  subGestureFunctions.forEach(gesture => {
-    gesture[ListenerType]?.(activeEvents, event);
+function callAllByType(listenerType, composedGestureFnsWithPlugins, activeEvents, event, node) {
+  composedGestureFnsWithPlugins.forEach(gestureWithPlugin => {
+    gestureWithPlugin.fns[listenerType]?.(activeEvents, event);
+    gestureWithPlugin.plugins.forEach(plugin => {
+      const eventData = getDispatchEventData(node, event, activeEvents);
+      plugin[listenerType]?.(eventData, activeEvents);
+    });
   });
 }
-function composedGesture(node, gestureCallback) {
-  const gestureFunctions = [];
-  function registerGesture(gestureFn, parameters) {
-    const subGestureFns = gestureFn(node, {
-      ...parameters,
-      composed: true
-    });
-    gestureFunctions.push(subGestureFns);
-    return subGestureFns;
-  }
-  const onMoveCallback = gestureCallback(registerGesture);
-  const gestureName = 'composedGesture';
-  function onUp(activeEvents, event) {
-    callAllByType('onUp', gestureFunctions, activeEvents, event);
-  }
-  function onDown(activeEvents, event) {
-    callAllByType('onDown', gestureFunctions, activeEvents, event);
-  }
-  function onMove(activeEvents, event) {
-    onMoveCallback(activeEvents, event);
-    return true;
-  }
-  return setPointerControls(gestureName, node, onMove, onDown, onUp);
-}
+const composedGesture = (node, gestureCallback) => {
+  $effect(() => {
+    const gestureFunctionsWithPlugins = [];
+    function registerGesture(gestureFn, parameters) {
+      const subGestureFns = gestureFn(node, {
+        ...parameters,
+        composed: true
+      });
+      gestureFunctionsWithPlugins.push({
+        fns: subGestureFns,
+        plugins: parameters.plugins || []
+      });
+      return subGestureFns;
+    }
+    const onMoveCallback = gestureCallback(registerGesture, node);
+    const gestureName = 'composedGesture';
+    function onUp(activeEvents, event) {
+      callAllByType('onUp', gestureFunctionsWithPlugins, activeEvents, event, node);
+    }
+    function onDown(activeEvents, event) {
+      callAllByType('onDown', gestureFunctionsWithPlugins, activeEvents, event, node);
+    }
+    function onMove(activeEvents, event) {
+      onMoveCallback(activeEvents, event);
+      return true;
+    }
+    return setPointerControls(gestureName, node, onMove, onDown, onUp).destroy;
+  });
+};
 
 const DEFAULT_TRESHOLD = 0.9;
 const DEFAULT_NB_OF_SAMPLE_POINTS = 64;
@@ -642,8 +790,34 @@ function shapeDetector(inputPatterns, options = {}) {
   };
 }
 
-function shapeGesture(node, inputParameters) {
-  let parameters = {
+const shapeGesture = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onMove,
+      onDown,
+      onUp,
+      parameters,
+      gestureName
+    } = shapeGestureBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
+  });
+};
+const shapeGestureComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    onUp,
+    parameters
+  } = shapeGestureBase(node, inputParameters);
+  return {
+    onMove,
+    onDown,
+    onUp,
+    plugins: parameters.plugins
+  };
+};
+function shapeGestureBase(node, inputParameters) {
+  const parameters = {
     composed: false,
     shapes: [],
     threshold: DEFAULT_TRESHOLD,
@@ -688,21 +862,12 @@ function shapeGesture(node, inputParameters) {
       }));
     }
   }
-  if (parameters.composed) {
-    return {
-      onMove,
-      onDown,
-      onUp
-    };
-  }
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction),
-    update: updateParameters => {
-      parameters = {
-        ...parameters,
-        ...updateParameters
-      };
-    }
+    onDown,
+    onMove,
+    onUp,
+    gestureName,
+    parameters
   };
 }
 
@@ -726,8 +891,34 @@ function getScrollParent(node, direction) {
     return getScrollParent(node.parentNode, direction) || document.scrollingElement || document.body;
   }
 }
-function scroll(node, inputParameters) {
-  let parameters = {
+const scroll = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      gestureName,
+      onMove,
+      onDown,
+      onUp,
+      parameters
+    } = scrollBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction).destroy;
+  });
+};
+const scrollComposition = (node, inputParameters) => {
+  const {
+    onMove,
+    onDown,
+    onUp,
+    parameters
+  } = scrollBase(node, inputParameters);
+  return {
+    onMove,
+    onUp,
+    onDown,
+    plugins: parameters.plugins
+  };
+};
+function scrollBase(node, inputParameters) {
+  const parameters = {
     ...{
       delay: DEFAULT_DELAY,
       touchAction: DEFAULT_TOUCH_ACTION,
@@ -755,7 +946,7 @@ function scroll(node, inputParameters) {
       behavior: 'auto'
     });
   }
-  function onDown(activeEvents, event) {
+  function onDown() {
     nearestScrollEl.y = getScrollParent(node, 'y');
     nearestScrollEl.x = getScrollParent(node, 'x');
     prevCoords = undefined;
@@ -765,8 +956,12 @@ function scroll(node, inputParameters) {
       if (prevCoords !== undefined) {
         scrollDelta.y = Math.round(prevCoords.y - event.clientY);
         scrollDelta.x = Math.round(prevCoords.x - event.clientX);
-        nearestScrollEl.y && scrollElementTo(nearestScrollEl.y, scrollDelta.y, 'y');
-        nearestScrollEl.x && scrollElementTo(nearestScrollEl.x, scrollDelta.x, 'x');
+        if (nearestScrollEl.y) {
+          scrollElementTo(nearestScrollEl.y, scrollDelta.y, 'y');
+        }
+        if (nearestScrollEl.x) {
+          scrollElementTo(nearestScrollEl.x, scrollDelta.x, 'x');
+        }
       }
       prevCoords = {
         x: event.clientX,
@@ -798,28 +993,47 @@ function scroll(node, inputParameters) {
     }
   }
   function scrollOutLoop() {
-    nearestScrollEl.x && scrollOutByDirection('x');
-    nearestScrollEl.y && scrollOutByDirection('y');
-  }
-  if (parameters.composed) {
-    return {
-      onMove,
-      onUp,
-      onDown
-    };
+    if (nearestScrollEl.x) {
+      scrollOutByDirection('x');
+    }
+    if (nearestScrollEl.y) {
+      scrollOutByDirection('y');
+    }
   }
   return {
-    ...setPointerControls(gestureName, node, onMove, onDown, onUp, parameters.touchAction),
-    update: updateParameters => {
-      parameters = {
-        ...parameters,
-        ...updateParameters
-      };
-    }
+    gestureName,
+    onMove,
+    onDown,
+    onUp,
+    parameters
   };
 }
 
-function tap(node, inputParameters) {
+const tap = (node, inputParameters) => {
+  $effect(() => {
+    const {
+      onDown,
+      onUp,
+      parameters,
+      gestureName
+    } = tapBase(node, inputParameters?.());
+    return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction).destroy;
+  });
+};
+const tapComposition = (node, inputParameters) => {
+  const {
+    onDown,
+    onUp,
+    parameters
+  } = tapBase(node, inputParameters);
+  return {
+    onMove: null,
+    onDown,
+    onUp,
+    plugins: parameters.plugins
+  };
+};
+function tapBase(node, inputParameters) {
   const parameters = {
     timeframe: DEFAULT_DELAY,
     composed: false,
@@ -850,14 +1064,109 @@ function tap(node, inputParameters) {
     clientY = event.clientY;
     startTime = Date.now();
   }
-  if (parameters.composed) {
-    return {
-      onMove: null,
-      onDown,
-      onUp
-    };
-  }
-  return setPointerControls(gestureName, node, null, onDown, onUp, parameters.touchAction);
+  return {
+    onDown,
+    onUp,
+    parameters,
+    gestureName
+  };
 }
 
-export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, composedGesture, getCenterOfTwoPoints, pan, pinch, press, rotate, scroll, setPointerControls, shapeGesture, swipe, tap };
+const highlightPlugin = options => {
+  const fallbacks = {
+    color: '#00ff00',
+    fadeTime: 1000,
+    zIndex: 1000000,
+    lineWidth: 4
+  };
+  let canvas = undefined;
+  let ctx;
+  let offScreenCanvas = undefined;
+  let offScreenCtx;
+  let fadingRunning = false;
+  let animationStepTime = Date.now();
+  const pos = {
+    x: 0,
+    y: 0
+  };
+  function animate() {
+    const now = Date.now();
+    const deltaTime = now - animationStepTime;
+    if (deltaTime > 100) {
+      if (ctx && offScreenCanvas && offScreenCtx && canvas) {
+        offScreenCtx.drawImage(canvas, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1 - deltaTime * 3 / (options.fadeTime ?? fallbacks.fadeTime);
+        ctx.drawImage(offScreenCanvas, 0, 0);
+        ctx.globalAlpha = 1;
+        offScreenCtx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animationStepTime = now;
+    }
+    if (fadingRunning) requestAnimationFrame(animate);
+  }
+  function setPosition(e) {
+    pos.x = e.x;
+    pos.y = e.y;
+  }
+  function resize() {
+    if (ctx && offScreenCanvas && canvas) {
+      ctx.canvas.width = window.innerWidth;
+      ctx.canvas.height = window.innerHeight;
+      offScreenCanvas.width = canvas.width;
+      offScreenCanvas.height = canvas.height;
+    }
+  }
+  function draw(e) {
+    if (ctx) {
+      ctx.beginPath();
+      ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = options.color ?? fallbacks.color;
+      ctx.moveTo(pos.x, pos.y);
+      setPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+  }
+  function onDestroy() {
+    fadingRunning = false;
+    window.document.getElementById('svelte-gestures-highlight-plugin')?.remove();
+    window.removeEventListener('resize', resize);
+  }
+  return {
+    onMove: dispatchEvent => {
+      draw(dispatchEvent.event);
+    },
+    onDown: dispatchEvent => {
+      // Reset if already running (could caused by some unexpected browser behavior)
+      onDestroy();
+      canvas = window.document.createElement('canvas');
+      canvas.id = 'svelte-gestures-highlight-plugin';
+      ctx = canvas.getContext('2d');
+      canvas.style.cssText = `
+display: block; 
+width: 100dvw;
+height: 100dvh;
+top: 0;
+left: 0;
+position: fixed;
+pointer-events: none;
+z-index: ${options.zIndex ?? fallbacks.zIndex};
+`;
+      window.document.body.appendChild(canvas);
+      window.addEventListener('resize', resize);
+      setPosition(dispatchEvent.event);
+
+      // Create an off-screen canvas
+      offScreenCanvas = document.createElement('canvas');
+      resize();
+      offScreenCtx = offScreenCanvas.getContext('2d');
+      fadingRunning = true;
+      animate();
+    },
+    onUp: onDestroy
+  };
+};
+
+export { DEFAULT_DELAY, DEFAULT_MIN_SWIPE_DISTANCE, DEFAULT_PRESS_SPREAD, DEFAULT_TOUCH_ACTION, callPlugins, composedGesture, getCenterOfTwoPoints, getDispatchEventData, highlightPlugin, pan, panComposition, pinch, pinchComposition, press, pressComposition, rotate, rotateComposition, scroll, scrollComposition, setPointerControls, shapeGesture, shapeGestureComposition, swipe, swipeComposition, tap, tapComposition };
