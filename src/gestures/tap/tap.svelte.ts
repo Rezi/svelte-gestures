@@ -1,7 +1,7 @@
 import {
   DEFAULT_DELAY,
   setPointerControls,
-  SubGestureFunctions,
+  type SubGestureFunctions,
   type Action,
   type BaseParams,
   type GestureCustomEvent,

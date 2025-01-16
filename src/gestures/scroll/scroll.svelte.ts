@@ -6,7 +6,7 @@ import {
   type Coord,
   type Action,
   type GestureCustomEvent,
-  SubGestureFunctions,
+  type SubGestureFunctions,
 } from '../../shared';
 
 export type ScrollParameters = {

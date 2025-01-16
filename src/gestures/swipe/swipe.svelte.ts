@@ -3,7 +3,7 @@ import {
   DEFAULT_MIN_SWIPE_DISTANCE,
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
-  SubGestureFunctions,
+  type SubGestureFunctions,
   type Action,
   type BaseParams,
   type GestureCustomEvent,

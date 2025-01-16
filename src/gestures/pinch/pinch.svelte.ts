@@ -6,7 +6,7 @@ import {
   type Coord,
   type GestureCustomEvent,
   type Action,
-  SubGestureFunctions,
+  type SubGestureFunctions,
 } from '../../shared';
 
 export type PinchParameters = BaseParams;
