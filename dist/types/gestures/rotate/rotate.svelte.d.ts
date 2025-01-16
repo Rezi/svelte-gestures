@@ -1,4 +1,4 @@
-import { type BaseParams, type Coord, type Action, type GestureCustomEvent, SubGestureFunctions } from '../../shared';
+import { type BaseParams, type Coord, type Action, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 export type RotateParameters = BaseParams;
 export type RotatePointerEventDetail = {
     rotation: number;

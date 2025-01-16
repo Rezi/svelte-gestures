@@ -1,4 +1,4 @@
-import { type BaseParams, type GestureCustomEvent, type Action, SubGestureFunctions } from '../../shared';
+import { type BaseParams, type GestureCustomEvent, type Action, type SubGestureFunctions } from '../../shared';
 import { type Pattern, type Options } from './detector';
 export type ShapeGestureParameters = {
     shapes: Pattern[];

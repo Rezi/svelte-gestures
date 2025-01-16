@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.1, 5.1.2, 5.1.3
+
+- Internal type fixes
+
 ## 5.1.0
 
 - Works only with svelte 5

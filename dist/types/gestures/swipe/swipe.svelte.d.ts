@@ -1,4 +1,4 @@
-import { SubGestureFunctions, type Action, type BaseParams, type GestureCustomEvent } from '../../shared';
+import { type SubGestureFunctions, type Action, type BaseParams, type GestureCustomEvent } from '../../shared';
 export type SwipeParameters = {
     timeframe: number;
     minSwipeDistance: number;

@@ -1,4 +1,4 @@
-import { type BaseParams, type Action, type GestureCustomEvent, SubGestureFunctions } from '../../shared';
+import { type BaseParams, type Action, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 export type ScrollParameters = {
     delay: number;
 } & BaseParams;

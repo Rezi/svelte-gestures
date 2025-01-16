@@ -1,4 +1,4 @@
-import { type BaseParams, type Coord, type GestureCustomEvent, type Action, SubGestureFunctions } from '../../shared';
+import { type BaseParams, type Coord, type GestureCustomEvent, type Action, type SubGestureFunctions } from '../../shared';
 export type PinchParameters = BaseParams;
 export type PinchPointerEventDetail = {
     scale: number;
