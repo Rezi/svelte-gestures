@@ -308,10 +308,7 @@ function pressBase(node, inputParameters) {
     touchAction: 'auto',
     ...inputParameters
   };
-  node.style.userSelect = 'none';
-  node.oncontextmenu = e => {
-    e.preventDefault();
-  };
+  let initialOncontextmenu = node.oncontextmenu;
   const gestureName = 'press';
   let startTime;
   let clientX;
@@ -351,6 +348,17 @@ function pressBase(node, inputParameters) {
     return triggered;
   }
   function onDown(activeEvents, event) {
+    // on touch devices, we need to prevent the context menu from showing after long press
+    if (event.pointerType === 'touch') {
+      node.oncontextmenu = e => {
+        e.preventDefault();
+      };
+    } else {
+      node.oncontextmenu = initialOncontextmenu;
+    }
+
+    // on touch devices, we need to prevent the default text selection on long press
+    node.style.userSelect = event.pointerType === 'touch' ? 'none' : 'auto';
     triggered = false;
     clientX = event.clientX;
     clientY = event.clientY;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.4
+
+- Press gesture now disable context menu and text selection only when touch input is used. When mouse is used context menu and text selection works as expected.
+
 ## 5.1.1, 5.1.2, 5.1.3
 
 - Internal type fixes

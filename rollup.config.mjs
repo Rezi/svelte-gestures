@@ -1,6 +1,6 @@
 import { babel, getBabelOutputPlugin } from '@rollup/plugin-babel';
 
-import pkg from './package.json' assert { type: 'json' };
+import pkg from './package.json' with { type: 'json' };
 import resolve from '@rollup/plugin-node-resolve';
 
 const extensions = ['.js', '.ts'];
