@@ -1,4 +1,4 @@
-# svelte-gestures (5.1.2)
+# svelte-gestures
 
 3 KB gzipped (you can use just part of those 3 KB) - a collection of gesture recognizers for Svelte. It can be actually used in any framework or native JS as it does not use any specific Svelte syntax at all ;)
 
