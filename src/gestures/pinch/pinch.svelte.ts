@@ -2,12 +2,13 @@ import {
   DEFAULT_TOUCH_ACTION,
   getCenterOfTwoPoints,
   setPointerControls,
+  type ActionType,
   type BaseParams,
   type Coord,
   type GestureCustomEvent,
-  type Action,
   type SubGestureFunctions,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type PinchParameters = BaseParams;
 
@@ -19,6 +20,10 @@ export type PinchPointerEventDetail = {
 
 export type PinchCustomEvent = CustomEvent<PinchPointerEventDetail>;
 
+const gestureName = 'pinch' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+
 function getPointersDistance(activeEvents: PointerEvent[]) {
   return Math.hypot(
     activeEvents[0].clientX - activeEvents[1].clientX,
@@ -26,33 +31,34 @@ function getPointersDistance(activeEvents: PointerEvent[]) {
   );
 }
 
-export const pinch: Action<
-  HTMLElement,
-  () => Partial<PinchParameters>,
-  {
-    onpinch: (e: PinchCustomEvent) => void;
-    onpinchdown: (e: GestureCustomEvent) => void;
-    onpinchup: (e: GestureCustomEvent) => void;
-    onpinchmove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<PinchParameters>) => {
-  $effect(() => {
-    const { onMove, onDown, onUp, gestureName, parameters } = pinchBase(
-      node,
-      inputParameters?.()
-    );
+export function usePinch(
+  inputParameters: () => Partial<PinchParameters>,
+  handler: (e: PinchCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters } = pinchBase(
+        node,
+        inputParameters?.()
+      );
 
-    return setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction,
-      parameters.plugins
-    ).destroy;
-  });
-};
+      return setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction,
+        parameters.plugins
+      ).destroy;
+    },
+  };
+}
 
 export const pinchComposition = (
   node: HTMLElement,
@@ -76,8 +82,6 @@ function pinchBase(
     composed: false,
     ...inputParameters,
   };
-
-  const gestureName = 'pinch';
 
   let prevDistance: number | undefined;
   let initDistance = 0;
@@ -122,7 +126,6 @@ function pinchBase(
     onMove,
     onDown,
     onUp,
-    gestureName,
     parameters,
   };
 }

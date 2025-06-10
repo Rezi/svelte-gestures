@@ -1,17 +1,18 @@
 import {
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
+  type ActionType,
   type BaseParams,
   type Coord,
   type GestureCustomEvent,
-  type Action,
   type SubGestureFunctions,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 import {
   shapeDetector,
   DEFAULT_NB_OF_SAMPLE_POINTS,
-  DEFAULT_TRESHOLD,
+  DEFAULT_THRESHOLD,
   type Pattern,
   type Options,
 } from './detector';
@@ -31,34 +32,37 @@ export type ShapePointerEventDetail = {
 
 export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;
 
-export const shapeGesture: Action<
-  HTMLElement,
-  () => Partial<ShapeGestureParameters>,
-  {
-    onshapeGesture: (e: ShapeCustomEvent) => void;
-    onshapeGesturedown: (e: GestureCustomEvent) => void;
-    onshapeGestureup: (e: GestureCustomEvent) => void;
-    onshapeGesturemove: (e: GestureCustomEvent) => void;
-  }
-> = (
-  node: HTMLElement,
-  inputParameters?: () => Partial<ShapeGestureParameters>
-) => {
-  $effect(() => {
-    const { onMove, onDown, onUp, parameters, gestureName } = shapeGestureBase(
-      node,
-      inputParameters?.()
-    );
-    return setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+const gestureName = 'shapeGesture' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+
+export function useShapeGesture(
+  inputParameters: () => Partial<ShapeGestureParameters>,
+  handler: (e: ShapeCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters } = shapeGestureBase(
+        node,
+        inputParameters?.()
+      );
+
+      return setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction
+      ).destroy;
+    },
+  };
+}
 
 export const shapeGestureComposition = (
   node: HTMLElement,
@@ -83,14 +87,12 @@ function shapeGestureBase(
   const parameters: ShapeGestureParameters = {
     composed: false,
     shapes: [],
-    threshold: DEFAULT_TRESHOLD,
+    threshold: DEFAULT_THRESHOLD,
     timeframe: 1000,
     nbOfSamplePoints: DEFAULT_NB_OF_SAMPLE_POINTS,
     touchAction: DEFAULT_TOUCH_ACTION,
     ...inputParameters,
   };
-
-  const gestureName = 'shapeGesture';
 
   const detector = shapeDetector(parameters.shapes, { ...parameters });
 
@@ -131,5 +133,5 @@ function shapeGestureBase(
     }
   }
 
-  return { onDown, onMove, onUp, gestureName, parameters };
+  return { onDown, onMove, onUp, parameters };
 }

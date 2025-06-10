@@ -27,6 +27,7 @@ export type BaseParams = Composed & {
     touchAction: TouchAction | TouchAction[];
     plugins?: GesturePlugin[] | undefined;
 };
+export type ActionType = 'up' | 'down' | 'move';
 export type DispatchEvent = {
     event: PointerEvent;
     pointersCount: number;

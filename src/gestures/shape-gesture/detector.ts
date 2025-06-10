@@ -14,7 +14,7 @@ export type PatternWithCenter = Pattern & {
 
 export type Result = { score: number; pattern: string | null };
 
-export const DEFAULT_TRESHOLD = 0.9;
+export const DEFAULT_THRESHOLD = 0.9;
 export const DEFAULT_NB_OF_SAMPLE_POINTS = 64;
 
 const PHI = (Math.sqrt(5.0) - 1) / 2;

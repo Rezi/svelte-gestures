@@ -1,1 +1,1 @@
-declare var $effect: any;
+// declare var $effect: any;

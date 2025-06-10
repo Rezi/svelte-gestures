@@ -2,11 +2,12 @@ import {
   DEFAULT_DELAY,
   DEFAULT_PRESS_SPREAD,
   setPointerControls,
-  type Action,
   type BaseParams,
   type GestureCustomEvent,
   type SubGestureFunctions,
+  type ActionType,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type PressParameters = {
   timeframe: number;
@@ -23,34 +24,42 @@ export type PressPointerEventDetail = {
 
 export type PressCustomEvent = CustomEvent<PressPointerEventDetail>;
 
-export const press: Action<
-  HTMLElement,
-  () => Partial<PressParameters>,
-  {
-    onpress: (e: PressCustomEvent) => void;
-    onpressdown: (e: GestureCustomEvent) => void;
-    onpressup: (e: GestureCustomEvent) => void;
-    onpressmove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<PressParameters>) => {
-  $effect(() => {
-    const { onMove, onDown, onUp, parameters, gestureName, clearTimeoutWrap } =
-      pressBase(node, inputParameters?.());
-    const onSharedDestroy = setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction
-    );
+const gestureName = 'press' as const;
 
-    return () => {
-      onSharedDestroy.destroy();
-      clearTimeoutWrap();
-    };
-  });
-};
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+
+export function usePress(
+  inputParameters: () => Partial<PressParameters>,
+  handler: (e: PressCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters, clearTimeoutWrap } = pressBase(
+        node,
+        inputParameters?.()
+      );
+
+      const onSharedDestroy = setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction
+      );
+
+      return () => {
+        onSharedDestroy.destroy();
+        clearTimeoutWrap();
+      };
+    },
+  };
+}
 
 export const pressComposition = (
   node: HTMLElement,
@@ -80,8 +89,6 @@ function pressBase(
   };
 
   let initialOncontextmenu = node.oncontextmenu;
-
-  const gestureName = 'press';
 
   let startTime: number;
   let clientX: number;
@@ -163,5 +170,5 @@ function pressBase(
     clearTimeout(timeout);
   }
 
-  return { onDown, onMove, onUp, gestureName, parameters, clearTimeoutWrap };
+  return { onDown, onMove, onUp, parameters, clearTimeoutWrap };
 }

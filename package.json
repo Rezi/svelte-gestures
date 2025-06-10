@@ -3,7 +3,7 @@
   "description": "Svelte cross-platform gesture actions",
   "repository": "https://github.com/Rezi/svelte-gestures",
   "license": "MIT",
-  "version": "5.1.4",
+  "version": "5.2.0",
   "main": "dist/index.svelte.js",
   "module": "dist/index.esm.svelte.js",
   "types": "./index.d.ts",
@@ -12,15 +12,13 @@
     "index.d.ts"
   ],
   "devDependencies": {
-    "@babel/core": "^7.24.9",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
-    "@babel/preset-typescript": "^7.24.7",
+    "@babel/core": "^7.27.4",
+    "@babel/preset-typescript": "^7.27.1",
     "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "rollup": "^4.19.0",
-    "svelte": "^5.0.0-next.193",
-    "typescript": "5.5.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.21.0"
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.42.0",
+    "svelte": "^5.33.19",
+    "typescript": "5.8.3"
   },
   "scripts": {
     "build": "rm -rf dist && rollup -c && tsc --emitDeclarationOnly",

@@ -4,10 +4,11 @@ import {
   DEFAULT_TOUCH_ACTION,
   setPointerControls,
   type SubGestureFunctions,
-  type Action,
   type BaseParams,
   type GestureCustomEvent,
+  type ActionType,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type SwipeParameters = {
   timeframe: number;
@@ -21,35 +22,37 @@ export type SwipePointerEventDetail = {
   pointerType: string;
 };
 
-type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
-
+export type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
 export type SwipeCustomEvent = CustomEvent<SwipePointerEventDetail>;
 
-export const swipe: Action<
-  HTMLElement,
-  () => Partial<SwipeParameters>,
-  {
-    onswipe: (e: SwipeCustomEvent) => void;
-    onswipedown: (e: GestureCustomEvent) => void;
-    onswipeup: (e: GestureCustomEvent) => void;
-    onswipemove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<SwipeParameters>) => {
-  $effect(() => {
-    const { onDown, onUp, parameters, gestureName } = swipeBase(
-      node,
-      inputParameters?.()
-    );
-    return setPointerControls(
-      gestureName,
-      node,
-      null,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+const gestureName = 'swipe' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+
+export function useSwipe(
+  inputParameters: () => Partial<SwipeParameters>,
+  handler: (e: SwipeCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onDown, onUp, parameters } = swipeBase(node, inputParameters?.());
+
+      return setPointerControls(
+        gestureName,
+        node,
+        null,
+        onDown,
+        onUp,
+        parameters.touchAction
+      ).destroy;
+    },
+  };
+}
 
 export const swipeComposition = (
   node: HTMLElement,
@@ -76,8 +79,6 @@ function swipeBase(
     composed: false,
     ...inputParameters,
   };
-
-  const gestureName = 'swipe';
 
   let startTime: number;
   let clientX: number;
@@ -121,5 +122,5 @@ function swipeBase(
       }
     }
   }
-  return { onDown, onUp, parameters, gestureName };
+  return { onDown, onUp, parameters };
 }

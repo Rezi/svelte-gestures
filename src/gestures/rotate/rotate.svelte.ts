@@ -2,12 +2,13 @@ import {
   getCenterOfTwoPoints,
   setPointerControls,
   DEFAULT_TOUCH_ACTION,
+  type ActionType,
   type BaseParams,
   type Coord,
-  type Action,
   type GestureCustomEvent,
   type SubGestureFunctions,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type RotateParameters = BaseParams;
 
@@ -18,6 +19,10 @@ export type RotatePointerEventDetail = {
 };
 
 export type RotateCustomEvent = CustomEvent<RotatePointerEventDetail>;
+
+const gestureName = 'rotate' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
 
 function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   const quadrantsMap = {
@@ -48,32 +53,33 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]) {
   return angle + quadrantAngleBonus;
 }
 
-export const rotate: Action<
-  HTMLElement,
-  () => Partial<RotateParameters>,
-  {
-    onrotate: (e: RotateCustomEvent) => void;
-    onrotatedown: (e: GestureCustomEvent) => void;
-    onrotateup: (e: GestureCustomEvent) => void;
-    onrotatemove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<RotateParameters>) => {
-  $effect(() => {
-    const { gestureName, onMove, onDown, onUp, parameters } = rotateBase(
-      node,
-      inputParameters?.()
-    );
+export function useRotate(
+  inputParameters: () => Partial<RotateParameters>,
+  handler: (e: RotateCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters } = rotateBase(
+        node,
+        inputParameters?.()
+      );
 
-    return setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+      return setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction
+      ).destroy;
+    },
+  };
+}
 
 export const rotateComposition = (
   node: HTMLElement,
@@ -101,7 +107,6 @@ function rotateBase(
     composed: false,
     ...inputParameters,
   };
-  const gestureName = 'rotate';
 
   let prevAngle: number | undefined;
   let initAngle = 0;
@@ -153,5 +158,5 @@ function rotateBase(
     return false;
   }
 
-  return { gestureName, onMove, onDown, onUp, parameters };
+  return { onMove, onDown, onUp, parameters };
 }
