@@ -22,7 +22,10 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
   let fadingRunning = false;
   let animationStepTime = Date.now();
 
-  const pos = { x: 0, y: 0 };
+  const pos: {
+    x?: number;
+    y?: number;
+  } = { x: undefined, y: undefined };
 
   function animate() {
     const fadeTime = options.fadeTime ?? fallbacks.fadeTime;
@@ -41,7 +44,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
       animationStepTime = now;
     }
 
-    if (fadingRunning) requestAnimationFrame(animate);
+    fadingRunning && requestAnimationFrame(animate);
   }
 
   function setPosition(e: { x: number; y: number }) {
@@ -65,11 +68,48 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
       ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
       ctx.lineCap = 'round';
       ctx.strokeStyle = options.color ?? fallbacks.color;
-      ctx.moveTo(pos.x, pos.y);
-      setPosition(e);
-      ctx.lineTo(pos.x, pos.y);
+      if (pos.x !== undefined && pos.y !== undefined) {
+        ctx.moveTo(pos.x, pos.y);
+        setPosition(e);
+        ctx.lineTo(pos.x, pos.y);
+      } else {
+        setPosition(e);
+      }
+
       ctx.stroke();
     }
+  }
+
+  function onInit(dispatchEvent?: DispatchEvent) {
+    // Reset if already running (could caused by some unexpected browser behavior)
+    onDestroy();
+
+    canvas = window.document.createElement('canvas');
+    canvas.id = 'svelte-gestures-highlight-plugin';
+    ctx = canvas.getContext('2d');
+
+    canvas.style.cssText = `
+display: block; 
+width: 100dvw;
+height: 100dvh;
+top: 0;
+left: 0;
+position: fixed;
+pointer-events: none;
+z-index: ${options.zIndex ?? fallbacks.zIndex};
+`;
+    window.document.body.appendChild(canvas);
+    window.addEventListener('resize', resize);
+
+    dispatchEvent && setPosition(dispatchEvent.event);
+
+    // Create an off-screen canvas
+    offScreenCanvas = document.createElement('canvas');
+
+    resize();
+    offScreenCtx = offScreenCanvas.getContext('2d');
+    fadingRunning = true;
+    animate();
   }
 
   function onDestroy() {
@@ -85,36 +125,20 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
       draw(dispatchEvent.event);
     },
     onDown: (dispatchEvent: DispatchEvent) => {
-      // Reset if already running (could caused by some unexpected browser behavior)
-      onDestroy();
-
-      canvas = window.document.createElement('canvas');
-      canvas.id = 'svelte-gestures-highlight-plugin';
-      ctx = canvas.getContext('2d');
-
-      canvas.style.cssText = `
-display: block; 
-width: 100dvw;
-height: 100dvh;
-top: 0;
-left: 0;
-position: fixed;
-pointer-events: none;
-z-index: ${options.zIndex ?? fallbacks.zIndex};
-`;
-      window.document.body.appendChild(canvas);
-      window.addEventListener('resize', resize);
-
-      setPosition(dispatchEvent.event);
-
-      // Create an off-screen canvas
-      offScreenCanvas = document.createElement('canvas');
-
-      resize();
-      offScreenCtx = offScreenCanvas.getContext('2d');
-      fadingRunning = true;
-      animate();
+      onInit(dispatchEvent);
     },
-    onUp: onDestroy,
+    onUp: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+      if (activeEvents.length === 0) {
+        onDestroy();
+      }
+    },
+    onDestroy: onDestroy,
+    onInit: (activeEvents: PointerEvent[]) => {
+      if (activeEvents.length) {
+        pos.x = undefined;
+        pos.y = undefined;
+        onInit();
+      }
+    },
   };
 };

@@ -14,7 +14,8 @@ export default [
       }),
       babel({
         extensions,
-        exclude: 'node_modules/**',
+        babelHelpers: 'runtime',
+        exclude: ['node_modules/**', 'vite.config.*'],
       }),
     ],
     output: [
@@ -23,10 +24,7 @@ export default [
         format: 'cjs',
         plugins: [
           getBabelOutputPlugin({
-            plugins: [
-              '@babel/plugin-proposal-optional-chaining',
-              '@babel/plugin-proposal-nullish-coalescing-operator',
-            ],
+            plugins: [],
           }),
         ],
       },

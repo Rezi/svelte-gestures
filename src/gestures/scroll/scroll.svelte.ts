@@ -1,13 +1,15 @@
 import {
   DEFAULT_DELAY,
   DEFAULT_TOUCH_ACTION,
-  setPointerControls,
   type BaseParams,
   type Coord,
-  type Action,
   type GestureCustomEvent,
   type SubGestureFunctions,
+  type ActionType,
+  createPointerControls,
 } from '../../shared';
+
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type ScrollParameters = {
   delay: number;
@@ -16,6 +18,15 @@ export type ScrollParameters = {
 type Direction = 'x' | 'y';
 type ScrollDimension = 'scrollHeight' | 'scrollWidth';
 type ClientDimension = 'clientHeight' | 'clientWidth';
+
+const gestureName = 'scroll' as const;
+
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type ScrollEvent = Record<
+  OnEventType,
+  (gestureEvent: CustomEvent) => void
+>;
 
 function isScrollMode(event: PointerEvent) {
   return event.pointerType === 'touch';
@@ -30,6 +41,7 @@ function getScrollParent(
   }
 
   const isElement = node instanceof HTMLElement;
+
   const overflowY = isElement && window.getComputedStyle(node).overflowY;
   const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
   const directionToDimension = { x: 'Width', y: 'Height' };
@@ -49,32 +61,36 @@ function getScrollParent(
   }
 }
 
-export const scroll: Action<
-  HTMLElement,
-  () => Partial<ScrollParameters>,
-  {
-    onscroll: (e: CustomEvent) => void;
-    onscrolldown: (e: GestureCustomEvent) => void;
-    onscrollup: (e: GestureCustomEvent) => void;
-    onscrollmove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<ScrollParameters>) => {
-  $effect(() => {
-    const { gestureName, onMove, onDown, onUp, parameters } = scrollBase(
-      node,
-      inputParameters?.()
-    );
+export function useScroll(
+  handler: (e: CustomEvent) => void,
+  inputParameters?: () => Partial<ScrollParameters>,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  const { setPointerControls } = createPointerControls();
 
-    return setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters } = scrollBase(
+        node,
+        inputParameters?.()
+      );
+
+      return setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction,
+        parameters.plugins
+      ).destroy;
+    },
+  };
+}
 
 export const scrollComposition = (
   node: HTMLElement,
@@ -105,7 +121,6 @@ function scrollBase(
     },
     ...inputParameters,
   };
-  const gestureName = 'scroll';
 
   const nearestScrollEl: {
     x: HTMLElement | undefined;
@@ -196,5 +211,5 @@ function scrollBase(
     }
   }
 
-  return { gestureName, onMove, onDown, onUp, parameters };
+  return { onMove, onDown, onUp, parameters };
 }

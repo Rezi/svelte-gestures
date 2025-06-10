@@ -1,20 +1,19 @@
 # svelte-gestures
 
-3 KB gzipped (you can use just part of those 3 KB) - a collection of gesture recognizers for Svelte ;)
+3 KB gzipped (you can use just part of those 3 KB) - a collection of gesture recognizers for Svelte. It can be actually used in any framework or native JS as it does not use any specific Svelte syntax at all ;)
 
-##### New in svelte-gestures 5.2.0:
+##### New in svelte-gestures 5.1.2:
 
 - **Only works with Svelte 5**
 - Support for plugins (highlight plugin provided in the library for gesture visualization)
 - There are several **breaking changes** with new API. It changes how parameters are passed to gestures. If you want to follow readme and examples for `svelte-gestures` 5.0.7 and older please follow the old [README_5.0.7.md](README_5.0.7.md)
 
 ### Migration
-
 For migration from 5.0.7 or older please follow [CHANGELOG.md](CHANGELOG.md)
 
 ## installation
 
-**Npm**
+**Npm** 
 `npm install svelte-gestures`
 
 **Npm Installing from JSR**
@@ -24,6 +23,7 @@ For migration from 5.0.7 or older please follow [CHANGELOG.md](CHANGELOG.md)
 `deno add @rezi/svelte-gestures`
 
 Svelte 4 projects should use svelte-gestures version 4, while older Svelte projects should use version 1.5.2 and lower.
+
 
 ## About
 
@@ -39,31 +39,27 @@ Besides above mentioned gestures, there are two more: `composedGesture` and `scr
 
 It uses pointer events under the hood, to make it cross-platform. Gestures will be recognized if done by mouse, touch, stylus etc.
 
-Recognizers are kept as simple as possible but still provide desired basic functionality. They are made in the form of svelte attachments with custom event emitters. **Any number of different recognizers can be used on one element**, but it is recommended to use `composedGesture` for combined gestures.
+Recognizers are kept as simple as possible but still provide desired basic functionality. They are made in the form of svelte actions with custom event emitters. **Any number of different recognizers can be used on one element**, but it is recommended to use `composedGesture` for combined gestures.
 
 ## API events
 
-Except for the main event, each recognizer triggers, three more events with names composed of attachment name (`pan` | `pinch` | `tap` | `swipe` | `rotate` | `shapeGesture` | `composedGesture`) and event type (`up` | `down` | `move`).
+Except for the main event, each recognizer triggers, three more events with names composed of action name (`pan` | `pinch` | `tap` | `swipe` | `rotate` | `shapeGesture` | `composedGesture`) and event type (`up` | `down` | `move`).
 
-For example `pan` attachment has for example `panup`, `pandown`, `panmove`. It dispatches `event.detail` with the following property
+For example `pan` action has for example `panup`, `pandown`, `panmove`. It dispatches `event.detail` with the following property
 
 ```
-{
-  event: PointerEvent,
-  pointersCount: number ,
+{ 
+  event: PointerEvent, 
+  pointersCount: number , 
   target:HTMLElement,
   x: number,
   y: number,
-}
+} 
 ```
 
 ```html
 <script lang="ts">
-  import {
-    pan,
-    type PanCustomEvent,
-    type GestureCustomEvent,
-  } from 'svelte-gestures';
+  import { pan, type PanCustomEvent, type GestureCustomEvent } from 'svelte-gestures';
   let x: number;
   let y: number;
   let target: EventTarget;
@@ -72,7 +68,7 @@ For example `pan` attachment has for example `panup`, `pandown`, `panmove`. It d
     x = event.detail.x;
     y = event.detail.y;
     target = event.detail.target;
-  }
+	}
 
   function panDown(gestureEvent: GestureCustomEvent) {
     const { event, pointersCount, target, x, y } = gestureEvent.detail;
@@ -85,14 +81,15 @@ For example `pan` attachment has for example `panup`, `pandown`, `panmove`. It d
 
 <div
   use:pan
-  on:pan="{handler}"
-  on:pandown="{panDown}"
-  on:panmove="{panMove}"
+  on:pan={handler}
+  on:pandown={panDown}
+  on:panmove={panMove}
   style="width:500px;height:500px;border:1px solid black;"
 ></div>
+
 ```
 
-You can import this event type as `GestureCustomEvent`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied). `x` and `y` refer to coordinates within the gesture element.
+ You can import this event type as `GestureCustomEvent`. First is a native pointer event; the second is the number of active pointers; third is the target Element on which the gesture started (it can be a child of the element on which a gesture is applied). `x` and `y` refer to coordinates within the gesture element.
 
 ## Pan
 
@@ -126,6 +123,7 @@ on:pan is triggered on the pointer (mouse, touch, etc.) move. But not earlier th
     y = event.detail.y;
     target = event.detail.target;
     pointerType = event.detail.pointerType;
+    
   }
 </script>
 
@@ -261,9 +259,9 @@ function handler(event: SwipeCustomEvent) {
 }
 </script>
 
-<div
-  use:swipe={()=>({ timeframe: 300, minSwipeDistance: 60 })}
-  on:swipe={handler}
+<div 
+  use:swipe={()=>({ timeframe: 300, minSwipeDistance: 60 })} 
+  on:swipe={handler} 
   style="width:500px;height:500px;border:1px solid black;">
   direction: {direction}
 </div>
@@ -307,8 +305,8 @@ function handler(event: TapCustomEvent) {
 }
 
 </script>
-<div use:tap={()=>({ timeframe: 300 })}
-  on:tap={handler}
+<div use:tap={()=>({ timeframe: 300 })} 
+  on:tap={handler} 
   style="width:500px;height:500px;border:1px solid black;">
   tap: {x} {y}
 </div>
@@ -524,25 +522,25 @@ You are encouraged to create your own plugins. Just follow the source code of th
 
 <script lang="ts">
   import { pan, type PanCustomEvent, type GestureCustomEvent, highlightPlugin } from 'svelte-gestures';
-
+  
   let lineWidth = 8;
-
+  
   let x = $state(0);
   let y = $state(0);
   let target: EventTarget | null = $state(null);
-
+  
   function handler(event: PanCustomEvent) {
     x = event.detail.x;
     y = event.detail.y;
     target = event.detail.target;
   }
-
+  
   function panUp(gestureEvent: GestureCustomEvent) {
     gesturePluginOptions = { color: getColor(), fadeTime: 500, lineWidth };
   }
-
+  
   let gesturePluginOptions = $state({ color: '#00ff00', fadeTime: 500, lineWidth });
-
+  
   const getColor = (): string => {
     let n = (Math.random() * 0xfffff * 1000000).toString(16);
     return '#' + n.slice(0, 6);
@@ -564,6 +562,7 @@ You are encouraged to create your own plugins. Just follow the source code of th
 
 
 ```
+
 
 # Your own gestures
 

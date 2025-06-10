@@ -1,11 +1,12 @@
 import {
   type SubGestureFunctions,
-  setPointerControls,
   type GesturePlugin,
   getDispatchEventData,
-  type Action,
   type GestureCustomEvent,
+  type ActionType,
+  createPointerControls,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type ListenerType = 'onDown' | 'onUp' | 'onMove';
 export type GenericParamsWithPlugins = Record<string, unknown> & {
@@ -39,7 +40,12 @@ export type ComposedGestureFnsWithPlugins = {
   plugins: GesturePlugin[];
 };
 
-function callAllByType(
+export const gestureName = 'composedGesture' as const;
+
+type EventTypeName<T extends string> = `on${T}${ActionType}`;
+type EventTypePureName<T extends string> = `on${T}`;
+
+export function callAllByType(
   listenerType: ListenerType,
   composedGestureFnsWithPlugins: ComposedGestureFnsWithPlugins[],
   activeEvents: PointerEvent[],
@@ -57,66 +63,75 @@ function callAllByType(
   );
 }
 
-export const composedGesture: Action<
-  HTMLElement,
-  GestureCallback,
-  {
-    oncomposedGesture: (e: CustomEvent) => void;
-    oncomposedGesturedown: (e: GestureCustomEvent) => void;
-    oncomposedGestureup: (e: GestureCustomEvent) => void;
-    oncomposedGesturemove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, gestureCallback: GestureCallback) => {
-  $effect(() => {
-    const gestureFunctionsWithPlugins: ComposedGestureFnsWithPlugins[] = [];
+export function useComposedGesture<GestureEvents>(
+  gestureCallback: GestureCallback,
+  baseHandlers?: Partial<
+    Record<
+      EventTypeName<typeof gestureName>,
+      (gestureEvent: GestureCustomEvent) => void
+    > &
+      GestureEvents
+  >
+) {
+  const { setPointerControls } = createPointerControls();
 
-    function registerGesture<F extends GenericParamsWithPlugins>(
-      gestureFn: (node: HTMLElement, params: F) => SubGestureFunctions,
-      parameters: F
-    ) {
-      const subGestureFns = gestureFn(node, { ...parameters, composed: true });
+  return {
+    ...baseHandlers,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const gestureFunctionsWithPlugins: ComposedGestureFnsWithPlugins[] = [];
 
-      gestureFunctionsWithPlugins.push({
-        fns: subGestureFns,
-        plugins: parameters.plugins || [],
-      });
+      function registerGesture<F extends GenericParamsWithPlugins>(
+        gestureFn: (node: HTMLElement, params: F) => SubGestureFunctions,
+        parameters: F
+      ) {
+        const subGestureFns = gestureFn(node, {
+          ...parameters,
+          composed: true,
+        });
 
-      return subGestureFns;
-    }
+        gestureFunctionsWithPlugins.push({
+          fns: subGestureFns,
+          plugins: parameters.plugins || [],
+        });
 
-    const onMoveCallback: (
-      activeEvents: PointerEvent[],
-      event: PointerEvent
-    ) => void = gestureCallback(registerGesture, node);
+        return subGestureFns;
+      }
 
-    const gestureName = 'composedGesture';
+      const onMoveCallback: (
+        activeEvents: PointerEvent[],
+        event: PointerEvent
+      ) => void = gestureCallback(registerGesture, node);
 
-    function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
-      callAllByType(
-        'onUp',
-        gestureFunctionsWithPlugins,
-        activeEvents,
-        event,
-        node
-      );
-    }
+      const gestureName = 'composedGesture';
 
-    function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
-      callAllByType(
-        'onDown',
-        gestureFunctionsWithPlugins,
-        activeEvents,
-        event,
-        node
-      );
-    }
+      function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+        callAllByType(
+          'onUp',
+          gestureFunctionsWithPlugins,
+          activeEvents,
+          event,
+          node
+        );
+      }
 
-    function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
-      onMoveCallback(activeEvents, event);
+      function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+        callAllByType(
+          'onDown',
+          gestureFunctionsWithPlugins,
+          activeEvents,
+          event,
+          node
+        );
+      }
 
-      return true;
-    }
+      function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+        onMoveCallback(activeEvents, event);
 
-    return setPointerControls(gestureName, node, onMove, onDown, onUp).destroy;
-  });
-};
+        return true;
+      }
+
+      return setPointerControls(gestureName, node, onMove, onDown, onUp)
+        .destroy;
+    },
+  };
+}
