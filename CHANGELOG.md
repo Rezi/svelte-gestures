@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.0
+
+- Conversion to attachments
+- For previous version without attachments and its documentation and examples, please check [README_5.0.7.md](/README_5.0.7.md)
+
 ## 5.1.4
 
 - Press gesture now disable context menu and text selection only when touch input is used. When mouse is used context menu and text selection works as expected.

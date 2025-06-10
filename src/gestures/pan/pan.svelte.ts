@@ -1,12 +1,14 @@
 import {
+	type ActionType,
 	DEFAULT_DELAY,
 	DEFAULT_TOUCH_ACTION,
-	setPointerControls,
-	type Action,
 	type BaseParams,
 	type GestureCustomEvent,
-	type SubGestureFunctions
+	type SubGestureFunctions,
+	createPointerControls
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
+
 export type PanParameters = { delay: number } & BaseParams;
 
 export type PanPointerEventDetail = {
@@ -18,30 +20,37 @@ export type PanPointerEventDetail = {
 
 export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;
 
-export const pan: Action<
-	HTMLElement,
-	() => Partial<PanParameters>,
-	{
-		onpan: (e: PanCustomEvent) => void;
-		onpandown: (e: GestureCustomEvent) => void;
-		onpanup: (e: GestureCustomEvent) => void;
-		onpanmove: (e: GestureCustomEvent) => void;
-	}
-> = (node: HTMLElement, inputParameters?: () => Partial<PanParameters>) => {
-	$effect(() => {
-		const { onMove, onDown, gestureName, parameters } = panBase(node, inputParameters?.());
+const gestureName = 'pan' as const;
 
-		return setPointerControls(
-			gestureName,
-			node,
-			onMove,
-			onDown,
-			null,
-			parameters.touchAction,
-			parameters.plugins
-		).destroy;
-	});
-};
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type PanEvent = Record<OnEventType, (gestureEvent: PanCustomEvent) => void>;
+
+export function usePan(
+	handler: (e: PanCustomEvent) => void,
+	inputParameters?: () => Partial<PanParameters>,
+	baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>
+) {
+	const { setPointerControls } = createPointerControls();
+
+	return {
+		...baseHandlers,
+		[`on${gestureName}`]: handler,
+		[createAttachmentKey()]: (node: HTMLElement) => {
+			const { onMove, onDown, parameters } = panBase(node, inputParameters?.());
+
+			return setPointerControls(
+				gestureName,
+				node,
+				onMove,
+				onDown,
+				null,
+				parameters.touchAction,
+				parameters.plugins
+			).destroy;
+		}
+	};
+}
 
 export const panComposition = (
 	node: HTMLElement,
@@ -64,7 +73,6 @@ function panBase(node: HTMLElement, inputParameters?: Partial<PanParameters>) {
 		touchAction: DEFAULT_TOUCH_ACTION,
 		...inputParameters
 	};
-	const gestureName = 'pan';
 
 	let startTime: number;
 	let target: EventTarget | null;
@@ -92,5 +100,5 @@ function panBase(node: HTMLElement, inputParameters?: Partial<PanParameters>) {
 		return false;
 	}
 
-	return { onDown, onMove, gestureName, parameters };
+	return { onDown, onMove, parameters };
 }
