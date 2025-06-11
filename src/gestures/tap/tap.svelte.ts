@@ -2,10 +2,11 @@ import {
   DEFAULT_DELAY,
   setPointerControls,
   type SubGestureFunctions,
-  type Action,
   type BaseParams,
   type GestureCustomEvent,
+  type ActionType,
 } from '../../shared';
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type TapParameters = {
   timeframe: number;
@@ -20,31 +21,34 @@ export type TapPointerEventDetail = {
 
 export type TapCustomEvent = CustomEvent<TapPointerEventDetail>;
 
-export const tap: Action<
-  HTMLElement,
-  () => Partial<TapParameters>,
-  {
-    ontap: (e: TapCustomEvent) => void;
-    ontapdown: (e: GestureCustomEvent) => void;
-    ontapup: (e: GestureCustomEvent) => void;
-    ontapmove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<TapParameters>) => {
-  $effect(() => {
-    const { onDown, onUp, parameters, gestureName } = tapBase(
-      node,
-      inputParameters?.()
-    );
-    return setPointerControls(
-      gestureName,
-      node,
-      null,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+const gestureName = 'tap' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+
+export function useTap(
+  inputParameters: () => Partial<TapParameters>,
+  handler: (e: TapCustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onDown, onUp, parameters } = tapBase(node, inputParameters?.());
+
+      return setPointerControls(
+        gestureName,
+        node,
+        null,
+        onDown,
+        onUp,
+        parameters.touchAction
+      ).destroy;
+    },
+  };
+}
 
 export const tapComposition = (
   node: HTMLElement,
@@ -66,7 +70,6 @@ function tapBase(node: HTMLElement, inputParameters?: Partial<TapParameters>) {
     touchAction: 'auto',
     ...inputParameters,
   };
-  const gestureName = 'tap';
 
   let startTime: number;
   let clientX: number;
@@ -101,5 +104,5 @@ function tapBase(node: HTMLElement, inputParameters?: Partial<TapParameters>) {
     startTime = Date.now();
   }
 
-  return { onDown, onUp, parameters, gestureName };
+  return { onDown, onUp, parameters };
 }

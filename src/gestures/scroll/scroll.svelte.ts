@@ -4,10 +4,12 @@ import {
   setPointerControls,
   type BaseParams,
   type Coord,
-  type Action,
   type GestureCustomEvent,
   type SubGestureFunctions,
+  type ActionType,
 } from '../../shared';
+
+import { createAttachmentKey } from 'svelte/attachments';
 
 export type ScrollParameters = {
   delay: number;
@@ -16,6 +18,10 @@ export type ScrollParameters = {
 type Direction = 'x' | 'y';
 type ScrollDimension = 'scrollHeight' | 'scrollWidth';
 type ClientDimension = 'clientHeight' | 'clientWidth';
+
+const gestureName = 'scroll' as const;
+
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
 
 function isScrollMode(event: PointerEvent) {
   return event.pointerType === 'touch';
@@ -49,32 +55,33 @@ function getScrollParent(
   }
 }
 
-export const scroll: Action<
-  HTMLElement,
-  () => Partial<ScrollParameters>,
-  {
-    onscroll: (e: CustomEvent) => void;
-    onscrolldown: (e: GestureCustomEvent) => void;
-    onscrollup: (e: GestureCustomEvent) => void;
-    onscrollmove: (e: GestureCustomEvent) => void;
-  }
-> = (node: HTMLElement, inputParameters?: () => Partial<ScrollParameters>) => {
-  $effect(() => {
-    const { gestureName, onMove, onDown, onUp, parameters } = scrollBase(
-      node,
-      inputParameters?.()
-    );
+export function useScroll(
+  inputParameters: () => Partial<ScrollParameters>,
+  handler: (e: CustomEvent) => void,
+  baseHandlers?: Partial<
+    Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
+  >
+) {
+  return {
+    ...baseHandlers,
+    [`on${gestureName}`]: handler,
+    [createAttachmentKey()]: (node: HTMLElement) => {
+      const { onMove, onDown, onUp, parameters } = scrollBase(
+        node,
+        inputParameters?.()
+      );
 
-    return setPointerControls(
-      gestureName,
-      node,
-      onMove,
-      onDown,
-      onUp,
-      parameters.touchAction
-    ).destroy;
-  });
-};
+      return setPointerControls(
+        gestureName,
+        node,
+        onMove,
+        onDown,
+        onUp,
+        parameters.touchAction
+      ).destroy;
+    },
+  };
+}
 
 export const scrollComposition = (
   node: HTMLElement,
@@ -105,7 +112,6 @@ function scrollBase(
     },
     ...inputParameters,
   };
-  const gestureName = 'scroll';
 
   const nearestScrollEl: {
     x: HTMLElement | undefined;
@@ -196,5 +202,5 @@ function scrollBase(
     }
   }
 
-  return { gestureName, onMove, onDown, onUp, parameters };
+  return { onMove, onDown, onUp, parameters };
 }

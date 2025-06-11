@@ -1,4 +1,4 @@
-import { type SubGestureFunctions, type GesturePlugin, type Action, type GestureCustomEvent } from '../../shared';
+import { type SubGestureFunctions, type GesturePlugin, type GestureCustomEvent, type ActionType } from '../../shared';
 export type ListenerType = 'onDown' | 'onUp' | 'onMove';
 export type GenericParamsWithPlugins = Record<string, unknown> & {
     plugins?: GesturePlugin[];
@@ -10,10 +10,12 @@ export type ComposedGestureFnsWithPlugins = {
     fns: SubGestureFunctions;
     plugins: GesturePlugin[];
 };
-export declare const composedGesture: Action<HTMLElement, GestureCallback, {
-    oncomposedGesture: (e: CustomEvent) => void;
-    oncomposedGesturedown: (e: GestureCustomEvent) => void;
-    oncomposedGestureup: (e: GestureCustomEvent) => void;
-    oncomposedGesturemove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "composedGesture";
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+export declare function useComposedGesture(gestureCallback: GestureCallback, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    oncomposedGesturemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    oncomposedGestureup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    oncomposedGesturedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
+export {};
 //# sourceMappingURL=composedGesture.svelte.d.ts.map

@@ -1,12 +1,14 @@
-import { type BaseParams, type Action, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
+import { type BaseParams, type GestureCustomEvent, type SubGestureFunctions, type ActionType } from '../../shared';
 export type ScrollParameters = {
     delay: number;
 } & BaseParams;
-export declare const scroll: Action<HTMLElement, () => Partial<ScrollParameters>, {
-    onscroll: (e: CustomEvent) => void;
-    onscrolldown: (e: GestureCustomEvent) => void;
-    onscrollup: (e: GestureCustomEvent) => void;
-    onscrollmove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "scroll";
+type EventTypeName = `on${typeof gestureName}${ActionType}`;
+export declare function useScroll(inputParameters: () => Partial<ScrollParameters>, handler: (e: CustomEvent) => void, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onscrollmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onscrollup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onscrolldown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const scrollComposition: (node: HTMLElement, inputParameters?: Partial<ScrollParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=scroll.svelte.d.ts.map
