@@ -1,6 +1,6 @@
 {
   "name": "svelte-gestures",
-  "description": "Svelte cross-platform gesture actions",
+  "description": "Svelte gestures library with plugin system. Based on svelte attachments.",
   "repository": "https://github.com/Rezi/svelte-gestures",
   "license": "MIT",
   "version": "5.2.0",

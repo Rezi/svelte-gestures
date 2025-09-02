@@ -6,6 +6,9 @@
 
 - **Only works with Svelte 5**
 - Support for plugins (highlight plugin provided in the library for gesture visualization)
+- Multi touch gesture added
+- Touch point plugin for pointer highlighting added
+- Experimental vibrate plugin added
 - There are several **breaking changes** with new API. It changes how parameters are passed to gestures. If you want to follow readme and examples for `svelte-gestures` 5.0.7 and older please follow the old [README_5.0.7.md](README_5.0.7.md)
 
 ### Migration

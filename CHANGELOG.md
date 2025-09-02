@@ -3,6 +3,9 @@
 ## 5.2.0
 
 - Conversion to attachments
+- Multitouch gesture added
+- Touch point plugin for pointer highlighting added
+- Experimental vibrate plugin added
 - For previous version without attachments and its documentation and examples, please check [README_5.0.7.md](/README_5.0.7.md)
 
 ## 5.1.4
@@ -20,27 +23,27 @@
   - Plugins can be used even in composed gestures
 
 BREAKING CHANGES
+
 - use action api now uses `$effect` to handle parameters' update rather than old `() => {destroy:()=>void, update:()=>void}`
   - parameters for gestures need to be passed in form of function wrapping parameters object instead of plain object as before. This is needed for possible updates of parameters within the internal `$effect` when they are passed in form of reactive `$state`.
 - each basic composable gesture now has its Composition version to be used in composed gesture. E.g.: `pan` has `panComposition`, `swipe` has `swipeComposition` etc.
 
-
 OTHER CHANGES
+
 - there is no need for global d.ts file to define template attributes of svelte gestures. The types are now in svelte 5 and `svelte-gestures 5.1.0` baked into the library code itself.
 - gestures has now suffix svelte eg.: `pan.svelte.ts`. This should not affect your imports directly from `svelte-gestures` package as they are served thru index.ts barrel reexports.
-
 
 ## 5.0.7
 
 - updated README and repl links to fit new urls with /playground/
-  
+
 ## 5.0.6
 
 - pointerType added to all gestures' events
 
 ## 5.0.4
 
-- Stricter type checking added: 
+- Stricter type checking added:
   - strictNullChecks
   - strictFunctionTypes
   - strictBindCallApply
