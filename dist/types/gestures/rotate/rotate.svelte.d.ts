@@ -11,9 +11,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type RotateEvent = Record<OnEventType, (gestureEvent: RotateCustomEvent) => void>;
 export declare function useRotate(handler: (e: RotateCustomEvent) => void, inputParameters?: () => Partial<RotateParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onrotatemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onrotateup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onrotatedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onrotateup?: (gestureEvent: GestureCustomEvent) => void;
+    onrotatedown?: (gestureEvent: GestureCustomEvent) => void;
+    onrotatemove?: (gestureEvent: GestureCustomEvent) => void;
+    onrotate: (e: RotateCustomEvent) => void;
 };
 export declare const rotateComposition: (node: HTMLElement, inputParameters?: Partial<RotateParameters>) => SubGestureFunctions;
 export {};

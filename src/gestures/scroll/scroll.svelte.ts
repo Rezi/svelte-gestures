@@ -28,7 +28,7 @@ export type ScrollEvent = Record<
   (gestureEvent: CustomEvent) => void
 >;
 
-function isScrollMode(event: PointerEvent) {
+function isScrollMode(event: PointerEvent): boolean {
   return event.pointerType === 'touch';
 }
 
@@ -67,13 +67,18 @@ export function useScroll(
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
   >
-) {
+): {
+  onscrollup?: (gestureEvent: GestureCustomEvent) => void;
+  onscrolldown?: (gestureEvent: GestureCustomEvent) => void;
+  onscrollmove?: (gestureEvent: GestureCustomEvent) => void;
+  onscroll: (e: CustomEvent) => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [`on${gestureName}` as OnEventType]: handler,
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = scrollBase(
         node,
         inputParameters?.()
@@ -112,7 +117,12 @@ export const scrollComposition = (
 function scrollBase(
   node: HTMLElement,
   inputParameters?: Partial<ScrollParameters>
-) {
+): {
+  onMove: (activeEvents: PointerEvent[], event: PointerEvent) => boolean;
+  onDown: () => void;
+  onUp: (activeEvents: PointerEvent[], event: PointerEvent) => void;
+  parameters: ScrollParameters;
+} {
   const parameters: ScrollParameters = {
     ...{
       delay: DEFAULT_DELAY,
@@ -137,21 +147,21 @@ function scrollBase(
     el: HTMLElement | undefined,
     scrollValue: number,
     direction: Direction
-  ) {
+  ): void {
     el?.scrollBy({
       [direction === 'x' ? 'left' : 'top']: scrollValue,
       behavior: 'auto',
     });
   }
 
-  function onDown() {
+  function onDown(): void {
     nearestScrollEl.y = getScrollParent(node, 'y');
     nearestScrollEl.x = getScrollParent(node, 'x');
 
     prevCoords = undefined;
   }
 
-  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent): boolean {
     if (activeEvents.length === 1 && isScrollMode(event)) {
       if (prevCoords !== undefined) {
         scrollDelta.y = Math.round(prevCoords.y - event.clientY);
@@ -170,7 +180,7 @@ function scrollBase(
     return false;
   }
 
-  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent): void {
     if (isScrollMode(event)) {
       if (scrollDelta.y || scrollDelta.x) {
         scrollDirectionPositive.y = scrollDelta.y > 0;
@@ -180,7 +190,7 @@ function scrollBase(
     }
   }
 
-  function scrollOutByDirection(direction: Direction) {
+  function scrollOutByDirection(direction: Direction): void {
     if (!scrollDirectionPositive[direction] && scrollDelta[direction] < 0) {
       scrollDelta[direction] += 0.3;
     } else if (
@@ -202,7 +212,7 @@ function scrollBase(
     }
   }
 
-  function scrollOutLoop() {
+  function scrollOutLoop(): void {
     if (nearestScrollEl.x) {
       scrollOutByDirection('x');
     }

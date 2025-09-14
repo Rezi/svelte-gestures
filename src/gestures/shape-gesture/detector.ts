@@ -21,17 +21,21 @@ const PHI = (Math.sqrt(5.0) - 1) / 2;
 const ANGLE_RANGE_RAD = deg2Rad(45.0);
 const ANGLE_PRECISION_RAD = deg2Rad(2.0);
 
-function deg2Rad(d: number) {
+function deg2Rad(d: number): number {
   return (d * Math.PI) / 180;
 }
 
-function getDistance(a: Coord, b: Coord) {
+function getDistance(a: Coord, b: Coord): number {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-function distanceAtBestAngle(pattern: Pattern, points: Coord[], center: Coord) {
+function distanceAtBestAngle(
+  pattern: Pattern,
+  points: Coord[],
+  center: Coord
+): number {
   let fromAngleRad = -ANGLE_RANGE_RAD;
   let toAngleRad = ANGLE_RANGE_RAD;
   let angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
@@ -63,7 +67,7 @@ function distanceAtAngle(
   angle: number,
   points: Coord[],
   center: Coord
-) {
+): number {
   const strokePoints = rotateBy(angle, points, center);
 
   const d = strokePoints.reduce((accu, sPoint, i) => {
@@ -73,7 +77,14 @@ function distanceAtAngle(
   return d / strokePoints.length;
 }
 
-function rotateBy(angle: number, points: Coord[], center: Coord) {
+function rotateBy(
+  angle: number,
+  points: Coord[],
+  center: Coord
+): {
+  x: number;
+  y: number;
+}[] {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
 
@@ -85,7 +96,10 @@ function rotateBy(angle: number, points: Coord[], center: Coord) {
   });
 }
 
-export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
+export function shapeDetector(
+  inputPatterns: Pattern[],
+  options: Options = {}
+): { detect: (points: Coord[], patternName?: string) => Result } {
   const threshold = options.threshold || 0;
   const NUMBER_OF_SAMPLE_POINTS =
     options.nbOfSamplePoints || DEFAULT_NB_OF_SAMPLE_POINTS;
@@ -117,7 +131,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
 
     return { name, points, center: { x: 0, y: 0 }, allowRotation };
 
-    function resample() {
+    function resample(): Coord[] {
       let localDistance, q;
       let distance = 0;
       const interval = strokeLength() / (NUMBER_OF_SAMPLE_POINTS - 1);
@@ -153,7 +167,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       return newPoints;
     }
 
-    function scaleToSquare() {
+    function scaleToSquare(): Coord[] {
       const box = {
         minX: +Infinity,
         maxX: -Infinity,
@@ -181,14 +195,14 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       });
     }
 
-    function translateToOrigin(center: Coord) {
+    function translateToOrigin(center: Coord): Coord[] {
       return points.map((point) => ({
         x: point.x - center.x,
         y: point.y - center.y,
       }));
     }
 
-    function getCenterPoint() {
+    function getCenterPoint(): Coord {
       const centre = points.reduce(
         (acc, point) => {
           acc.x += point.x;
@@ -208,11 +222,11 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       return centre;
     }
 
-    function indicativeAngle(center: Coord) {
+    function indicativeAngle(center: Coord): number {
       return Math.atan2(center.y - points[0].y, center.x - points[0].x);
     }
 
-    function strokeLength() {
+    function strokeLength(): number {
       let d = 0;
 
       for (let i = 1; i < points.length; i++) {
@@ -271,7 +285,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
     points: Coord[],
     allowRotation: boolean,
     bothDirections: boolean
-  ) {
+  ): PatternWithCenter[] {
     const response = [getStroke([...points], name, allowRotation)];
     if (bothDirections) {
       response.push(getStroke([...points.reverse()], name, allowRotation));

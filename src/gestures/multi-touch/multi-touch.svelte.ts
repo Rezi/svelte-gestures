@@ -38,13 +38,18 @@ export function useMultiTouch(
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
   >
-) {
+): {
+  onmultiTouchup?: (gestureEvent: GestureCustomEvent) => void;
+  onmultiTouchdown?: (gestureEvent: GestureCustomEvent) => void;
+  onmultiTouchmove?: (gestureEvent: GestureCustomEvent) => void;
+  onmultiTouch: (e: MultiTouchCustomEvent) => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [`on${gestureName}` as OnEventType]: handler,
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const { onDown, parameters } = multiTouchBase(node, inputParameters?.());
 
       return setPointerControls(
@@ -77,7 +82,10 @@ export const multiTouchComposition = (
 function multiTouchBase(
   node: HTMLElement,
   inputParameters?: Partial<MultiTouchParameters>
-) {
+): {
+  onDown: (activeEvents: PointerEvent[], event: PointerEvent) => boolean;
+  parameters: MultiTouchParameters;
+} {
   const parameters: MultiTouchParameters = {
     touchCount: 2,
     composed: false,
@@ -88,7 +96,7 @@ function multiTouchBase(
   let touchCenter: Coord;
   let target: EventTarget | null;
 
-  function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onDown(activeEvents: PointerEvent[], event: PointerEvent): boolean {
     if (activeEvents.length === 1) {
       target = event.target;
     }

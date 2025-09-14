@@ -153,7 +153,19 @@ export function dispatch(
 /** Closure needed for creation of peristent state across lifetime of a gesture,
  * Gesture can be destroyed and recreated multiple times when it options change/update
  */
-export function createPointerControls() {
+export function createPointerControls(): {
+  setPointerControls: (
+    gestureName: string,
+    node: HTMLElement,
+    onMoveCallback: PointerEventCallback<boolean>,
+    onDownCallback: PointerEventCallback<void>,
+    onUpCallback: PointerEventCallback<void>,
+    touchAction?: TouchAction | TouchAction[],
+    pluginsArg?: GesturePlugin[]
+  ) => {
+    destroy: () => void;
+  };
+} {
   let activeEvents: PointerEvent[] = [];
   let removePointerdownHandler: () => void = () => {};
   let plugins: GesturePlugin[] = [];
@@ -179,7 +191,7 @@ export function createPointerControls() {
 
       // this is needed to prevent multiple event handlers being added when gesture is recreated
       if (!activeEvents.length) {
-        function handlePointerdown(event: PointerEvent) {
+        function handlePointerdown(event: PointerEvent): void {
           activeEvents.push(event);
           const dispatchEvent: DispatchEvent = dispatch(
             node,
@@ -196,7 +208,7 @@ export function createPointerControls() {
             });
           });
 
-          function onup(e: PointerEvent) {
+          function onup(e: PointerEvent): void {
             const activeEvenstBefore = activeEvents.length;
             activeEvents = removeEvent(e, activeEvents);
             const eventRemoved = activeEvenstBefore > activeEvents.length;
@@ -220,7 +232,7 @@ export function createPointerControls() {
             }
           }
 
-          function removeEventHandlers() {
+          function removeEventHandlers(): void {
             removePointermoveHandler();
             removeLostpointercaptureHandler();
             removePointerUpHandler();
@@ -281,7 +293,7 @@ export function createPointerControls() {
       }
 
       return {
-        destroy: () => {
+        destroy: (): void => {
           if (!activeEvents.length) {
             removePointerdownHandler();
 

@@ -14,9 +14,10 @@ export declare const gestureName: "composedGesture";
 type EventTypeName<T extends string> = `on${T}${ActionType}`;
 export declare function callAllByType(listenerType: ListenerType, composedGestureFnsWithPlugins: ComposedGestureFnsWithPlugins[], activeEvents: PointerEvent[], event: PointerEvent, node: HTMLElement): void;
 export declare function useComposedGesture<GestureEvents>(gestureCallback: GestureCallback, baseHandlers?: Partial<Record<EventTypeName<typeof gestureName>, (gestureEvent: GestureCustomEvent) => void> & GestureEvents>): {
-    oncomposedGesturemove?: (Record<"oncomposedGesturemove" | "oncomposedGestureup" | "oncomposedGesturedown", (gestureEvent: GestureCustomEvent) => void> & GestureEvents)["oncomposedGesturemove"] | undefined;
-    oncomposedGestureup?: (Record<"oncomposedGesturemove" | "oncomposedGestureup" | "oncomposedGesturedown", (gestureEvent: GestureCustomEvent) => void> & GestureEvents)["oncomposedGestureup"] | undefined;
-    oncomposedGesturedown?: (Record<"oncomposedGesturemove" | "oncomposedGestureup" | "oncomposedGesturedown", (gestureEvent: GestureCustomEvent) => void> & GestureEvents)["oncomposedGesturedown"] | undefined;
+    oncomposedGestureup?: (Record<'oncomposedGestureup' | 'oncomposedGesturedown' | 'oncomposedGesturemove', (gestureEvent: GestureCustomEvent) => void> & GestureEvents)['oncomposedGestureup'] | undefined;
+    oncomposedGesturedown?: (Record<'oncomposedGestureup' | 'oncomposedGesturedown' | 'oncomposedGesturemove', (gestureEvent: GestureCustomEvent) => void> & GestureEvents)['oncomposedGesturedown'] | undefined;
+    oncomposedGesturemove?: (Record<'oncomposedGestureup' | 'oncomposedGesturedown' | 'oncomposedGesturemove', (gestureEvent: GestureCustomEvent) => void> & GestureEvents)['oncomposedGesturemove'] | undefined;
+    [attach: symbol]: (node: HTMLElement) => () => void;
 };
 export {};
 //# sourceMappingURL=composedGesture.svelte.d.ts.map

@@ -43,7 +43,6 @@ export type ComposedGestureFnsWithPlugins = {
 export const gestureName = 'composedGesture' as const;
 
 type EventTypeName<T extends string> = `on${T}${ActionType}`;
-type EventTypePureName<T extends string> = `on${T}`;
 
 export function callAllByType(
   listenerType: ListenerType,
@@ -51,7 +50,7 @@ export function callAllByType(
   activeEvents: PointerEvent[],
   event: PointerEvent,
   node: HTMLElement
-) {
+): void {
   composedGestureFnsWithPlugins.forEach(
     (gestureWithPlugin: ComposedGestureFnsWithPlugins) => {
       gestureWithPlugin.fns[listenerType]?.(activeEvents, event);
@@ -72,18 +71,47 @@ export function useComposedGesture<GestureEvents>(
     > &
       GestureEvents
   >
-) {
+): {
+  oncomposedGestureup?:
+    | (Record<
+        | 'oncomposedGestureup'
+        | 'oncomposedGesturedown'
+        | 'oncomposedGesturemove',
+        (gestureEvent: GestureCustomEvent) => void
+      > &
+        GestureEvents)['oncomposedGestureup']
+    | undefined;
+  oncomposedGesturedown?:
+    | (Record<
+        | 'oncomposedGestureup'
+        | 'oncomposedGesturedown'
+        | 'oncomposedGesturemove',
+        (gestureEvent: GestureCustomEvent) => void
+      > &
+        GestureEvents)['oncomposedGesturedown']
+    | undefined;
+  oncomposedGesturemove?:
+    | (Record<
+        | 'oncomposedGestureup'
+        | 'oncomposedGesturedown'
+        | 'oncomposedGesturemove',
+        (gestureEvent: GestureCustomEvent) => void
+      > &
+        GestureEvents)['oncomposedGesturemove']
+    | undefined;
+  [attach: symbol]: (node: HTMLElement) => () => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const gestureFunctionsWithPlugins: ComposedGestureFnsWithPlugins[] = [];
 
       function registerGesture<F extends GenericParamsWithPlugins>(
         gestureFn: (node: HTMLElement, params: F) => SubGestureFunctions,
         parameters: F
-      ) {
+      ): SubGestureFunctions {
         const subGestureFns = gestureFn(node, {
           ...parameters,
           composed: true,
@@ -104,7 +132,7 @@ export function useComposedGesture<GestureEvents>(
 
       const gestureName = 'composedGesture';
 
-      function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+      function onUp(activeEvents: PointerEvent[], event: PointerEvent): void {
         callAllByType(
           'onUp',
           gestureFunctionsWithPlugins,
@@ -114,7 +142,7 @@ export function useComposedGesture<GestureEvents>(
         );
       }
 
-      function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+      function onDown(activeEvents: PointerEvent[], event: PointerEvent): void {
         callAllByType(
           'onDown',
           gestureFunctionsWithPlugins,
@@ -124,7 +152,10 @@ export function useComposedGesture<GestureEvents>(
         );
       }
 
-      function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+      function onMove(
+        activeEvents: PointerEvent[],
+        event: PointerEvent
+      ): boolean {
         onMoveCallback(activeEvents, event);
 
         return true;

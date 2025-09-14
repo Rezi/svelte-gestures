@@ -29,7 +29,7 @@ export type PinchEvent = Record<
   (gestureEvent: PinchCustomEvent) => void
 >;
 
-function getPointersDistance(activeEvents: PointerEvent[]) {
+function getPointersDistance(activeEvents: PointerEvent[]): number {
   return Math.hypot(
     activeEvents[0].clientX - activeEvents[1].clientX,
     activeEvents[0].clientY - activeEvents[1].clientY
@@ -42,13 +42,18 @@ export function usePinch(
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
   >
-) {
+): {
+  onpinchup?: (gestureEvent: GestureCustomEvent) => void;
+  onpinchdown?: (gestureEvent: GestureCustomEvent) => void;
+  onpinchmove?: (gestureEvent: GestureCustomEvent) => void;
+  onpinch: (e: PinchCustomEvent) => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [`on${gestureName}` as OnEventType]: handler,
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = pinchBase(
         node,
         inputParameters?.()
@@ -83,7 +88,12 @@ export const pinchComposition = (
 function pinchBase(
   node: HTMLElement,
   inputParameters?: Partial<PinchParameters>
-) {
+): {
+  onMove: (activeEvents: PointerEvent[], event: PointerEvent) => boolean;
+  onDown: (activeEvents: PointerEvent[]) => void;
+  onUp: (activeEvents: PointerEvent[]) => void;
+  parameters: BaseParams;
+} {
   const parameters: PinchParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -94,20 +104,20 @@ function pinchBase(
   let initDistance = 0;
   let pinchCenter: Coord;
 
-  function onUp(activeEvents: PointerEvent[]) {
+  function onUp(activeEvents: PointerEvent[]): void {
     if (activeEvents.length === 1) {
       prevDistance = undefined;
     }
   }
 
-  function onDown(activeEvents: PointerEvent[]) {
+  function onDown(activeEvents: PointerEvent[]): void {
     if (activeEvents.length === 2) {
       initDistance = getPointersDistance(activeEvents);
       pinchCenter = getCenterOfTwoPoints(node, activeEvents);
     }
   }
 
-  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent): boolean {
     if (activeEvents.length === 2) {
       const curDistance = getPointersDistance(activeEvents);
 

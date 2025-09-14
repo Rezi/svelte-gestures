@@ -11,16 +11,19 @@ export const vibratePlugin: VibratePluginFn = (options) => {
 
   options = { ...fallbacks, ...options };
 
-  function onDestroy() {
+  function onDestroy(): void {
     navigator?.vibrate?.([]);
   }
 
   return {
-    onMove: () => {},
-    onDown: () => {
+    onMove: (): void => {},
+    onDown: (): void => {
       navigator?.vibrate?.(options.vibrationSequence);
     },
-    onUp: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+    onUp: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void => {
       if (activeEvents.length === 0) {
         onDestroy();
       }

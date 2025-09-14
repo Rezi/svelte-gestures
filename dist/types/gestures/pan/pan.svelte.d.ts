@@ -14,9 +14,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type PanEvent = Record<OnEventType, (gestureEvent: PanCustomEvent) => void>;
 export declare function usePan(handler: (e: PanCustomEvent) => void, inputParameters?: () => Partial<PanParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onpanmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpanup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpandown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpanup?: (gestureEvent: GestureCustomEvent) => void;
+    onpandown?: (gestureEvent: GestureCustomEvent) => void;
+    onpanmove?: (gestureEvent: GestureCustomEvent) => void;
+    onpan: (e: PanCustomEvent) => void;
 };
 export declare const panComposition: (node: HTMLElement, inputParameters?: Partial<PanParameters>) => SubGestureFunctions;
 export {};

@@ -370,7 +370,7 @@ function pressBase(node, inputParameters) {
     touchAction: 'auto',
     ...inputParameters
   };
-  let initialOncontextmenu = node.oncontextmenu;
+  const initialOncontextmenu = node.oncontextmenu;
   let startTime;
   let clientX;
   let clientY;
@@ -1275,7 +1275,9 @@ const highlightPlugin = options => {
       }
       animationStepTime = now;
     }
-    fadingRunning && requestAnimationFrame(animate);
+    if (fadingRunning) {
+      requestAnimationFrame(animate);
+    }
   }
   function setPosition(e) {
     pos.x = e.x;
@@ -1323,7 +1325,9 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
 `;
     window.document.body.appendChild(canvas);
     window.addEventListener('resize', resize);
-    dispatchEvent && setPosition(dispatchEvent.event);
+    if (dispatchEvent) {
+      setPosition(dispatchEvent.event);
+    }
 
     // Create an off-screen canvas
     offScreenCanvas = document.createElement('canvas');

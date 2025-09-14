@@ -29,7 +29,7 @@ export type RotateEvent = Record<
   (gestureEvent: RotateCustomEvent) => void
 >;
 
-function getPointersAngleDeg(activeEvents: PointerEvent[]) {
+function getPointersAngleDeg(activeEvents: PointerEvent[]): number {
   const quadrantsMap = {
     left: { top: 360, bottom: 180 },
     right: { top: 0, bottom: 180 },
@@ -64,13 +64,18 @@ export function useRotate(
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
   >
-) {
+): {
+  onrotateup?: (gestureEvent: GestureCustomEvent) => void;
+  onrotatedown?: (gestureEvent: GestureCustomEvent) => void;
+  onrotatemove?: (gestureEvent: GestureCustomEvent) => void;
+  onrotate: (e: RotateCustomEvent) => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [`on${gestureName}` as OnEventType]: handler,
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = rotateBase(
         node,
         inputParameters?.()
@@ -108,7 +113,12 @@ export const rotateComposition = (
 function rotateBase(
   node: HTMLElement,
   inputParameters?: Partial<RotateParameters>
-) {
+): {
+  onMove: (activeEvents: PointerEvent[], event: PointerEvent) => boolean;
+  onDown: (activeEvents: PointerEvent[]) => void;
+  onUp: (activeEvents: PointerEvent[]) => void;
+  parameters: BaseParams;
+} {
   const parameters: RotateParameters = {
     touchAction: DEFAULT_TOUCH_ACTION,
     composed: false,
@@ -119,13 +129,13 @@ function rotateBase(
   let initAngle = 0;
   let rotationCenter: Coord;
 
-  function onUp(activeEvents: PointerEvent[]) {
+  function onUp(activeEvents: PointerEvent[]): void {
     if (activeEvents.length === 1) {
       prevAngle = undefined;
     }
   }
 
-  function onDown(activeEvents: PointerEvent[]) {
+  function onDown(activeEvents: PointerEvent[]): void {
     if (activeEvents.length === 2) {
       activeEvents = activeEvents.sort((a, b) => {
         return a.clientX - b.clientX;
@@ -137,7 +147,7 @@ function rotateBase(
     }
   }
 
-  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent): boolean {
     if (activeEvents.length === 2) {
       const curAngle = getPointersAngleDeg(activeEvents);
 

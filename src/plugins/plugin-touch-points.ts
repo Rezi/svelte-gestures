@@ -15,11 +15,11 @@ export const touchPointsPlugin: TouchPointsPluginFn = (options) => {
 
   let wrapper: HTMLDivElement | undefined = undefined;
 
-  function onDestroy() {
+  function onDestroy(): void {
     window.document.getElementById('svelte-gestures-touch-plugin')?.remove();
   }
 
-  function rebuildWrapper(activeEvents: PointerEvent[]) {
+  function rebuildWrapper(activeEvents: PointerEvent[]): void {
     // Reset if already running (could caused by some unexpected browser behavior)
     onDestroy();
 
@@ -55,7 +55,10 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
   }
 
   return {
-    onMove: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+    onMove: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void => {
       activeEvents.forEach((event, i) => {
         const point = window.document.getElementById(
           `svelte-gestures-touch-${i}`
@@ -70,10 +73,16 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
         }
       });
     },
-    onDown: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+    onDown: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void => {
       rebuildWrapper(activeEvents);
     },
-    onUp: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+    onUp: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void => {
       if (activeEvents.length === 0) {
         onDestroy();
       } else {

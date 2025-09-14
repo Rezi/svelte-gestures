@@ -27,7 +27,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
     y?: number;
   } = { x: undefined, y: undefined };
 
-  function animate() {
+  function animate(): void {
     const fadeTime = options.fadeTime ?? fallbacks.fadeTime;
     const now = Date.now();
     const deltaTime = now - animationStepTime;
@@ -44,15 +44,17 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
       animationStepTime = now;
     }
 
-    fadingRunning && requestAnimationFrame(animate);
+    if (fadingRunning) {
+      requestAnimationFrame(animate);
+    }
   }
 
-  function setPosition(e: { x: number; y: number }) {
+  function setPosition(e: { x: number; y: number }): void {
     pos.x = e.x;
     pos.y = e.y;
   }
 
-  function resize() {
+  function resize(): void {
     if (ctx && offScreenCanvas && canvas) {
       ctx.canvas.width = window.innerWidth;
       ctx.canvas.height = window.innerHeight;
@@ -62,7 +64,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
     }
   }
 
-  function draw(e: { x: number; y: number }) {
+  function draw(e: { x: number; y: number }): void {
     if (ctx) {
       ctx.beginPath();
       ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
@@ -80,7 +82,7 @@ export const highlightPlugin: HighlightPluginFn = (options) => {
     }
   }
 
-  function onInit(dispatchEvent?: DispatchEvent) {
+  function onInit(dispatchEvent?: DispatchEvent): void {
     // Reset if already running (could caused by some unexpected browser behavior)
     onDestroy();
 
@@ -101,7 +103,9 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
     window.document.body.appendChild(canvas);
     window.addEventListener('resize', resize);
 
-    dispatchEvent && setPosition(dispatchEvent.event);
+    if (dispatchEvent) {
+      setPosition(dispatchEvent.event);
+    }
 
     // Create an off-screen canvas
     offScreenCanvas = document.createElement('canvas');
@@ -112,7 +116,7 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
     animate();
   }
 
-  function onDestroy() {
+  function onDestroy(): void {
     fadingRunning = false;
     window.document
       .getElementById('svelte-gestures-highlight-plugin')
@@ -121,19 +125,22 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
   }
 
   return {
-    onMove: (dispatchEvent: DispatchEvent) => {
+    onMove: (dispatchEvent: DispatchEvent): void => {
       draw(dispatchEvent.event);
     },
-    onDown: (dispatchEvent: DispatchEvent) => {
+    onDown: (dispatchEvent: DispatchEvent): void => {
       onInit(dispatchEvent);
     },
-    onUp: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) => {
+    onUp: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void => {
       if (activeEvents.length === 0) {
         onDestroy();
       }
     },
     onDestroy: onDestroy,
-    onInit: (activeEvents: PointerEvent[]) => {
+    onInit: (activeEvents: PointerEvent[]): void => {
       if (activeEvents.length) {
         pos.x = undefined;
         pos.y = undefined;

@@ -16,9 +16,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type SwipeEvent = Record<OnEventType, (gestureEvent: SwipeCustomEvent) => void>;
 export declare function useSwipe(handler: (e: SwipeCustomEvent) => void, inputParameters?: () => Partial<SwipeParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onswipemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onswipeup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onswipedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onswipeup?: (gestureEvent: GestureCustomEvent) => void;
+    onswipedown?: (gestureEvent: GestureCustomEvent) => void;
+    onswipemove?: (gestureEvent: GestureCustomEvent) => void;
+    onswipe: (e: SwipeCustomEvent) => void;
 };
 export declare const swipeComposition: (node: HTMLElement, inputParameters?: Partial<SwipeParameters>) => SubGestureFunctions;
 export {};

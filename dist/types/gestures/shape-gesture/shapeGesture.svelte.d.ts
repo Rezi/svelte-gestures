@@ -16,9 +16,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type ShapeEvent = Record<OnEventType, (gestureEvent: ShapeCustomEvent) => void>;
 export declare function useShapeGesture(handler: (e: ShapeCustomEvent) => void, inputParameters?: () => Partial<ShapeGestureParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onshapeGesturemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onshapeGestureup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onshapeGesturedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onshapeGestureup?: (gestureEvent: GestureCustomEvent) => void;
+    onshapeGesturedown?: (gestureEvent: GestureCustomEvent) => void;
+    onshapeGesturemove?: (gestureEvent: GestureCustomEvent) => void;
+    onshapeGesture: (e: ShapeCustomEvent) => void;
 };
 export declare const shapeGestureComposition: (node: HTMLElement, inputParameters?: Partial<ShapeGestureParameters>) => SubGestureFunctions;
 export {};

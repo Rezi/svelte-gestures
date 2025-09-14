@@ -16,9 +16,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type PressEvent = Record<OnEventType, (gestureEvent: PressCustomEvent) => void>;
 export declare function usePress(handler: (e: PressCustomEvent) => void, inputParameters?: () => Partial<PressParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onpressmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpressup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpressdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpressup?: (gestureEvent: GestureCustomEvent) => void;
+    onpressdown?: (gestureEvent: GestureCustomEvent) => void;
+    onpressmove?: (gestureEvent: GestureCustomEvent) => void;
+    onpress: (e: PressCustomEvent) => void;
 };
 export declare const pressComposition: (node: HTMLElement, inputParameters?: Partial<PressParameters>) => SubGestureFunctions;
 export {};

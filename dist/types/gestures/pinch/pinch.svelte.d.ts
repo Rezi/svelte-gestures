@@ -11,9 +11,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type PinchEvent = Record<OnEventType, (gestureEvent: PinchCustomEvent) => void>;
 export declare function usePinch(handler: (e: PinchCustomEvent) => void, inputParameters?: () => Partial<PinchParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    onpinchmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpinchup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-    onpinchdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpinchup?: (gestureEvent: GestureCustomEvent) => void;
+    onpinchdown?: (gestureEvent: GestureCustomEvent) => void;
+    onpinchmove?: (gestureEvent: GestureCustomEvent) => void;
+    onpinch: (e: PinchCustomEvent) => void;
 };
 export declare const pinchComposition: (node: HTMLElement, inputParameters?: Partial<PinchParameters>) => SubGestureFunctions;
 export {};

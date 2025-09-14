@@ -47,13 +47,18 @@ export function useShapeGesture(
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
   >
-) {
+): {
+  onshapeGestureup?: (gestureEvent: GestureCustomEvent) => void;
+  onshapeGesturedown?: (gestureEvent: GestureCustomEvent) => void;
+  onshapeGesturemove?: (gestureEvent: GestureCustomEvent) => void;
+  onshapeGesture: (e: ShapeCustomEvent) => void;
+} {
   const { setPointerControls } = createPointerControls();
 
   return {
     ...baseHandlers,
-    [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [`on${gestureName}` as OnEventType]: handler,
+    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = shapeGestureBase(
         node,
         inputParameters?.()
@@ -91,7 +96,12 @@ export const shapeGestureComposition = (
 function shapeGestureBase(
   node: HTMLElement,
   inputParameters?: Partial<ShapeGestureParameters>
-) {
+): {
+  onDown: (activeEvents: PointerEvent[], event: PointerEvent) => void;
+  onMove: (activeEvents: PointerEvent[], event: PointerEvent) => boolean;
+  onUp: (activeEvents: PointerEvent[], event: PointerEvent) => void;
+  parameters: ShapeGestureParameters;
+} {
   const parameters: ShapeGestureParameters = {
     composed: false,
     shapes: [],
@@ -108,13 +118,13 @@ function shapeGestureBase(
   let target: EventTarget | null;
   let stroke: Coord[] = [];
 
-  function onDown(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onDown(activeEvents: PointerEvent[], event: PointerEvent): void {
     startTime = Date.now();
     target = event.target;
     stroke = [];
   }
 
-  function onMove(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onMove(activeEvents: PointerEvent[], event: PointerEvent): boolean {
     if (activeEvents.length === 1) {
       const rect = node.getBoundingClientRect();
       const x = Math.round(event.clientX - rect.left);
@@ -126,7 +136,7 @@ function shapeGestureBase(
     return false;
   }
 
-  function onUp(activeEvents: PointerEvent[], event: PointerEvent) {
+  function onUp(activeEvents: PointerEvent[], event: PointerEvent): void {
     if (stroke.length > 2 && Date.now() - startTime < parameters.timeframe) {
       const detectionResult = detector.detect(stroke);
 

@@ -14,9 +14,10 @@ type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type SapEvent = Record<OnEventType, (gestureEvent: TapCustomEvent) => void>;
 export declare function useTap(handler: (e: TapCustomEvent) => void, inputParameters?: () => Partial<TapParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
-    ontapmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
     ontapup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
     ontapdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    ontapmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    ontap: (e: TapCustomEvent) => void;
 };
 export declare const tapComposition: (node: HTMLElement, inputParameters?: Partial<TapParameters>) => SubGestureFunctions;
 export {};
