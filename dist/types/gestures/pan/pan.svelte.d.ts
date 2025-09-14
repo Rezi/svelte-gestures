@@ -1,4 +1,4 @@
-import { type Action, type BaseParams, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
+import { type ActionType, type BaseParams, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 export type PanParameters = {
     delay: number;
 } & BaseParams;
@@ -9,11 +9,15 @@ export type PanPointerEventDetail = {
     pointerType: string;
 };
 export type PanCustomEvent = CustomEvent<PanPointerEventDetail>;
-export declare const pan: Action<HTMLElement, () => Partial<PanParameters>, {
-    onpan: (e: PanCustomEvent) => void;
-    onpandown: (e: GestureCustomEvent) => void;
-    onpanup: (e: GestureCustomEvent) => void;
-    onpanmove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "pan";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type PanEvent = Record<OnEventType, (gestureEvent: PanCustomEvent) => void>;
+export declare function usePan(handler: (e: PanCustomEvent) => void, inputParameters?: () => Partial<PanParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onpanmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpanup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpandown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const panComposition: (node: HTMLElement, inputParameters?: Partial<PanParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=pan.svelte.d.ts.map

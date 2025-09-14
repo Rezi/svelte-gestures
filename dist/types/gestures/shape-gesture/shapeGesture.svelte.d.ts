@@ -1,4 +1,4 @@
-import { type BaseParams, type GestureCustomEvent, type Action, type SubGestureFunctions } from '../../shared';
+import { type ActionType, type BaseParams, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 import { type Pattern, type Options } from './detector';
 export type ShapeGestureParameters = {
     shapes: Pattern[];
@@ -11,11 +11,15 @@ export type ShapePointerEventDetail = {
     pointerType: string;
 };
 export type ShapeCustomEvent = CustomEvent<ShapePointerEventDetail>;
-export declare const shapeGesture: Action<HTMLElement, () => Partial<ShapeGestureParameters>, {
-    onshapeGesture: (e: ShapeCustomEvent) => void;
-    onshapeGesturedown: (e: GestureCustomEvent) => void;
-    onshapeGestureup: (e: GestureCustomEvent) => void;
-    onshapeGesturemove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "shapeGesture";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type ShapeEvent = Record<OnEventType, (gestureEvent: ShapeCustomEvent) => void>;
+export declare function useShapeGesture(handler: (e: ShapeCustomEvent) => void, inputParameters?: () => Partial<ShapeGestureParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onshapeGesturemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onshapeGestureup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onshapeGesturedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const shapeGestureComposition: (node: HTMLElement, inputParameters?: Partial<ShapeGestureParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=shapeGesture.svelte.d.ts.map

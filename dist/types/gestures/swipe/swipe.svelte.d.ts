@@ -1,4 +1,4 @@
-import { type SubGestureFunctions, type Action, type BaseParams, type GestureCustomEvent } from '../../shared';
+import { type SubGestureFunctions, type BaseParams, type GestureCustomEvent, type ActionType } from '../../shared';
 export type SwipeParameters = {
     timeframe: number;
     minSwipeDistance: number;
@@ -9,14 +9,17 @@ export type SwipePointerEventDetail = {
     target: EventTarget | null;
     pointerType: string;
 };
-type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
+export type Direction = 'top' | 'right' | 'bottom' | 'left' | null;
 export type SwipeCustomEvent = CustomEvent<SwipePointerEventDetail>;
-export declare const swipe: Action<HTMLElement, () => Partial<SwipeParameters>, {
-    onswipe: (e: SwipeCustomEvent) => void;
-    onswipedown: (e: GestureCustomEvent) => void;
-    onswipeup: (e: GestureCustomEvent) => void;
-    onswipemove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "swipe";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type SwipeEvent = Record<OnEventType, (gestureEvent: SwipeCustomEvent) => void>;
+export declare function useSwipe(handler: (e: SwipeCustomEvent) => void, inputParameters?: () => Partial<SwipeParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onswipemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onswipeup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onswipedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const swipeComposition: (node: HTMLElement, inputParameters?: Partial<SwipeParameters>) => SubGestureFunctions;
 export {};
 //# sourceMappingURL=swipe.svelte.d.ts.map

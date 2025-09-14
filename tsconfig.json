@@ -17,8 +17,9 @@
     "lib": ["es2020", "dom"],
     "target": "es2019",
     "outDir": "dist/types",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["@vitest/browser/providers/playwright"]
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/*.spec.ts"]
 }

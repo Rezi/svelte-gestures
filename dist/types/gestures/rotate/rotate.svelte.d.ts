@@ -1,4 +1,4 @@
-import { type BaseParams, type Coord, type Action, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
+import { type ActionType, type BaseParams, type Coord, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 export type RotateParameters = BaseParams;
 export type RotatePointerEventDetail = {
     rotation: number;
@@ -6,11 +6,15 @@ export type RotatePointerEventDetail = {
     pointerType: string;
 };
 export type RotateCustomEvent = CustomEvent<RotatePointerEventDetail>;
-export declare const rotate: Action<HTMLElement, () => Partial<RotateParameters>, {
-    onrotate: (e: RotateCustomEvent) => void;
-    onrotatedown: (e: GestureCustomEvent) => void;
-    onrotateup: (e: GestureCustomEvent) => void;
-    onrotatemove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "rotate";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type RotateEvent = Record<OnEventType, (gestureEvent: RotateCustomEvent) => void>;
+export declare function useRotate(handler: (e: RotateCustomEvent) => void, inputParameters?: () => Partial<RotateParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onrotatemove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onrotateup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onrotatedown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const rotateComposition: (node: HTMLElement, inputParameters?: Partial<RotateParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=rotate.svelte.d.ts.map

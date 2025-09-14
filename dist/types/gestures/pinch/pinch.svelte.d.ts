@@ -1,4 +1,4 @@
-import { type BaseParams, type Coord, type GestureCustomEvent, type Action, type SubGestureFunctions } from '../../shared';
+import { type ActionType, type BaseParams, type Coord, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
 export type PinchParameters = BaseParams;
 export type PinchPointerEventDetail = {
     scale: number;
@@ -6,11 +6,15 @@ export type PinchPointerEventDetail = {
     pointerType: string;
 };
 export type PinchCustomEvent = CustomEvent<PinchPointerEventDetail>;
-export declare const pinch: Action<HTMLElement, () => Partial<PinchParameters>, {
-    onpinch: (e: PinchCustomEvent) => void;
-    onpinchdown: (e: GestureCustomEvent) => void;
-    onpinchup: (e: GestureCustomEvent) => void;
-    onpinchmove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "pinch";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type PinchEvent = Record<OnEventType, (gestureEvent: PinchCustomEvent) => void>;
+export declare function usePinch(handler: (e: PinchCustomEvent) => void, inputParameters?: () => Partial<PinchParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onpinchmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpinchup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpinchdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const pinchComposition: (node: HTMLElement, inputParameters?: Partial<PinchParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=pinch.svelte.d.ts.map

@@ -1,4 +1,4 @@
-import { type Action, type BaseParams, type GestureCustomEvent, type SubGestureFunctions } from '../../shared';
+import { type BaseParams, type GestureCustomEvent, type SubGestureFunctions, type ActionType } from '../../shared';
 export type PressParameters = {
     timeframe: number;
     triggerBeforeFinished: boolean;
@@ -11,11 +11,15 @@ export type PressPointerEventDetail = {
     pointerType: string;
 };
 export type PressCustomEvent = CustomEvent<PressPointerEventDetail>;
-export declare const press: Action<HTMLElement, () => Partial<PressParameters>, {
-    onpress: (e: PressCustomEvent) => void;
-    onpressdown: (e: GestureCustomEvent) => void;
-    onpressup: (e: GestureCustomEvent) => void;
-    onpressmove: (e: GestureCustomEvent) => void;
-}>;
+declare const gestureName: "press";
+type OnEventType = `on${typeof gestureName}`;
+type EventTypeName = `${OnEventType}${ActionType}`;
+export type PressEvent = Record<OnEventType, (gestureEvent: PressCustomEvent) => void>;
+export declare function usePress(handler: (e: PressCustomEvent) => void, inputParameters?: () => Partial<PressParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+    onpressmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpressup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+    onpressdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+};
 export declare const pressComposition: (node: HTMLElement, inputParameters?: Partial<PressParameters>) => SubGestureFunctions;
+export {};
 //# sourceMappingURL=press.svelte.d.ts.map
