@@ -2,11 +2,12 @@
 
 ## 5.2.0
 
-- Conversion to attachments
+- BREAKING CHANGES - actions converted to attachments
+- new API of gestures
 - Multitouch gesture added
 - Touch point plugin for pointer highlighting added
 - Experimental vibrate plugin added
-- For previous version without attachments and its documentation and examples, please check [README_5.0.7.md](/README_5.0.7.md)
+- For previous version without attachments and its documentation and examples, please check [README_5.1.4.md](/README_5.1.4.md)
 
 ## 5.1.4
 

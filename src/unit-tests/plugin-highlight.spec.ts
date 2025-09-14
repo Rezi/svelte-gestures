@@ -117,7 +117,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
 
       plugin.onDown(mockDispatchEvent, []);
@@ -139,7 +139,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({ zIndex: 555555 });
@@ -156,7 +156,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({});
@@ -179,7 +179,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({ color: '#ff0000', lineWidth: 6 });
@@ -197,7 +197,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 150,
         y: 150,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
 
       plugin.onMove(moveEvent, []);
@@ -216,7 +216,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({});
@@ -254,7 +254,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({});
@@ -274,7 +274,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({});
@@ -319,7 +319,7 @@ describe('highlightPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = highlightPlugin({});

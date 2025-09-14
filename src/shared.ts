@@ -35,7 +35,7 @@ export type DispatchEvent = {
   target: HTMLElement;
   x: number;
   y: number;
-  attachementNode: HTMLElement;
+  attachmentNode: HTMLElement;
 };
 
 export type GestureCustomEvent = CustomEvent<DispatchEvent>;
@@ -129,7 +129,7 @@ export function getDispatchEventData(
     target: event.target as HTMLElement,
     x,
     y,
-    attachementNode: node,
+    attachmentNode: node,
   };
   return eventData;
 }

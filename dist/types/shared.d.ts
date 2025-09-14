@@ -21,7 +21,7 @@ export type DispatchEvent = {
     target: HTMLElement;
     x: number;
     y: number;
-    attachementNode: HTMLElement;
+    attachmentNode: HTMLElement;
 };
 export type GestureCustomEvent = CustomEvent<DispatchEvent>;
 export type PointerEventCallback<T> = ((activeEvents: PointerEvent[], event: PointerEvent) => T) | null;

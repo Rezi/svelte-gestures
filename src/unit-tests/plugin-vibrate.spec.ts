@@ -60,7 +60,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -78,7 +78,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -95,7 +95,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -112,7 +112,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -129,7 +129,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents = [{} as PointerEvent];
 
@@ -158,7 +158,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -175,7 +175,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -192,7 +192,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -209,7 +209,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -234,7 +234,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -263,7 +263,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -296,7 +296,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -316,7 +316,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -343,7 +343,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 
@@ -363,7 +363,7 @@ describe('vibratePlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents: PointerEvent[] = [];
 

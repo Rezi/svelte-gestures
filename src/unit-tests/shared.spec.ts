@@ -240,7 +240,7 @@ describe('shared.ts', () => {
         target: mockTarget,
         x: 50, // 60 - 10
         y: 50, // 70 - 20
-        attachementNode: mockNode,
+        attachmentNode: mockNode,
       });
     });
 

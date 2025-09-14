@@ -48,7 +48,7 @@ function getDispatchEventData(node, event, activeEvents) {
     target: event.target,
     x,
     y,
-    attachementNode: node
+    attachmentNode: node
   };
   return eventData;
 }

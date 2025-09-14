@@ -106,7 +106,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = touchPointsPlugin({});
@@ -125,7 +125,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
 
       mockCreateElement.mockClear();
@@ -151,7 +151,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const options = {
@@ -177,7 +177,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 150,
         y: 200,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = touchPointsPlugin({ size: 100 });
@@ -201,7 +201,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
 
       mockCreateElement.mockClear();
@@ -236,7 +236,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
 
@@ -278,7 +278,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents = [{ clientX: 100, clientY: 100 } as PointerEvent];
 
@@ -310,7 +310,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
 
       plugin.onUp(mockDispatchEvent, []);
@@ -328,7 +328,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = touchPointsPlugin({});
@@ -354,7 +354,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       mockCreateElement.mockClear();
       const plugin = touchPointsPlugin({});
@@ -386,7 +386,7 @@ describe('touchPointsPlugin', () => {
         target: document.createElement('div'),
         x: 100,
         y: 100,
-        attachementNode: document.createElement('div'),
+        attachmentNode: document.createElement('div'),
       };
       const activeEvents = [{ clientX: 100, clientY: 100 } as PointerEvent];
 
