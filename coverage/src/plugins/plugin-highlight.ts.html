@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.57% </span>
+                <span class="strong">89.28% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>93/105</span>
+                <span class='fraction'>100/112</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.57% </span>
+                <span class="strong">89.28% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>93/105</span>
+                <span class='fraction'>100/112</span>
             </div>
         
             
@@ -207,7 +207,14 @@
 <a name='L142'></a><a href='#L142'>142</a>
 <a name='L143'></a><a href='#L143'>143</a>
 <a name='L144'></a><a href='#L144'>144</a>
-<a name='L145'></a><a href='#L145'>145</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -255,6 +262,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">10x</span>
@@ -311,6 +320,8 @@
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
@@ -337,6 +348,9 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -380,7 +394,7 @@ export const highlightPlugin: HighlightPluginFn = (options) =&gt; {
     y?: number;
   } = { x: undefined, y: undefined };
 &nbsp;
-  function animate() {
+  function animate(): void {
     const fadeTime = options.fadeTime ?? fallbacks.fadeTime;
     const now = Date.now();
     const deltaTime = now - animationStepTime;
@@ -397,15 +411,17 @@ export const highlightPlugin: HighlightPluginFn = (options) =&gt; {
 <span class="cstat-no" title="statement not covered" >      animationStepTime = now;</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 &nbsp;
-    fadingRunning &amp;&amp; requestAnimationFrame(animate);
+    if (fadingRunning) {
+      requestAnimationFrame(animate);
+    }
   }
 &nbsp;
-  function setPosition(e: { x: number; y: number }) {
+  function setPosition(e: { x: number; y: number }): void {
     pos.x = e.x;
     pos.y = e.y;
   }
 &nbsp;
-  function resize() {
+  function resize(): void {
     if (ctx &amp;&amp; offScreenCanvas &amp;&amp; canvas) {
       ctx.canvas.width = window.innerWidth;
       ctx.canvas.height = window.innerHeight;
@@ -415,7 +431,7 @@ export const highlightPlugin: HighlightPluginFn = (options) =&gt; {
     }
   }
 &nbsp;
-  function draw(e: { x: number; y: number }) {
+  function draw(e: { x: number; y: number }): void {
     if (ctx) {
       ctx.beginPath();
       ctx.lineWidth = options.lineWidth ?? fallbacks.lineWidth;
@@ -433,7 +449,7 @@ export const highlightPlugin: HighlightPluginFn = (options) =&gt; {
     }
   }
 &nbsp;
-  function onInit(dispatchEvent?: DispatchEvent) {
+  function onInit(dispatchEvent?: DispatchEvent): void {
     // Reset if already running (could caused by some unexpected browser behavior)
     onDestroy();
 &nbsp;
@@ -454,7 +470,9 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
     window.document.body.appendChild(canvas);
     window.addEventListener('resize', resize);
 &nbsp;
-    dispatchEvent &amp;&amp; setPosition(dispatchEvent.event);
+    if (dispatchEvent) {
+      setPosition(dispatchEvent.event);
+    }
 &nbsp;
     // Create an off-screen canvas
     offScreenCanvas = document.createElement('canvas');
@@ -465,7 +483,7 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
     animate();
   }
 &nbsp;
-  function onDestroy() {
+  function onDestroy(): void {
     fadingRunning = false;
     window.document
       .getElementById('svelte-gestures-highlight-plugin')
@@ -474,19 +492,22 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
   }
 &nbsp;
   return {
-    onMove: (dispatchEvent: DispatchEvent) =&gt; {
+    onMove: (dispatchEvent: DispatchEvent): void =&gt; {
       draw(dispatchEvent.event);
     },
-    onDown: (dispatchEvent: DispatchEvent) =&gt; {
+    onDown: (dispatchEvent: DispatchEvent): void =&gt; {
       onInit(dispatchEvent);
     },
-    onUp: (dispatchEvent: DispatchEvent, activeEvents: PointerEvent[]) =&gt; {
+    onUp: (
+      dispatchEvent: DispatchEvent,
+      activeEvents: PointerEvent[]
+    ): void =&gt; {
       if (activeEvents.length === 0) {
         onDestroy();
       }
     },
     onDestroy: onDestroy,
-    onInit: (activeEvents: PointerEvent[]) =&gt; {
+    onInit: (activeEvents: PointerEvent[]): void =&gt; {
       if (activeEvents.length) {
         pos.x = undefined;
         pos.y = undefined;
@@ -502,7 +523,7 @@ z-index: ${options.zIndex ?? fallbacks.zIndex};
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-01T21:28:30.698Z
+                at 2025-09-21T08:29:33.855Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

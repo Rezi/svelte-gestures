@@ -177,14 +177,15 @@ function createAttachmentKey() {
   return Symbol(ATTACHMENT_KEY);
 }
 const gestureName$9 = 'pan';
-function usePan(handler, inputParameters, baseHandlers) {
+function usePan(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$9 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$9}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -248,14 +249,15 @@ const gestureName$8 = 'pinch';
 function getPointersDistance(activeEvents) {
   return Math.hypot(activeEvents[0].clientX - activeEvents[1].clientX, activeEvents[0].clientY - activeEvents[1].clientY);
 }
-function usePinch(handler, inputParameters, baseHandlers) {
+function usePinch(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$8 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$8}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -324,14 +326,15 @@ function pinchBase(node, inputParameters) {
   };
 }
 const gestureName$7 = 'press';
-function usePress(handler, inputParameters, baseHandlers) {
+function usePress(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$7 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$7}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -474,14 +477,15 @@ function getPointersAngleDeg(activeEvents) {
   const quadrantAngleBonus = height >= 0 ? halfQuadrant.top : halfQuadrant.bottom;
   return angle + quadrantAngleBonus;
 }
-function useRotate(handler, inputParameters, baseHandlers) {
+function useRotate(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$6 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$6}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -561,14 +565,15 @@ function rotateBase(node, inputParameters) {
   };
 }
 const gestureName$5 = 'swipe';
-function useSwipe(handler, inputParameters, baseHandlers) {
+function useSwipe(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$5 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$5}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onDown,
         onUp,
@@ -643,14 +648,15 @@ function swipeBase(node, inputParameters) {
   };
 }
 const gestureName$4 = 'multiTouch';
-function useMultiTouch(handler, inputParameters, baseHandlers) {
+function useMultiTouch(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$4 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$4}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onDown,
         parameters
@@ -726,13 +732,14 @@ function callAllByType(listenerType, composedGestureFnsWithPlugins, activeEvents
     });
   });
 }
-function useComposedGesture(gestureCallback, baseHandlers) {
+function useComposedGesture(gestureCallback, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$3 : createAttachmentKey();
   return {
     ...baseHandlers,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const gestureFunctionsWithPlugins = [];
       function registerGesture(gestureFn, parameters) {
         const subGestureFns = gestureFn(node, {
@@ -950,14 +957,15 @@ function shapeDetector(inputPatterns, options = {}) {
   };
 }
 const gestureName$2 = 'shapeGesture';
-function useShapeGesture(handler, inputParameters, baseHandlers) {
+function useShapeGesture(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$2 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$2}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -1055,14 +1063,15 @@ function getScrollParent(node, direction) {
     return getScrollParent(node.parentNode, direction) || document.scrollingElement || document.body;
   }
 }
-function useScroll(handler, inputParameters, baseHandlers) {
+function useScroll(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName$1 : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName$1}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onMove,
         onDown,
@@ -1177,14 +1186,15 @@ function scrollBase(node, inputParameters) {
   };
 }
 const gestureName = 'tap';
-function useTap(handler, inputParameters, baseHandlers) {
+function useTap(handler, inputParameters, baseHandlers, isRaw = false) {
   const {
     setPointerControls
   } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
   return {
     ...baseHandlers,
     [`on${gestureName}`]: handler,
-    [createAttachmentKey()]: node => {
+    [gesturePropName]: node => {
       const {
         onDown,
         onUp,

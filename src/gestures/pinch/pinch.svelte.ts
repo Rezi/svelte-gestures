@@ -29,6 +29,23 @@ export type PinchEvent = Record<
   (gestureEvent: PinchCustomEvent) => void
 >;
 
+type ReturnPinch<T> = T extends false
+  ? {
+      onpinchup?: (gestureEvent: GestureCustomEvent) => void;
+      onpinchdown?: (gestureEvent: GestureCustomEvent) => void;
+      onpinchmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpinch: (e: PinchCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onpinchup?: (gestureEvent: GestureCustomEvent) => void;
+      onpinchdown?: (gestureEvent: GestureCustomEvent) => void;
+      onpinchmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpinch: (e: PinchCustomEvent) => void;
+      pinch: (node: HTMLElement) => () => void;
+    }
+  : never;
+
 function getPointersDistance(activeEvents: PointerEvent[]): number {
   return Math.hypot(
     activeEvents[0].clientX - activeEvents[1].clientX,
@@ -36,24 +53,21 @@ function getPointersDistance(activeEvents: PointerEvent[]): number {
   );
 }
 
-export function usePinch(
+export function usePinch<T extends boolean>(
   handler: (e: PinchCustomEvent) => void,
   inputParameters?: () => Partial<PinchParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onpinchup?: (gestureEvent: GestureCustomEvent) => void;
-  onpinchdown?: (gestureEvent: GestureCustomEvent) => void;
-  onpinchmove?: (gestureEvent: GestureCustomEvent) => void;
-  onpinch: (e: PinchCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnPinch<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = pinchBase(
         node,
         inputParameters?.()
@@ -69,7 +83,7 @@ export function usePinch(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnPinch<T>;
 }
 
 export const pinchComposition = (

@@ -29,25 +29,38 @@ export type SapEvent = Record<
   OnEventType,
   (gestureEvent: TapCustomEvent) => void
 >;
+type ReturnTap<T> = T extends false
+  ? {
+      ontapup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontapdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontapmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontap: (e: TapCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      ontapup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontapdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontapmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
+      ontap: (e: TapCustomEvent) => void;
+      tap: (node: HTMLElement) => () => void;
+    }
+  : never;
 
-export function useTap(
+export function useTap<T extends boolean>(
   handler: (e: TapCustomEvent) => void,
   inputParameters?: () => Partial<TapParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  ontapup?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-  ontapdown?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-  ontapmove?: ((gestureEvent: GestureCustomEvent) => void) | undefined;
-  ontap: (e: TapCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnTap<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onDown, onUp, parameters } = tapBase(node, inputParameters?.());
 
       return setPointerControls(
@@ -60,7 +73,7 @@ export function useTap(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnTap<T>;
 }
 
 export const tapComposition = (

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.34% </span>
+                <span class="strong">97.46% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>220/226</span>
+                <span class='fraction'>231/237</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.34% </span>
+                <span class="strong">97.46% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>220/226</span>
+                <span class='fraction'>231/237</span>
             </div>
         
             
@@ -346,7 +346,21 @@
 <a name='L281'></a><a href='#L281'>281</a>
 <a name='L282'></a><a href='#L282'>282</a>
 <a name='L283'></a><a href='#L283'>283</a>
-<a name='L284'></a><a href='#L284'>284</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -379,6 +393,10 @@
 <span class="cline-any cline-yes">2953x</span>
 <span class="cline-any cline-yes">2953x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -424,6 +442,13 @@
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-yes">2432x</span>
@@ -434,6 +459,9 @@
 <span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
@@ -652,17 +680,21 @@ const PHI = (Math.sqrt(5.0) - 1) / 2;
 const ANGLE_RANGE_RAD = deg2Rad(45.0);
 const ANGLE_PRECISION_RAD = deg2Rad(2.0);
 &nbsp;
-function deg2Rad(d: number) {
+function deg2Rad(d: number): number {
   return (d * Math.PI) / 180;
 }
 &nbsp;
-function getDistance(a: Coord, b: Coord) {
+function getDistance(a: Coord, b: Coord): number {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 &nbsp;
-function distanceAtBestAngle(pattern: Pattern, points: Coord[], center: Coord) {
+function distanceAtBestAngle(
+  pattern: Pattern,
+  points: Coord[],
+  center: Coord
+): number {
   let fromAngleRad = -ANGLE_RANGE_RAD;
   let toAngleRad = ANGLE_RANGE_RAD;
   let angleOne = PHI * fromAngleRad + (1.0 - PHI) * toAngleRad;
@@ -694,7 +726,7 @@ function distanceAtAngle(
   angle: number,
   points: Coord[],
   center: Coord
-) {
+): number {
   const strokePoints = rotateBy(angle, points, center);
 &nbsp;
   const d = strokePoints.reduce((accu, sPoint, i) =&gt; {
@@ -704,7 +736,14 @@ function distanceAtAngle(
   return d / strokePoints.length;
 }
 &nbsp;
-function rotateBy(angle: number, points: Coord[], center: Coord) {
+function rotateBy(
+  angle: number,
+  points: Coord[],
+  center: Coord
+): {
+  x: number;
+  y: number;
+}[] {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
 &nbsp;
@@ -716,7 +755,10 @@ function rotateBy(angle: number, points: Coord[], center: Coord) {
   });
 }
 &nbsp;
-export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
+export function shapeDetector(
+  inputPatterns: Pattern[],
+  options: Options = {}
+): { detect: (points: Coord[], patternName?: string) =&gt; Result } {
   const threshold = options.<span class="branch-0 cbranch-no" title="branch not covered" >threshold || 0;</span>
   const NUMBER_OF_SAMPLE_POINTS =
     options.<span class="branch-0 cbranch-no" title="branch not covered" >nbOfSamplePoints || DEFAULT_NB_OF_SAMPLE_POINTS;</span>
@@ -748,7 +790,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
 &nbsp;
     return { name, points, center: { x: 0, y: 0 }, allowRotation };
 &nbsp;
-    function resample() {
+    function resample(): Coord[] {
       let localDistance, q;
       let distance = 0;
       const interval = strokeLength() / (NUMBER_OF_SAMPLE_POINTS - 1);
@@ -784,7 +826,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       return newPoints;
     }
 &nbsp;
-    function scaleToSquare() {
+    function scaleToSquare(): Coord[] {
       const box = {
         minX: +Infinity,
         maxX: -Infinity,
@@ -812,14 +854,14 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       });
     }
 &nbsp;
-    function translateToOrigin(center: Coord) {
+    function translateToOrigin(center: Coord): Coord[] {
       return points.map((point) =&gt; ({
         x: point.x - center.x,
         y: point.y - center.y,
       }));
     }
 &nbsp;
-    function getCenterPoint() {
+    function getCenterPoint(): Coord {
       const centre = points.reduce(
         (acc, point) =&gt; {
           acc.x += point.x;
@@ -839,11 +881,11 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
       return centre;
     }
 &nbsp;
-    function indicativeAngle(center: Coord) {
+    function indicativeAngle(center: Coord): number {
       return Math.atan2(center.y - points[0].y, center.x - points[0].x);
     }
 &nbsp;
-    function strokeLength() {
+    function strokeLength(): number {
       let d = 0;
 &nbsp;
       for (let i = 1; i &lt; points.length; i++) {
@@ -902,7 +944,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
     points: Coord[],
     allowRotation: boolean,
     bothDirections: boolean
-  ) {
+  ): PatternWithCenter[] {
     const response = [getStroke([...points], name, allowRotation)];
     if (bothDirections) {
       response.push(getStroke([...points.reverse()], name, allowRotation));
@@ -919,7 +961,7 @@ export function shapeDetector(inputPatterns: Pattern[], options: Options = {}) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-01T21:28:30.698Z
+                at 2025-09-21T08:29:33.855Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

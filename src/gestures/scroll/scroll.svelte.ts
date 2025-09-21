@@ -28,6 +28,23 @@ export type ScrollEvent = Record<
   (gestureEvent: CustomEvent) => void
 >;
 
+type ReturnScroll<T> = T extends false
+  ? {
+      onscrollup?: (gestureEvent: GestureCustomEvent) => void;
+      onscrolldown?: (gestureEvent: GestureCustomEvent) => void;
+      onscrollmove?: (gestureEvent: GestureCustomEvent) => void;
+      onscroll: (e: CustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onscrollup?: (gestureEvent: GestureCustomEvent) => void;
+      onscrolldown?: (gestureEvent: GestureCustomEvent) => void;
+      onscrollmove?: (gestureEvent: GestureCustomEvent) => void;
+      onscroll: (e: CustomEvent) => void;
+      scroll: (node: HTMLElement) => () => void;
+    }
+  : never;
+
 function isScrollMode(event: PointerEvent): boolean {
   return event.pointerType === 'touch';
 }
@@ -61,24 +78,21 @@ function getScrollParent(
   }
 }
 
-export function useScroll(
+export function useScroll<T extends boolean>(
   handler: (e: CustomEvent) => void,
   inputParameters?: () => Partial<ScrollParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onscrollup?: (gestureEvent: GestureCustomEvent) => void;
-  onscrolldown?: (gestureEvent: GestureCustomEvent) => void;
-  onscrollmove?: (gestureEvent: GestureCustomEvent) => void;
-  onscroll: (e: CustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnScroll<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = scrollBase(
         node,
         inputParameters?.()
@@ -94,7 +108,7 @@ export function useScroll(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnScroll<T>;
 }
 
 export const scrollComposition = (

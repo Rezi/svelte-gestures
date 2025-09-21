@@ -33,24 +33,38 @@ export type PressEvent = Record<
   (gestureEvent: PressCustomEvent) => void
 >;
 
-export function usePress(
+type ReturnPress<T> = T extends false
+  ? {
+      onpressup?: (gestureEvent: GestureCustomEvent) => void;
+      onpressdown?: (gestureEvent: GestureCustomEvent) => void;
+      onpressmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpress: (e: PressCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onpressup?: (gestureEvent: GestureCustomEvent) => void;
+      onpressdown?: (gestureEvent: GestureCustomEvent) => void;
+      onpressmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpress: (e: PressCustomEvent) => void;
+      press: (node: HTMLElement) => () => void;
+    }
+  : never;
+
+export function usePress<T extends boolean>(
   handler: (e: PressCustomEvent) => void,
   inputParameters?: () => Partial<PressParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onpressup?: (gestureEvent: GestureCustomEvent) => void;
-  onpressdown?: (gestureEvent: GestureCustomEvent) => void;
-  onpressmove?: (gestureEvent: GestureCustomEvent) => void;
-  onpress: (e: PressCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnPress<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement) => {
+    [gesturePropName]: (node: HTMLElement) => {
       const { onMove, onDown, onUp, parameters, clearTimeoutWrap } = pressBase(
         node,
         inputParameters?.()
@@ -71,7 +85,7 @@ export function usePress(
         clearTimeoutWrap();
       };
     },
-  };
+  } as ReturnPress<T>;
 }
 
 export const pressComposition = (

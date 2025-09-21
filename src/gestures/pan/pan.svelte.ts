@@ -29,24 +29,39 @@ export type PanEvent = Record<
   (gestureEvent: PanCustomEvent) => void
 >;
 
-export function usePan(
+type ReturnPan<T> = T extends false
+  ? {
+      onpanup?: (gestureEvent: GestureCustomEvent) => void;
+      onpandown?: (gestureEvent: GestureCustomEvent) => void;
+      onpanmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpan: (e: PanCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onpanup?: (gestureEvent: GestureCustomEvent) => void;
+      onpandown?: (gestureEvent: GestureCustomEvent) => void;
+      onpanmove?: (gestureEvent: GestureCustomEvent) => void;
+      onpan: (e: PanCustomEvent) => void;
+      pan: (node: HTMLElement) => () => void;
+    }
+  : never;
+
+export function usePan<T extends boolean>(
   handler: (e: PanCustomEvent) => void,
   inputParameters?: () => Partial<PanParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onpanup?: (gestureEvent: GestureCustomEvent) => void;
-  onpandown?: (gestureEvent: GestureCustomEvent) => void;
-  onpanmove?: (gestureEvent: GestureCustomEvent) => void;
-  onpan: (e: PanCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnPan<T> {
   const { setPointerControls } = createPointerControls();
+
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, parameters } = panBase(node, inputParameters?.());
 
       return setPointerControls(
@@ -59,7 +74,7 @@ export function usePan(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnPan<T>;
 }
 
 export const panComposition = (

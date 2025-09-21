@@ -41,24 +41,38 @@ export type ShapeEvent = Record<
   (gestureEvent: ShapeCustomEvent) => void
 >;
 
-export function useShapeGesture(
+type ReturnShapeGesture<T> = T extends false
+  ? {
+      onshapeGestureup?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesturedown?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesturemove?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesture: (e: ShapeCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onshapeGestureup?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesturedown?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesturemove?: (gestureEvent: GestureCustomEvent) => void;
+      onshapeGesture: (e: ShapeCustomEvent) => void;
+      shapeGesture: (node: HTMLElement) => () => void;
+    }
+  : never;
+
+export function useShapeGesture<T extends boolean>(
   handler: (e: ShapeCustomEvent) => void,
   inputParameters?: () => Partial<ShapeGestureParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onshapeGestureup?: (gestureEvent: GestureCustomEvent) => void;
-  onshapeGesturedown?: (gestureEvent: GestureCustomEvent) => void;
-  onshapeGesturemove?: (gestureEvent: GestureCustomEvent) => void;
-  onshapeGesture: (e: ShapeCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnShapeGesture<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = shapeGestureBase(
         node,
         inputParameters?.()
@@ -74,7 +88,7 @@ export function useShapeGesture(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnShapeGesture<T>;
 }
 
 export const shapeGestureComposition = (

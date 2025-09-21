@@ -32,24 +32,38 @@ export type MultiTouchEvent = Record<
   (gestureEvent: MultiTouchCustomEvent) => void
 >;
 
-export function useMultiTouch(
+type ReturnMultiTouch<T> = T extends false
+  ? {
+      onmultiTouchup?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouchdown?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouchmove?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouch: (e: MultiTouchCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onmultiTouchup?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouchdown?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouchmove?: (gestureEvent: GestureCustomEvent) => void;
+      onmultiTouch: (e: MultiTouchCustomEvent) => void;
+      multiTouch: (node: HTMLElement) => () => void;
+    }
+  : never;
+
+export function useMultiTouch<T extends boolean>(
   handler: (e: MultiTouchCustomEvent) => void,
   inputParameters?: () => Partial<MultiTouchParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onmultiTouchup?: (gestureEvent: GestureCustomEvent) => void;
-  onmultiTouchdown?: (gestureEvent: GestureCustomEvent) => void;
-  onmultiTouchmove?: (gestureEvent: GestureCustomEvent) => void;
-  onmultiTouch: (e: MultiTouchCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnMultiTouch<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onDown, parameters } = multiTouchBase(node, inputParameters?.());
 
       return setPointerControls(
@@ -62,7 +76,7 @@ export function useMultiTouch(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnMultiTouch<T>;
 }
 
 export const multiTouchComposition = (

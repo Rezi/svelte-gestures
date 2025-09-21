@@ -34,24 +34,38 @@ export type SwipeEvent = Record<
   (gestureEvent: SwipeCustomEvent) => void
 >;
 
-export function useSwipe(
+type ReturnSwipe<T> = T extends false
+  ? {
+      onswipeup?: (gestureEvent: GestureCustomEvent) => void;
+      onswipedown?: (gestureEvent: GestureCustomEvent) => void;
+      onswipemove?: (gestureEvent: GestureCustomEvent) => void;
+      onswipe: (e: SwipeCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onswipeup?: (gestureEvent: GestureCustomEvent) => void;
+      onswipedown?: (gestureEvent: GestureCustomEvent) => void;
+      onswipemove?: (gestureEvent: GestureCustomEvent) => void;
+      onswipe: (e: SwipeCustomEvent) => void;
+      swipe: (node: HTMLElement) => () => void;
+    }
+  : never;
+
+export function useSwipe<T extends boolean>(
   handler: (e: SwipeCustomEvent) => void,
   inputParameters?: () => Partial<SwipeParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onswipeup?: (gestureEvent: GestureCustomEvent) => void;
-  onswipedown?: (gestureEvent: GestureCustomEvent) => void;
-  onswipemove?: (gestureEvent: GestureCustomEvent) => void;
-  onswipe: (e: SwipeCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnSwipe<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onDown, onUp, parameters } = swipeBase(node, inputParameters?.());
 
       return setPointerControls(
@@ -64,7 +78,7 @@ export function useSwipe(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnSwipe<T>;
 }
 
 export const swipeComposition = (

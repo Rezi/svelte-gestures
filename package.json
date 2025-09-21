@@ -3,7 +3,7 @@
   "description": "Svelte gestures library with plugin system. Based on svelte attachments.",
   "repository": "https://github.com/Rezi/svelte-gestures",
   "license": "MIT",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "main": "dist/index.svelte.js",
   "module": "dist/index.esm.svelte.js",
   "types": "./index.d.ts",

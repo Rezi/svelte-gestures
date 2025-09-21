@@ -29,6 +29,23 @@ export type RotateEvent = Record<
   (gestureEvent: RotateCustomEvent) => void
 >;
 
+type ReturnRotate<T> = T extends false
+  ? {
+      onrotateup?: (gestureEvent: GestureCustomEvent) => void;
+      onrotatedown?: (gestureEvent: GestureCustomEvent) => void;
+      onrotatemove?: (gestureEvent: GestureCustomEvent) => void;
+      onrotate: (e: RotateCustomEvent) => void;
+    }
+  : T extends true
+  ? {
+      onrotateup?: (gestureEvent: GestureCustomEvent) => void;
+      onrotatedown?: (gestureEvent: GestureCustomEvent) => void;
+      onrotatemove?: (gestureEvent: GestureCustomEvent) => void;
+      onrotate: (e: RotateCustomEvent) => void;
+      rotate: (node: HTMLElement) => () => void;
+    }
+  : never;
+
 function getPointersAngleDeg(activeEvents: PointerEvent[]): number {
   const quadrantsMap = {
     left: { top: 360, bottom: 180 },
@@ -58,24 +75,21 @@ function getPointersAngleDeg(activeEvents: PointerEvent[]): number {
   return angle + quadrantAngleBonus;
 }
 
-export function useRotate(
+export function useRotate<T extends boolean>(
   handler: (e: RotateCustomEvent) => void,
   inputParameters?: () => Partial<RotateParameters>,
   baseHandlers?: Partial<
     Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>
-  >
-): {
-  onrotateup?: (gestureEvent: GestureCustomEvent) => void;
-  onrotatedown?: (gestureEvent: GestureCustomEvent) => void;
-  onrotatemove?: (gestureEvent: GestureCustomEvent) => void;
-  onrotate: (e: RotateCustomEvent) => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnRotate<T> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
     [`on${gestureName}` as OnEventType]: handler,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const { onMove, onDown, onUp, parameters } = rotateBase(
         node,
         inputParameters?.()
@@ -90,7 +104,7 @@ export function useRotate(
         parameters.plugins
       ).destroy;
     },
-  };
+  } as ReturnRotate<T>;
 }
 
 export const rotateComposition = (

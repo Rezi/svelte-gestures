@@ -1,6 +1,10 @@
 # Changelog
 
-## 5.2.0
+## 5.2.2
+
+- `isRaw` argument was added as last optional argument to useGesture functions. It defaults to `false`, which makes it to work as before this change. However, when set to `true`, the return object won't use `@attach` symbol as property key for the gesture function, instead it will use the gesture name. This way one could get destruct the object easily and use it via @attach syntax instead. It makes it easier to use gestures programmatically or on svelte native elements like `svelte:body`.
+
+## 5.2.1
 
 - BREAKING CHANGES - actions converted to attachments
 - new API of gestures

@@ -15,12 +15,19 @@ declare const gestureName: "swipe";
 type OnEventType = `on${typeof gestureName}`;
 type EventTypeName = `${OnEventType}${ActionType}`;
 export type SwipeEvent = Record<OnEventType, (gestureEvent: SwipeCustomEvent) => void>;
-export declare function useSwipe(handler: (e: SwipeCustomEvent) => void, inputParameters?: () => Partial<SwipeParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>): {
+type ReturnSwipe<T> = T extends false ? {
     onswipeup?: (gestureEvent: GestureCustomEvent) => void;
     onswipedown?: (gestureEvent: GestureCustomEvent) => void;
     onswipemove?: (gestureEvent: GestureCustomEvent) => void;
     onswipe: (e: SwipeCustomEvent) => void;
-};
+} : T extends true ? {
+    onswipeup?: (gestureEvent: GestureCustomEvent) => void;
+    onswipedown?: (gestureEvent: GestureCustomEvent) => void;
+    onswipemove?: (gestureEvent: GestureCustomEvent) => void;
+    onswipe: (e: SwipeCustomEvent) => void;
+    swipe: (node: HTMLElement) => () => void;
+} : never;
+export declare function useSwipe<T extends boolean>(handler: (e: SwipeCustomEvent) => void, inputParameters?: () => Partial<SwipeParameters>, baseHandlers?: Partial<Record<EventTypeName, (gestureEvent: GestureCustomEvent) => void>>, isRaw?: T): ReturnSwipe<T>;
 export declare const swipeComposition: (node: HTMLElement, inputParameters?: Partial<SwipeParameters>) => SubGestureFunctions;
 export {};
 //# sourceMappingURL=swipe.svelte.d.ts.map

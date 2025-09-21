@@ -76,7 +76,7 @@ Except for the main event, each recognizer triggers, three more events with name
 
 For example `usePan` attachment has for example `onpanup`, `onpandown`, `onpanmove`. It dispatches `event.detail` with the following property
 
-```
+```ts
 {
   event: PointerEvent,
   pointersCount: number ,
@@ -102,6 +102,28 @@ All basic gestures follow the same pattern. A gesture attachment starts with **u
 1. Handler for the gesture main event.Handle is triggered when pan gesture is recognized
 2. A function which returns gesture options object. The function wrapper allow the options to be changed on the fly.
 3. Object with three extra event handles. In case of pan gesture Object with `onpanup`, `onpandown`, `onpanmove` properties which hold handler functions for those events.
+4. isRaw `boolean`. Defaults to `false`. If set to `true`, the usePan function returns the main pan function in form under property name `pan` instead of regular attachment key (`createAttachmentKey()`). It is useful when `@attach` syntax i needed like on `svelte:body` element on which spread properties are not allowed. Also can be handy for attaching handler programmatically by addEventListener().
+
+Example for `isRaw` true.
+
+```ts
+<script lang="ts">
+...
+
+const { swipe, onswipe, onswipedown, onswipemove, onswipeup } = useSwipe(
+  handler,
+  () => ({ timeframe: 300, minSwipeDistance: 50, touchAction: 'none' }),
+  {
+    onswipemove: moveHandler,
+    onswipeup: upHandler,
+    onswipedown: downHandler
+  },
+  true
+);
+</script>
+
+<svelte:body {@attach swipe} {onswipe} {onswipedown} {onswipemove} {onswipeup} />
+```
 
 ## Pan
 

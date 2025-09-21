@@ -40,6 +40,69 @@ export type ComposedGestureFnsWithPlugins = {
   plugins: GesturePlugin[];
 };
 
+type ReturnComposedGesture<T, GestureEvents> = T extends false
+  ? {
+      oncomposedGestureup?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGestureup']
+        | undefined;
+      oncomposedGesturedown?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGesturedown']
+        | undefined;
+      oncomposedGesturemove?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGesturemove']
+        | undefined;
+    }
+  : T extends true
+  ? {
+      oncomposedGestureup?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGestureup']
+        | undefined;
+      oncomposedGesturedown?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGesturedown']
+        | undefined;
+      oncomposedGesturemove?:
+        | (Record<
+            | 'oncomposedGestureup'
+            | 'oncomposedGesturedown'
+            | 'oncomposedGesturemove',
+            (gestureEvent: GestureCustomEvent) => void
+          > &
+            GestureEvents)['oncomposedGesturemove']
+        | undefined;
+      composedGesture: (node: HTMLElement) => () => void;
+    }
+  : never;
+
 export const gestureName = 'composedGesture' as const;
 
 type EventTypeName<T extends string> = `on${T}${ActionType}`;
@@ -62,7 +125,7 @@ export function callAllByType(
   );
 }
 
-export function useComposedGesture<GestureEvents>(
+export function useComposedGesture<GestureEvents, T extends boolean>(
   gestureCallback: GestureCallback,
   baseHandlers?: Partial<
     Record<
@@ -70,42 +133,15 @@ export function useComposedGesture<GestureEvents>(
       (gestureEvent: GestureCustomEvent) => void
     > &
       GestureEvents
-  >
-): {
-  oncomposedGestureup?:
-    | (Record<
-        | 'oncomposedGestureup'
-        | 'oncomposedGesturedown'
-        | 'oncomposedGesturemove',
-        (gestureEvent: GestureCustomEvent) => void
-      > &
-        GestureEvents)['oncomposedGestureup']
-    | undefined;
-  oncomposedGesturedown?:
-    | (Record<
-        | 'oncomposedGestureup'
-        | 'oncomposedGesturedown'
-        | 'oncomposedGesturemove',
-        (gestureEvent: GestureCustomEvent) => void
-      > &
-        GestureEvents)['oncomposedGesturedown']
-    | undefined;
-  oncomposedGesturemove?:
-    | (Record<
-        | 'oncomposedGestureup'
-        | 'oncomposedGesturedown'
-        | 'oncomposedGesturemove',
-        (gestureEvent: GestureCustomEvent) => void
-      > &
-        GestureEvents)['oncomposedGesturemove']
-    | undefined;
-  [attach: symbol]: (node: HTMLElement) => () => void;
-} {
+  >,
+  isRaw = false as T
+): ReturnComposedGesture<T, GestureEvents> {
   const { setPointerControls } = createPointerControls();
+  const gesturePropName = isRaw ? gestureName : createAttachmentKey();
 
   return {
     ...baseHandlers,
-    [createAttachmentKey()]: (node: HTMLElement): (() => void) => {
+    [gesturePropName]: (node: HTMLElement): (() => void) => {
       const gestureFunctionsWithPlugins: ComposedGestureFnsWithPlugins[] = [];
 
       function registerGesture<F extends GenericParamsWithPlugins>(
@@ -164,5 +200,5 @@ export function useComposedGesture<GestureEvents>(
       return setPointerControls(gestureName, node, onMove, onDown, onUp)
         .destroy;
     },
-  };
+  } as ReturnComposedGesture<T, GestureEvents>;
 }
